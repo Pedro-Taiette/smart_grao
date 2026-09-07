@@ -17,12 +17,18 @@ public sealed record SamplingSpacing
 {
     /// <summary>
     /// Tetos de sanidade, nao recomendacao agronomica — mesma natureza dos limites de area do
-    /// talhao. Abaixo de 10 m a malha vira uma caminhada continua; acima de 500 m um talhao inteiro
-    /// cabe entre dois pontos.
+    /// talhao. Abaixo de 10 m a malha vira uma caminhada continua.
+    /// <para>
+    /// O teto e alto de proposito. Ele nao existe para sugerir espacamento: existe para barrar
+    /// numero absurdo. Quem o alcanca e o modo Monitoramento em talhao enorme — no limite de
+    /// 50.000 ha do dominio, distribuir os 10 pontos da tabela do MIP-Soja pede cerca de 7 km entre
+    /// eles. Um teto menor faria o solver bater na parede e devolver centenas de pontos para um alvo
+    /// de dez.
+    /// </para>
     /// </summary>
     public const double MinimumMeters = 10d;
 
-    public const double MaximumMeters = 500d;
+    public const double MaximumMeters = 10_000d;
 
     private SamplingSpacing(double meters) => Meters = meters;
 

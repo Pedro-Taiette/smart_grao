@@ -48,33 +48,21 @@ public static class SamplingGridGenerator
         ArgumentNullException.ThrowIfNull(boundary);
         ArgumentNullException.ThrowIfNull(spacing);
 
-        var box = boundary.BoundingBox;
-        var referenceLatitude = (box.MinY + box.MaxY) / 2d;
+        var layout = Layout(boundary, spacing);
 
-        var stepLatitude = Wgs84Geodesy.MetersToDegreesLatitude(spacing.Meters);
-        var stepLongitude = Wgs84Geodesy.MetersToDegreesLongitude(spacing.Meters, referenceLatitude);
-
-        var rows = CellsAcross(box.Height, stepLatitude);
-        var columns = CellsAcross(box.Width, stepLongitude);
-
-        if ((long)rows * columns > MaximumPoints)
+        if (layout.CandidateCount > MaximumPoints)
             throw new DomainException(SmartGraoErrors.Sampling.GridTooDense(MaximumPoints));
-
-        // Sobra da divisao repartida entre as duas pontas: sem isso a grade encosta numa borda da
-        // caixa e deixa uma faixa vazia na oposta, o que apareceria como um talhao amostrado torto.
-        var originLatitude = box.MinY + ((box.Height - (rows * stepLatitude)) / 2d);
-        var originLongitude = box.MinX + ((box.Width - (columns * stepLongitude)) / 2d);
 
         var points = new List<GeoCoordinate>();
 
-        for (var row = 0; row < rows; row++)
+        for (var row = 0; row < layout.Rows; row++)
         {
-            var latitude = originLatitude + ((row + 0.5) * stepLatitude);
+            var latitude = layout.OriginLatitude + ((row + 0.5) * layout.StepLatitude);
             var rowPoints = new List<GeoCoordinate>();
 
-            for (var column = 0; column < columns; column++)
+            for (var column = 0; column < layout.Columns; column++)
             {
-                var longitude = originLongitude + ((column + 0.5) * stepLongitude);
+                var longitude = layout.OriginLongitude + ((column + 0.5) * layout.StepLongitude);
                 var candidate = GeoCoordinate.From(latitude, longitude);
 
                 if (boundary.Contains(candidate))
@@ -91,9 +79,59 @@ public static class SamplingGridGenerator
     }
 
     /// <summary>
+    /// Quantos pontos a grade teria <b>antes</b> do recorte pelo contorno, sem construir nenhum.
+    /// <para>
+    /// Serve a quem precisa saber o tamanho da grade sem pagar por ela — a busca do modo
+    /// Monitoramento sonda espacamentos ao longo de toda a faixa permitida, e no extremo denso a
+    /// grade de um talhao grande passa de milhoes de candidatos. Comparar aqui e o que evita
+    /// construir para so depois recusar.
+    /// </para>
+    /// </summary>
+    public static long CandidateCount(Boundary boundary, SamplingSpacing spacing)
+    {
+        ArgumentNullException.ThrowIfNull(boundary);
+        ArgumentNullException.ThrowIfNull(spacing);
+
+        return Layout(boundary, spacing).CandidateCount;
+    }
+
+    private static GridLayout Layout(Boundary boundary, SamplingSpacing spacing)
+    {
+        var box = boundary.BoundingBox;
+        var referenceLatitude = (box.MinY + box.MaxY) / 2d;
+
+        var stepLatitude = Wgs84Geodesy.MetersToDegreesLatitude(spacing.Meters);
+        var stepLongitude = Wgs84Geodesy.MetersToDegreesLongitude(spacing.Meters, referenceLatitude);
+
+        var rows = CellsAcross(box.Height, stepLatitude);
+        var columns = CellsAcross(box.Width, stepLongitude);
+
+        // Sobra da divisao repartida entre as duas pontas: sem isso a grade encosta numa borda da
+        // caixa e deixa uma faixa vazia na oposta, o que apareceria como um talhao amostrado torto.
+        return new GridLayout(
+            rows,
+            columns,
+            box.MinY + ((box.Height - (rows * stepLatitude)) / 2d),
+            box.MinX + ((box.Width - (columns * stepLongitude)) / 2d),
+            stepLatitude,
+            stepLongitude);
+    }
+
+    /// <summary>
     /// Quantas celulas de lado <paramref name="step"/> cabem no vao. Nunca menos de uma: um talhao
     /// menor que o espacamento pedido deve render o seu ponto central, e nao uma lista vazia.
     /// </summary>
     private static int CellsAcross(double span, double step) =>
         Math.Max(1, (int)Math.Round(span / step, MidpointRounding.AwayFromZero));
+
+    private readonly record struct GridLayout(
+        int Rows,
+        int Columns,
+        double OriginLatitude,
+        double OriginLongitude,
+        double StepLatitude,
+        double StepLongitude)
+    {
+        public long CandidateCount => (long)Rows * Columns;
+    }
 }

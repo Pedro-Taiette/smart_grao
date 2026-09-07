@@ -135,6 +135,12 @@ public static class SmartGraoErrors
         public static Error UnknownMode =>
             Error.Validation("sampling.unknown_mode", "That sampling mode is not in the catalog.");
 
+        public static Error EdgeBufferNotFinite =>
+            Error.Validation("sampling.edge_buffer_not_finite", "The edge buffer is not a finite number.");
+
+        public static Error EdgeBufferNegative =>
+            Error.Validation("sampling.edge_buffer_negative", "The edge buffer cannot be negative.");
+
         public static Error SpacingNotFinite =>
             Error.Validation("sampling.spacing_not_finite", "The spacing is not a finite number.");
 

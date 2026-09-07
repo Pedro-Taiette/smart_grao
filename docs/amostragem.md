@@ -171,11 +171,34 @@ plano grava o alvo e a contagem real lado a lado.
 Aceitar um excedente, em vez de descartar pontos até bater o número, é deliberado. Todo critério de
 descarte que consideramos ou introduz viés espacial (cortar os últimos da ordem, cortar os mais
 próximos da borda) ou depende de um desempate arbitrário — nenhum tem respaldo em fonte. E o
-protocolo estabelece um número mínimo de pontos, não um teto. Se o excedente se mostrar grande em
-talhões de formato irregular, existe caminho publicado para contagem exata sem descarte:
-*spatial coverage sampling* por estratificação k-means (Walvoort, Brus & de Gruijter), que põe um
-ponto no centroide de cada um de N estratos compactos. Fica registrado como alternativa a adotar
-com medida na mão, não por preferência.
+protocolo estabelece um número mínimo de pontos, não um teto.
+
+**O excedente foi medido**, porque a decisão dependia de ele ser pequeno:
+
+| Forma | Área | Alvo | Pontos | Excedente | Espaçamento |
+|---|---|---|---|---|---|
+| quadrado | 5 ha | 6 | 6 | 1,00× | 53 m |
+| quadrado | 20 ha | 8 | 9 | 1,12× | 116 m |
+| quadrado | 50 ha | 10 | 12 | 1,20× | 138 m |
+| retângulo 4:1 | 40 ha | 10 | 10 | 1,00× | 112 m |
+| retângulo 8:1 | 40 ha | 10 | 10 | 1,00× | 167 m |
+| talhão em L | 48 ha | 10 | 11 | 1,10× | 129 m |
+| quadrado | 50.000 ha | 10 | 12 | 1,20× | 4.371 m |
+
+No pior caso são 2 pontos a mais — a caminhada continua sendo a que o protocolo pede. O teste que
+produz esta tabela fica no repositório (`SamplingGridResolverTests`), então a medida se refaz sozinha
+se a regra mudar.
+
+Existe caminho publicado para contagem exata sem descarte — *spatial coverage sampling* por
+estratificação k-means (Walvoort, Brus & de Gruijter), que põe um ponto no centroide de cada um de N
+estratos compactos. Com o excedente nesta ordem, ele **não se justifica**: custaria um segundo
+algoritmo de geração, quebrando a premissa de um serviço de domínio só, para economizar dois pontos.
+Fica registrado para o caso de a medida mudar.
+
+**Quando o alvo não é alcançável.** Um talhão pequeno demais não comporta os pontos que o protocolo
+pede: 0,15 ha, depois de descartada a bordadura, rende 4 pontos para um alvo de 6, mesmo na malha
+mais densa permitida. Não é erro — o plano grava alvo e contagem real lado a lado, e a diferença
+fica visível em vez de mascarada.
 
 ### Modo Mapeamento — decidir *onde* aplica
 
