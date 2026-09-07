@@ -34,6 +34,10 @@ public static class SmartGraoErrors
             Error.Validation("geo.latitude_too_close_to_pole",
                 "Metric conversions are not defined this close to a pole.");
 
+        public static Error NegativeShrinkDistance =>
+            Error.Validation("geo.negative_shrink_distance",
+                "A boundary can only be shrunk inwards by a non-negative distance.");
+
         public static Error EmptyBoundary =>
             Error.Validation("geo.empty_boundary", "The boundary has no geometry.");
 
