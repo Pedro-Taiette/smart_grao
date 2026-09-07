@@ -132,6 +132,14 @@ public static class SmartGraoErrors
         public static Error NotFound =>
             Error.NotFound("sampling.not_found", "Sampling plan not found.");
 
+        /// <summary>
+        /// O talhao saiu de operacao. Gerar uma caminhada para ele mandaria alguem a campo por uma
+        /// area que ninguem esta manejando.
+        /// </summary>
+        public static Error FieldIsInactive =>
+            Error.Conflict("sampling.field_is_inactive",
+                "This field is inactive; reactivate it before planning a sampling round.");
+
         public static Error UnknownMode =>
             Error.Validation("sampling.unknown_mode", "That sampling mode is not in the catalog.");
 

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SmartGrao.Application.Features.Fields;
+using SmartGrao.Application.Features.Sampling;
 
 namespace SmartGrao.WebApi.Controllers;
 
@@ -69,6 +70,20 @@ public sealed class FieldsController : ControllerBase
         CancellationToken cancellationToken)
     {
         return Ok(await handler.HandleAsync(id, active, cancellationToken));
+    }
+
+    /// <summary>
+    /// Historico de amostragem do talhao, do mais recente para o mais antigo. Devolve o resumo de
+    /// cada plano, sem a malha — a malha se pede pelo plano.
+    /// </summary>
+    [HttpGet("{id:guid}/sampling-plans", Name = "GetSamplingPlansByField")]
+    [ProducesResponseType(typeof(IReadOnlyList<SamplingPlanSummaryViewModel>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyList<SamplingPlanSummaryViewModel>>> GetSamplingPlans(
+        Guid id,
+        [FromServices] GetSamplingPlansByFieldQueryHandler handler,
+        CancellationToken cancellationToken)
+    {
+        return Ok(await handler.HandleAsync(id, cancellationToken));
     }
 
     [HttpDelete("{id:guid}", Name = "DeleteField")]
