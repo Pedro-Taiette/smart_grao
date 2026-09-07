@@ -30,6 +30,14 @@ public static class SmartGraoErrors
         public static Error LongitudeOutOfRange =>
             Error.Validation("geo.longitude_out_of_range", "Longitude must be between -180 and 180 degrees.");
 
+        public static Error LatitudeTooCloseToPole =>
+            Error.Validation("geo.latitude_too_close_to_pole",
+                "Metric conversions are not defined this close to a pole.");
+
+        public static Error NegativeShrinkDistance =>
+            Error.Validation("geo.negative_shrink_distance",
+                "A boundary can only be shrunk inwards by a non-negative distance.");
+
         public static Error EmptyBoundary =>
             Error.Validation("geo.empty_boundary", "The boundary has no geometry.");
 
@@ -117,5 +125,59 @@ public static class SmartGraoErrors
 
         public static Error UnknownCrop =>
             Error.Validation("field.unknown_crop", "That crop is not in the catalog.");
+    }
+
+    public static class Sampling
+    {
+        public static Error NotFound =>
+            Error.NotFound("sampling.not_found", "Sampling plan not found.");
+
+        /// <summary>
+        /// O talhao saiu de operacao. Gerar uma caminhada para ele mandaria alguem a campo por uma
+        /// area que ninguem esta manejando.
+        /// </summary>
+        public static Error FieldIsInactive =>
+            Error.Conflict("sampling.field_is_inactive",
+                "This field is inactive; reactivate it before planning a sampling round.");
+
+        public static Error UnknownMode =>
+            Error.Validation("sampling.unknown_mode", "That sampling mode is not in the catalog.");
+
+        public static Error EdgeBufferNotFinite =>
+            Error.Validation("sampling.edge_buffer_not_finite", "The edge buffer is not a finite number.");
+
+        public static Error EdgeBufferNegative =>
+            Error.Validation("sampling.edge_buffer_negative", "The edge buffer cannot be negative.");
+
+        public static Error SpacingNotFinite =>
+            Error.Validation("sampling.spacing_not_finite", "The spacing is not a finite number.");
+
+        public static Error SpacingOutOfRange(double minimumMeters, double maximumMeters) =>
+            Error.Validation(
+                "sampling.spacing_out_of_range",
+                string.Create(CultureInfo.InvariantCulture,
+                    $"The spacing must be between {minimumMeters} and {maximumMeters} metres."));
+
+        public static Error GridTooDense(int maximumPoints) =>
+            Error.BusinessRule(
+                "sampling.grid_too_dense",
+                string.Create(CultureInfo.InvariantCulture,
+                    $"That spacing would produce more than {maximumPoints} points for this field."));
+
+        /// <summary>
+        /// A bordadura descartada pelo modo Monitoramento consumiu o talhao inteiro — ou o partiu em
+        /// pedacos soltos, no caso de um contorno em ampulheta. Nao ha miolo onde amostrar.
+        /// </summary>
+        public static Error FieldTooNarrowForEdgeBuffer =>
+            Error.BusinessRule("sampling.field_too_narrow_for_edge_buffer",
+                "Discarding the field margin leaves no area to sample; the field is too narrow.");
+
+        /// <summary>
+        /// O contorno nao acomodou nenhum ponto da malha. Acontece com talhao muito estreito e
+        /// espacamento grande: a grade existe, mas todos os candidatos caem fora do poligono.
+        /// </summary>
+        public static Error NoPointsFitTheField =>
+            Error.BusinessRule("sampling.no_points_fit_the_field",
+                "No grid point falls inside this field at the requested spacing.");
     }
 }

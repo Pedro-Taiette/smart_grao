@@ -1,4 +1,5 @@
 using NetTopologySuite.Geometries;
+using SmartGrao.Domain.Abstractions;
 
 namespace SmartGrao.Domain.Geo;
 
@@ -24,6 +25,37 @@ public static class Wgs84Geodesy
     public const double AuthalicRadiusMeters = 6_371_007.181;
 
     public const double SquareMetersPerHectare = 10_000d;
+
+    /// <summary>
+    /// Acima disso a conversao de metros para graus de longitude divide por um cosseno proximo de
+    /// zero e explode. Nao e regra agronomica — nenhum talhao existe a 89 graus de latitude —, e sim
+    /// a recusa de devolver <c>Infinity</c> em silencio para quem for montar uma malha.
+    /// </summary>
+    public const double MaximumLatitudeForMetricConversion = 89d;
+
+    /// <summary>
+    /// Quantos metros vale um grau de latitude. Constante em qualquer ponto do globo: os meridianos
+    /// sao circulos maximos.
+    /// </summary>
+    public static double MetersPerDegreeLatitude => Math.PI * AuthalicRadiusMeters / 180d;
+
+    /// <summary>
+    /// Quantos metros vale um grau de longitude na latitude dada. Encolhe com o cosseno da latitude
+    /// — os paralelos vao ficando menores em direcao aos polos —, e e por isso que uma malha de
+    /// espacamento fixo em metros nao pode usar o mesmo passo nos dois eixos.
+    /// </summary>
+    public static double MetersPerDegreeLongitude(double atLatitude) =>
+        MetersPerDegreeLatitude * Math.Cos(ToRadians(GuardLatitude(atLatitude)));
+
+    /// <summary>Converte uma distancia em metros para o deslocamento equivalente em graus de latitude.</summary>
+    public static double MetersToDegreesLatitude(double meters) => meters / MetersPerDegreeLatitude;
+
+    /// <summary>
+    /// Converte uma distancia em metros para o deslocamento equivalente em graus de longitude, na
+    /// latitude dada.
+    /// </summary>
+    public static double MetersToDegreesLongitude(double meters, double atLatitude) =>
+        meters / MetersPerDegreeLongitude(atLatitude);
 
     /// <summary>
     /// Area geodesica do anel, em metros quadrados, pela formula do excesso esferico
@@ -100,6 +132,17 @@ public static class Wgs84Geodesy
                 (Math.Cos(phi1) * Math.Cos(phi2) * Math.Sin(deltaLambda / 2) * Math.Sin(deltaLambda / 2));
 
         return 2 * AuthalicRadiusMeters * Math.Asin(Math.Min(1d, Math.Sqrt(a)));
+    }
+
+    private static double GuardLatitude(double latitude)
+    {
+        if (double.IsNaN(latitude) || double.IsInfinity(latitude))
+            throw new DomainException(SmartGraoErrors.Geo.CoordinateNotFinite);
+
+        if (Math.Abs(latitude) >= MaximumLatitudeForMetricConversion)
+            throw new DomainException(SmartGraoErrors.Geo.LatitudeTooCloseToPole);
+
+        return latitude;
     }
 
     private static double ToRadians(double degrees) => degrees * Math.PI / 180d;

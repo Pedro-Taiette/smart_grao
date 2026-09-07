@@ -3,6 +3,7 @@ using SmartGrao.Application.Abstractions;
 using SmartGrao.Domain.Abstractions;
 using SmartGrao.Domain.Farms;
 using SmartGrao.Domain.Fields;
+using SmartGrao.Domain.Sampling;
 
 namespace SmartGrao.Infrastructure.Persistence;
 
@@ -17,6 +18,8 @@ public sealed class SmartGraoDbContext(DbContextOptions<SmartGraoDbContext> opti
     public DbSet<Farm> Farms => Set<Farm>();
 
     public DbSet<Field> Fields => Set<Field>();
+
+    public DbSet<SamplingPlan> SamplingPlans => Set<SamplingPlan>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

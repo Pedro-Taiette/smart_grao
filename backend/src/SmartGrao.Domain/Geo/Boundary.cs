@@ -1,5 +1,6 @@
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
+using NetTopologySuite.Geometries.Utilities;
 using SmartGrao.Domain.Abstractions;
 
 namespace SmartGrao.Domain.Geo;
@@ -128,6 +129,46 @@ public sealed class Boundary : IEquatable<Boundary>
         var perimeter = Wgs84Geodesy.PerimeterInMeters(coordinates);
 
         return new Boundary(normalized, Wgs84Geodesy.ToHectares(areaSquareMeters), perimeter);
+    }
+
+    /// <summary>
+    /// Contorno recuado para dentro por uma distancia em metros — a bordadura que a amostragem de
+    /// monitoramento descarta.
+    /// <para>
+    /// Devolve <c>null</c> quando a erosao nao deixa area util: ou o talhao e estreito demais e
+    /// desaparece, ou ele tem forma de ampulheta e a erosao o parte em pedacos soltos. Nos dois
+    /// casos nao existe um contorno recuado, e devolver o pedaco maior seria descartar parte do
+    /// talhao em silencio — a amostragem sairia enviesada para um lado sem que ninguem pedisse isso.
+    /// Nao e violacao de invariante, entao nao lanca: quem chama e que sabe se a ausencia de miolo e
+    /// um erro.
+    /// </para>
+    /// </summary>
+    public Boundary? Shrink(double meters)
+    {
+        if (meters < 0)
+            throw new DomainException(SmartGraoErrors.Geo.NegativeShrinkDistance);
+
+        if (meters == 0)
+            return this;
+
+        // O recuo e pedido em metros, mas o poligono vive em graus, e um grau de longitude vale
+        // menos metros que um grau de latitude. Erodir direto em graus recuaria mais no sentido
+        // norte-sul do que no leste-oeste — uma bordadura mais larga em cima e embaixo do que dos
+        // lados. Por isso a longitude e comprimida por cos(lat) antes: nesse espaco os dois eixos
+        // tem a mesma escala metrica, o recuo sai uniforme, e a compressao e desfeita no fim.
+        var latitude = Polygon.Centroid.Coordinate.Y;
+        var longitudeScale = Math.Cos(latitude * Math.PI / 180d);
+
+        var compress = AffineTransformation.ScaleInstance(longitudeScale, 1d);
+        var expand = AffineTransformation.ScaleInstance(1d / longitudeScale, 1d);
+
+        var eroded = compress.Transform(Polygon)
+            .Buffer(-Wgs84Geodesy.MetersToDegreesLatitude(meters));
+
+        if (eroded.IsEmpty || eroded is not Polygon shrunken)
+            return null;
+
+        return FromPolygon((Polygon)expand.Transform(shrunken));
     }
 
     /// <summary>Verdadeiro quando o ponto cai dentro do contorno. Base da amostragem do Pilar 2.</summary>

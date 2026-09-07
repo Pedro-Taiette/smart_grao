@@ -40,6 +40,10 @@ import type {
 } from '../model/problemDetails';
 
 import type {
+  SamplingPlanSummaryViewModel
+} from '../model/samplingPlanSummaryViewModel';
+
+import type {
   UpdateFieldViewModel
 } from '../model/updateFieldViewModel';
 
@@ -394,3 +398,89 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getChangeFieldStatusMutationOptions(options), queryClient);
     }
+    export const getSamplingPlansByField = (
+    id: string,
+ options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+) => {
+
+
+      return httpClient<SamplingPlanSummaryViewModel[]>(
+      {url: `/api/fields/${id}/sampling-plans`, method: 'GET', signal
+    },
+      options);
+    }
+
+
+
+
+export const getGetSamplingPlansByFieldQueryKey = (id: string,) => {
+    return [
+    `/api/fields/${id}/sampling-plans`
+    ] as const;
+    }
+
+
+export const getGetSamplingPlansByFieldQueryOptions = <TData = Awaited<ReturnType<typeof getSamplingPlansByField>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSamplingPlansByField>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSamplingPlansByFieldQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSamplingPlansByField>>> = ({ signal }) => getSamplingPlansByField(id, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSamplingPlansByField>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSamplingPlansByFieldQueryResult = NonNullable<Awaited<ReturnType<typeof getSamplingPlansByField>>>
+export type GetSamplingPlansByFieldQueryError = unknown
+
+
+export function useGetSamplingPlansByField<TData = Awaited<ReturnType<typeof getSamplingPlansByField>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSamplingPlansByField>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSamplingPlansByField>>,
+          TError,
+          Awaited<ReturnType<typeof getSamplingPlansByField>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof httpClient>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSamplingPlansByField<TData = Awaited<ReturnType<typeof getSamplingPlansByField>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSamplingPlansByField>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSamplingPlansByField>>,
+          TError,
+          Awaited<ReturnType<typeof getSamplingPlansByField>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof httpClient>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSamplingPlansByField<TData = Awaited<ReturnType<typeof getSamplingPlansByField>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSamplingPlansByField>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useGetSamplingPlansByField<TData = Awaited<ReturnType<typeof getSamplingPlansByField>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSamplingPlansByField>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSamplingPlansByFieldQueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+

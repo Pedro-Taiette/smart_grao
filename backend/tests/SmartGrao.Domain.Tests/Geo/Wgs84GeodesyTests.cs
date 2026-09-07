@@ -1,3 +1,4 @@
+using SmartGrao.Domain.Abstractions;
 using SmartGrao.Domain.Geo;
 using Xunit;
 
@@ -86,12 +87,97 @@ public sealed class Wgs84GeodesyTests
         Assert.InRange(geodesicInSquareMeters, 995_000d, 1_005_000d);
     }
 
+    /// <summary>
+    /// Um grau de latitude vale o mesmo em qualquer lugar, e a ida e volta tem que fechar. Sem isso
+    /// a malha amostral nasce com o passo errado e ninguem nota: os pontos continuam dentro do
+    /// talhao, so que espacados de outra coisa que nao o que foi pedido.
+    /// </summary>
+    [Theory]
+    [InlineData(50d)]
+    [InlineData(100d)]
+    [InlineData(1_000d)]
+    public void LatitudeConversion_RoundTrips(double meters)
+    {
+        var degrees = Wgs84Geodesy.MetersToDegreesLatitude(meters);
+
+        Assert.Equal(meters, degrees * Wgs84Geodesy.MetersPerDegreeLatitude, precision: 6);
+    }
+
+    /// <summary>
+    /// Um grau de longitude encolhe com o cosseno da latitude. E a razao de a malha precisar de dois
+    /// passos diferentes: usar o passo da latitude tambem na longitude esticaria a grade no sentido
+    /// leste-oeste, e no Rio Grande do Sul o erro passa de 10%.
+    /// </summary>
+    [Theory]
+    [InlineData(0d)]
+    [InlineData(-15.6)]
+    [InlineData(-28.2)]
+    public void LongitudeConversion_RoundTripsAtItsOwnLatitude(double latitude)
+    {
+        var degrees = Wgs84Geodesy.MetersToDegreesLongitude(100d, latitude);
+
+        Assert.Equal(100d, degrees * Wgs84Geodesy.MetersPerDegreeLongitude(latitude), precision: 6);
+    }
+
+    /// <summary>
+    /// A conversao de longitude confere contra a distancia geodesica medida de verdade: cem metros
+    /// convertidos para graus e reconvertidos por Haversine tem que dar cem metros. Nao e o mesmo
+    /// caminho de codigo, entao um fator errado apareceria aqui.
+    /// </summary>
+    [Theory]
+    [InlineData(0d)]
+    [InlineData(-15.6)]
+    [InlineData(-28.2)]
+    public void LongitudeConversion_MatchesTheMeasuredDistance(double latitude)
+    {
+        var deltaLongitude = Wgs84Geodesy.MetersToDegreesLongitude(100d, latitude);
+
+        var measured = Wgs84Geodesy.DistanceInMeters(
+            GeoCoordinate.From(latitude, 0),
+            GeoCoordinate.From(latitude, deltaLongitude));
+
+        Assert.Equal(100d, measured, precision: 3);
+    }
+
+    /// <summary>
+    /// No Equador o grau de longitude vale o mesmo que o de latitude; a 60 graus, metade. Fixa a
+    /// direcao do encolhimento por escrito — trocar o cosseno pelo seno passaria nos testes de ida e
+    /// volta acima, porque eles usam a mesma funcao nos dois sentidos.
+    /// </summary>
+    [Fact]
+    public void LongitudeDegree_ShrinksTowardsThePoles()
+    {
+        Assert.Equal(
+            Wgs84Geodesy.MetersPerDegreeLatitude,
+            Wgs84Geodesy.MetersPerDegreeLongitude(0d),
+            precision: 6);
+
+        Assert.Equal(
+            Wgs84Geodesy.MetersPerDegreeLatitude / 2d,
+            Wgs84Geodesy.MetersPerDegreeLongitude(60d),
+            precision: 6);
+    }
+
+    /// <summary>
+    /// Perto do polo a divisao pelo cosseno explode. Devolver <c>Infinity</c> em silencio faria a
+    /// malha nascer vazia ou o laco nao terminar, entao a conversao recusa.
+    /// </summary>
+    [Theory]
+    [InlineData(89.5)]
+    [InlineData(-90d)]
+    public void MetricConversion_RefusesLatitudesNearThePoles(double latitude)
+    {
+        var exception = Assert.Throws<DomainException>(
+            () => Wgs84Geodesy.MetersToDegreesLongitude(100d, latitude));
+
+        Assert.Equal("geo.latitude_too_close_to_pole", exception.Error.Code);
+    }
+
     /// <summary>Quadrado de aproximadamente 1000 m de lado, corrigindo a longitude pela latitude.</summary>
     internal static GeoCoordinate[] OneKilometreSquare(double latitude, double longitude)
     {
-        var degreesPerMetreInLatitude = 180d / (Math.PI * Wgs84Geodesy.AuthalicRadiusMeters);
-        var deltaLatitude = 1_000d * degreesPerMetreInLatitude;
-        var deltaLongitude = deltaLatitude / Math.Cos(latitude * Math.PI / 180d);
+        var deltaLatitude = Wgs84Geodesy.MetersToDegreesLatitude(1_000d);
+        var deltaLongitude = Wgs84Geodesy.MetersToDegreesLongitude(1_000d, latitude);
 
         return
         [

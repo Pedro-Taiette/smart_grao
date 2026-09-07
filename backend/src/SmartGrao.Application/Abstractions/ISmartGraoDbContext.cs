@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SmartGrao.Domain.Farms;
 using SmartGrao.Domain.Fields;
+using SmartGrao.Domain.Sampling;
 
 namespace SmartGrao.Application.Abstractions;
 
@@ -25,6 +26,13 @@ public interface ISmartGraoDbContext
     DbSet<Farm> Farms { get; }
 
     DbSet<Field> Fields { get; }
+
+    /// <summary>
+    /// Os planos de amostragem. Nao ha <c>DbSet</c> para <c>SamplingPoint</c>: o ponto so existe
+    /// dentro do plano que o gerou, e expo-lo como conjunto proprio convidaria a consultas que
+    /// atravessam a fronteira do agregado.
+    /// </summary>
+    DbSet<SamplingPlan> SamplingPlans { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
