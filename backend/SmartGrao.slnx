@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SmartGrao.Domain/SmartGrao.Domain.csproj" />
+    <Project Path="src/SmartGrao.Application/SmartGrao.Application.csproj" />
+    <Project Path="src/SmartGrao.Infrastructure/SmartGrao.Infrastructure.csproj" />
+    <Project Path="src/SmartGrao.WebApi/SmartGrao.WebApi.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/SmartGrao.Domain.Tests/SmartGrao.Domain.Tests.csproj" />
+  </Folder>
+</Solution>

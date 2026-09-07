@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- O Domain nao referencia framework web, ORM nem cliente HTTP. A unica dependencia externa e o
+       NetTopologySuite: um poligono georreferenciado e parte da linguagem ubiqua deste dominio, e
+       modela-lo como coordenadas soltas custaria reimplementar validade topologica, interseccao e
+       relacoes espaciais que a biblioteca ja resolve. -->
+  <ItemGroup>
+    <PackageReference Include="NetTopologySuite" />
+  </ItemGroup>
+
+</Project>

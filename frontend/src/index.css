@@ -1,0 +1,13 @@
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+/* O container do Leaflet nao tem altura propria: sem isto o mapa renderiza com zero pixel. */
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+  font-family: inherit;
+}

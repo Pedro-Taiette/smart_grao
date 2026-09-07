@@ -1,0 +1,126 @@
+@host = http://localhost:5148
+
+### 1. Cadastrar a fazenda
+# @name createFarm
+POST {{host}}/api/farms
+Content-Type: application/json
+
+{
+  "name": "Fazenda Santa Rita",
+  "city": "Sorriso",
+  "state": "MT",
+  "headquarters": { "latitude": -12.5453, "longitude": -55.7211 }
+}
+
+### 2. Desenhar o talhao
+# O contorno e exatamente o que o Leaflet-Geoman produz: GeoJSON Polygon, posicoes em
+# [longitude, latitude]. O quadrado abaixo tem aproximadamente 1 km de lado, ou seja ~100 ha —
+# confira o campo areaHectares da resposta.
+# @name createField
+POST {{host}}/api/fields
+Content-Type: application/json
+
+{
+  "farmId": "{{createFarm.response.body.id}}",
+  "name": "Talhao Norte",
+  "crop": "Soybean",
+  "boundary": {
+    "type": "Polygon",
+    "coordinates": [[
+      [-55.7211, -12.5453],
+      [-55.7119, -12.5453],
+      [-55.7119, -12.5363],
+      [-55.7211, -12.5363],
+      [-55.7211, -12.5453]
+    ]]
+  }
+}
+
+### 3. Listar os talhoes da fazenda (e o que o mapa consome)
+GET {{host}}/api/farms/{{createFarm.response.body.id}}/fields
+
+### 4. Contorno auto-interseccionado — deve responder 422 geo.invalid_polygon
+POST {{host}}/api/fields
+Content-Type: application/json
+
+{
+  "farmId": "{{createFarm.response.body.id}}",
+  "name": "No de gravata",
+  "crop": "Soybean",
+  "boundary": {
+    "type": "Polygon",
+    "coordinates": [[
+      [-55.7211, -12.5453],
+      [-55.7119, -12.5363],
+      [-55.7119, -12.5453],
+      [-55.7211, -12.5363],
+      [-55.7211, -12.5453]
+    ]]
+  }
+}
+
+### 5. Talhao sobreposto ao do passo 2 — deve responder 409 field.overlaps_another
+POST {{host}}/api/fields
+Content-Type: application/json
+
+{
+  "farmId": "{{createFarm.response.body.id}}",
+  "name": "Talhao Invasor",
+  "crop": "Corn",
+  "boundary": {
+    "type": "Polygon",
+    "coordinates": [[
+      [-55.7165, -12.5408],
+      [-55.7075, -12.5408],
+      [-55.7075, -12.5320],
+      [-55.7165, -12.5320],
+      [-55.7165, -12.5408]
+    ]]
+  }
+}
+
+### 6. Talhao vizinho encostado na divisa — deve ser ACEITO (201)
+POST {{host}}/api/fields
+Content-Type: application/json
+
+{
+  "farmId": "{{createFarm.response.body.id}}",
+  "name": "Talhao Leste",
+  "crop": "Corn",
+  "boundary": {
+    "type": "Polygon",
+    "coordinates": [[
+      [-55.7119, -12.5453],
+      [-55.7027, -12.5453],
+      [-55.7027, -12.5363],
+      [-55.7119, -12.5363],
+      [-55.7119, -12.5453]
+    ]]
+  }
+}
+
+### 7. Nome repetido na mesma fazenda — deve responder 409 field.duplicate_name
+POST {{host}}/api/fields
+Content-Type: application/json
+
+{
+  "farmId": "{{createFarm.response.body.id}}",
+  "name": "talhao norte",
+  "crop": "Cotton",
+  "boundary": {
+    "type": "Polygon",
+    "coordinates": [[
+      [-55.6900, -12.5453],
+      [-55.6808, -12.5453],
+      [-55.6808, -12.5363],
+      [-55.6900, -12.5363],
+      [-55.6900, -12.5453]
+    ]]
+  }
+}
+
+### 8. Desativar o talhao (preserva o historico)
+PATCH {{host}}/api/fields/{{createField.response.body.id}}/status?active=false
+
+### 9. Excluir a fazenda com talhoes — deve responder 409 farm.has_fields
+DELETE {{host}}/api/farms/{{createFarm.response.body.id}}

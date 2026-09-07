@@ -1,0 +1,18 @@
+## .NET
+bin/
+obj/
+artifacts/
+*.user
+.vs/
+
+## Node / frontend (Fase 2)
+node_modules/
+dist/
+
+## Segredos — a string do Neon nunca entra no repositorio
+appsettings.Local.json
+# A connection string do Neon esta em appsettings.Development.json por conveniencia do dia a dia.
+# Ignorar o arquivo mantem essa conveniencia sem publicar a senha no historico do git.
+backend/src/SmartGrao.WebApi/appsettings.Development.json
+*.env
+.env.local
