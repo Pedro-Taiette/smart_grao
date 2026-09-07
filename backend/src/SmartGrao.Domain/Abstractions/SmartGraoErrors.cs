@@ -30,6 +30,10 @@ public static class SmartGraoErrors
         public static Error LongitudeOutOfRange =>
             Error.Validation("geo.longitude_out_of_range", "Longitude must be between -180 and 180 degrees.");
 
+        public static Error LatitudeTooCloseToPole =>
+            Error.Validation("geo.latitude_too_close_to_pole",
+                "Metric conversions are not defined this close to a pole.");
+
         public static Error EmptyBoundary =>
             Error.Validation("geo.empty_boundary", "The boundary has no geometry.");
 
