@@ -166,3 +166,20 @@ depura; o frontend traduz pelo código e nunca o exibe cru. A tradução vive em
 | nome repetido (caixa diferente) | 409 | `field.duplicate_name` |
 | área minúscula | 400 | `field.area_below_minimum` |
 | excluir fazenda com talhões | 409 | `farm.has_fields` |
+
+Amostragem, verificada contra o Neon num talhão real de 99,93 ha:
+
+| Cenário | Esperado | Obtido |
+|---|---|---|
+| Monitoramento, 99,93 ha | ≥ 10 pontos (alvo da tabela) | 12 pontos, espaçamento 195,3 m, bordadura 158,1 m |
+| Mapeamento, grade de 100 m | ~100 pontos | 100 pontos, bordadura 0 m |
+| sequência da malha | contínua de 1 a N | ✓ |
+| espaçamento junto com `Monitoring` | 422 | `validation.failed` |
+| `Mapping` sem espaçamento | 422 | `validation.failed` |
+| espaçamento de 2 m | 422 | `validation.failed` |
+| talhão inexistente | 404 | `field.not_found` |
+| excluir plano | 204, pontos vão junto | ✓ (10.000 pontos removidos em cascata) |
+
+**Um limite a conhecer:** 100 ha com grade de 10 m dá exatamente 10.000 pontos, que é o teto — e portanto é
+aceito, não recusado. `sampling.grid_too_dense` só dispara **acima** disso. Um plano assim é válido
+mas pesado: são 10.000 linhas em `sampling_points` e uma caminhada que ninguém faz.
