@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SmartGrao.Application.Abstractions;
+using SmartGrao.Infrastructure.Events;
 using SmartGrao.Infrastructure.Persistence;
 
 namespace SmartGrao.Infrastructure;
@@ -40,6 +41,7 @@ public static class DependencyInjection
         });
 
         services.AddScoped<ISmartGraoDbContext>(sp => sp.GetRequiredService<SmartGraoDbContext>());
+        services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
 
         return services;
     }

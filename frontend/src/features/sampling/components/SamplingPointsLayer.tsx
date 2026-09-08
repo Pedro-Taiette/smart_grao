@@ -4,6 +4,8 @@ import type { SamplingPointViewModel } from '@/api/generated/model/samplingPoint
 
 interface SamplingPointsLayerProps {
   points: SamplingPointViewModel[];
+  /** O contorno mudou depois que esta malha foi gerada. */
+  isOutdated?: boolean;
 }
 
 /**
@@ -15,8 +17,12 @@ interface SamplingPointsLayerProps {
  * O numero da parada aparece ao passar o mouse — a malha e gerada em serpentina justamente para que
  * seguir a numeracao seja um caminho continuo pelo talhao, sem atravessa-lo de ponta a ponta a cada
  * fileira.
+ *
+ * Malha defasada aparece em cinza. O aviso escrito no painel resolve para quem le; a cor resolve
+ * para quem so bate o olho no mapa, que e onde o erro custaria caro — ir a campo atras de um ponto
+ * que nao esta mais dentro do talhao.
  */
-export function SamplingPointsLayer({ points }: SamplingPointsLayerProps) {
+export function SamplingPointsLayer({ points, isOutdated = false }: SamplingPointsLayerProps) {
   // O tamanho do circulo cai quando a malha e densa: no modo Mapeamento sao centenas de pontos, e
   // no raio fixo eles se sobrepoem ate virar uma mancha unica.
   const radius = useMemo(() => (points.length > 120 ? 3 : 5), [points.length]);
@@ -31,8 +37,8 @@ export function SamplingPointsLayer({ points }: SamplingPointsLayerProps) {
           pathOptions={{
             color: '#ffffff',
             weight: 1,
-            fillColor: '#d32f2f',
-            fillOpacity: 0.9,
+            fillColor: isOutdated ? '#9e9e9e' : '#d32f2f',
+            fillOpacity: isOutdated ? 0.6 : 0.9,
           }}
         >
           <Tooltip direction="top" offset={[0, -4]}>

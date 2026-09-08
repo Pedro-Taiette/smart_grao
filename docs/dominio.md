@@ -51,11 +51,22 @@ que foi decidido naquele dia.
 | `TargetPointCount` | nulo no Mapeamento, onde a pergunta não tem número alvo |
 | `FieldAreaHectares` | instantâneo da área no momento da geração |
 | `SubdivisionRecommended` | acima de 100 ha o protocolo manda subdividir em vez de amostrar mais |
+| `IsOutdated` | o contorno mudou depois desta marcação |
 
 **Por que o instantâneo da área.** `Field.Redraw` existe, e depois de um redesenho os pontos deste
 plano podem cair fora do talhão. Guardando a área da geração, o plano sabe dizer que está defasado
-sem carregar o talhão junto. Na Fase 4 o `FieldRedrawnEvent` vira o gatilho para marcar planos
-obsoletos.
+sem carregar o talhão junto.
+
+**Quando o contorno muda.** O `FieldRedrawnEvent` é escutado pelo `MarkSamplingPlansOutdatedHandler`,
+que marca as malhas daquele talhão como defasadas. Marca — não apaga nem regera. Apagar destruiria o
+roteiro de uma caminhada que pode já ter começado; regerar sozinho trocaria em silêncio pontos que
+alguém talvez já tenha visitado. O plano fica onde está, dizendo que envelheceu, e quem decide é o
+produtor.
+
+Os eventos são entregues **antes do commit, na mesma transação**. Handler de evento aqui existe para
+manter o modelo coerente, não para efeito externo como e-mail: entregar depois deixaria uma janela em
+que o contorno já mudou e a malha ainda se diz atual — e se a segunda transação falhasse, a janela
+viraria permanente.
 
 **Alvo e contagem real ficam lado a lado.** A malha recortada pelo contorno raramente bate o alvo
 exato; devolver só o total apagaria a informação de que este talhão ficou acima ou abaixo do que a

@@ -39,6 +39,7 @@ export function useSamplingWorkspace(fieldId: string | null) {
   const visiblePlanId = chosenPlanId ?? latestPlan?.id ?? null;
 
   const { points } = useSamplingPlan(visiblePlanId);
+  const visiblePlan = plans.find((plan) => plan.id === visiblePlanId) ?? null;
 
   const openDialog = useCallback(() => setDialogOpen(true), []);
   const closeDialog = useCallback(() => setDialogOpen(false), []);
@@ -74,6 +75,7 @@ export function useSamplingWorkspace(fieldId: string | null) {
     plans,
     points,
     visiblePlanId,
+    isVisiblePlanOutdated: visiblePlan?.isOutdated ?? false,
     selectPlan: setChosenPlanId,
 
     isDialogOpen,

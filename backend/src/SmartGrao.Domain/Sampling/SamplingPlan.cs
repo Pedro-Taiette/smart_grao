@@ -59,6 +59,16 @@ public sealed class SamplingPlan : AggregateRoot<SamplingPlanId>
     /// </summary>
     public bool SubdivisionRecommended { get; private set; }
 
+    /// <summary>
+    /// O contorno do talhao mudou depois que esta malha foi gerada.
+    /// <para>
+    /// Os pontos continuam gravados como estao — apagar seria pior, porque uma parte deles pode ja
+    /// ter sido caminhada. O que muda e que o plano passa a se declarar defasado, e quem for a campo
+    /// sabe que ele pode mandar parar fora da area atual.
+    /// </para>
+    /// </summary>
+    public bool IsOutdated { get; private set; }
+
     public IReadOnlyList<SamplingPoint> Points => _points.AsReadOnly();
 
     public int PointCount => _points.Count;
@@ -92,6 +102,19 @@ public sealed class SamplingPlan : AggregateRoot<SamplingPlanId>
 
         return From(fieldId, SamplingMode.Mapping, boundary,
             SamplingGridResolver.ForMapping(boundary, spacing));
+    }
+
+    /// <summary>
+    /// Marca a malha como defasada apos um redesenho do contorno. Idempotente: redesenhar o talhao
+    /// tres vezes nao torna o plano mais defasado do que ele ja esta, e nao mexe no
+    /// <see cref="AggregateRoot{TId}.UpdatedAt"/> de novo a cada vez.
+    /// </summary>
+    public void MarkAsOutdated()
+    {
+        if (IsOutdated) return;
+
+        IsOutdated = true;
+        MarkAsUpdated();
     }
 
     private static SamplingPlan From(

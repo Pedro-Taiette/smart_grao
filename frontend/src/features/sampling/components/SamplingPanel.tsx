@@ -76,6 +76,13 @@ export function SamplingPanel({
         Marcados em {formatDate(current.createdAt)}
       </Typography>
 
+      {current.isOutdated && (
+        <Alert severity="warning" sx={{ mb: 1.5 }}>
+          O contorno deste talhão mudou depois que estes pontos foram marcados. Alguns podem estar
+          fora da área atual — marque de novo antes de ir a campo.
+        </Alert>
+      )}
+
       {current.fallsShortOfTarget && (
         <Alert severity="warning" sx={{ mb: 1.5 }}>
           Este talhão é pequeno demais para as {current.targetPointCount} paradas que a recomendação

@@ -19,6 +19,7 @@ interface FieldMapProps {
   selectedFieldId: string | null;
   editingFieldId: string | null;
   samplingPoints: SamplingPointViewModel[];
+  isSamplingOutdated: boolean;
   onSelectField: (fieldId: string) => void;
   onPolygonDrawn: (boundary: GeoJsonPolygon) => void;
   onGeometryChange: (boundary: GeoJsonPolygon) => void;
@@ -65,6 +66,7 @@ export function FieldMap({
   selectedFieldId,
   editingFieldId,
   samplingPoints,
+  isSamplingOutdated,
   onSelectField,
   onPolygonDrawn,
   onGeometryChange,
@@ -96,7 +98,9 @@ export function FieldMap({
       {/* Os pontos ficam por cima dos contornos, e somem durante o redesenho: eles pertencem ao
           contorno antigo, e mante-los na tela enquanto ele e arrastado mostraria uma malha que ja
           nao corresponde ao talhao. */}
-      {editingFieldId === null && <SamplingPointsLayer points={samplingPoints} />}
+      {editingFieldId === null && (
+        <SamplingPointsLayer points={samplingPoints} isOutdated={isSamplingOutdated} />
+      )}
 
       {/* A barra de desenho some durante a edicao de um contorno: desenhar um talhao novo enquanto
           outro esta aberto para edicao perderia as alteracoes ainda nao salvas. */}

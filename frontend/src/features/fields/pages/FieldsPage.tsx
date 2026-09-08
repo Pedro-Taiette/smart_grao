@@ -130,6 +130,7 @@ export function FieldsPage() {
           selectedFieldId={workspace.selectedFieldId}
           editingFieldId={workspace.redrawingFieldId}
           samplingPoints={sampling.points}
+          isSamplingOutdated={sampling.isVisiblePlanOutdated}
           onSelectField={workspace.selectField}
           onPolygonDrawn={workspace.handlePolygonDrawn}
           onGeometryChange={workspace.setPendingGeometry}
