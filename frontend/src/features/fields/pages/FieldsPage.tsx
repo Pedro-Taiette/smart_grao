@@ -1,6 +1,9 @@
 import { Box, Divider, IconButton, List, Paper, Stack, Typography } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate, useParams } from 'react-router-dom';
+import { SamplingPanel } from '@/features/sampling/components/SamplingPanel';
+import { SamplingPlanDialog } from '@/features/sampling/components/SamplingPlanDialog';
+import { useSamplingWorkspace } from '@/features/sampling/hooks/useSamplingWorkspace';
 import { ConfirmDialog } from '@/shared/components/ConfirmDialog';
 import { QueryBoundary } from '@/shared/components/QueryBoundary';
 import { formatHectares } from '@/shared/format';
@@ -20,6 +23,7 @@ export function FieldsPage() {
   const { farmId = '' } = useParams<{ farmId: string }>();
   const navigate = useNavigate();
   const workspace = useFieldsWorkspace(farmId);
+  const sampling = useSamplingWorkspace(workspace.selectedFieldId);
 
   const totalHectares = workspace.fields.reduce((sum, field) => sum + field.areaHectares, 0);
 
@@ -98,6 +102,23 @@ export function FieldsPage() {
               onToggleStatus={workspace.toggleStatus}
               onDelete={() => workspace.requestDeletion(workspace.selectedField)}
             />
+
+            {/* A amostragem some durante o redesenho: os pontos pertencem ao contorno antigo, e
+                oferecer "marcar de novo" no meio de um arrasto geraria a malha sobre uma geometria
+                que ainda nao foi salva. */}
+            {workspace.redrawingFieldId === null && (
+              <>
+                <Divider />
+                <SamplingPanel
+                  plans={sampling.plans}
+                  visiblePlanId={sampling.visiblePlanId}
+                  isBusy={sampling.isBusy}
+                  onGenerate={sampling.openDialog}
+                  onSelectPlan={sampling.selectPlan}
+                  onRemovePlan={sampling.requestDeletion}
+                />
+              </>
+            )}
           </>
         )}
       </Paper>
@@ -108,6 +129,8 @@ export function FieldsPage() {
           farmCenter={workspace.farmCenter}
           selectedFieldId={workspace.selectedFieldId}
           editingFieldId={workspace.redrawingFieldId}
+          samplingPoints={sampling.points}
+          isSamplingOutdated={sampling.isVisiblePlanOutdated}
           onSelectField={workspace.selectField}
           onPolygonDrawn={workspace.handlePolygonDrawn}
           onGeometryChange={workspace.setPendingGeometry}
@@ -120,6 +143,28 @@ export function FieldsPage() {
         field={workspace.editingField}
         boundary={workspace.drawnBoundary}
         onClose={workspace.closeForm}
+      />
+
+      {/* Montado so quando aberto: e o que faz a escolha voltar ao padrao a cada vez, sem o dialogo
+          precisar de um efeito para se reinicializar. */}
+      {workspace.selectedField && sampling.isDialogOpen && (
+        <SamplingPlanDialog
+          fieldName={workspace.selectedField.name}
+          fieldAreaHectares={workspace.selectedField.areaHectares}
+          isGenerating={sampling.isGenerating}
+          onConfirm={sampling.confirmGeneration}
+          onClose={sampling.closeDialog}
+        />
+      )}
+
+      <ConfirmDialog
+        open={sampling.pendingDeletion !== null}
+        title="Apagar pontos"
+        message="Apagar os pontos desta marcação? O talhão e o contorno não são afetados — você pode marcar de novo quando quiser."
+        confirmLabel="Apagar"
+        isWorking={sampling.isBusy}
+        onConfirm={sampling.confirmDeletion}
+        onCancel={() => sampling.requestDeletion(null)}
       />
 
       <ConfirmDialog

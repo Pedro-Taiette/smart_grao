@@ -988,6 +988,7 @@
           "pointCount",
           "fallsShortOfTarget",
           "subdivisionRecommended",
+          "isOutdated",
           "fieldAreaHectares",
           "createdAt"
         ],
@@ -1027,6 +1028,9 @@
             "type": "boolean"
           },
           "subdivisionRecommended": {
+            "type": "boolean"
+          },
+          "isOutdated": {
             "type": "boolean"
           },
           "fieldAreaHectares": {

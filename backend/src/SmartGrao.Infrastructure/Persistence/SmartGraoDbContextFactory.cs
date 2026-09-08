@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using SmartGrao.Application.Abstractions;
+using SmartGrao.Domain.Abstractions;
 
 namespace SmartGrao.Infrastructure.Persistence;
 
@@ -20,6 +22,18 @@ internal sealed class SmartGraoDbContextFactory : IDesignTimeDbContextFactory<Sm
             .UseSnakeCaseNamingConvention()
             .Options;
 
-        return new SmartGraoDbContext(options);
+        // As ferramentas so leem o modelo para gerar migrations — nunca salvam nada, entao nenhum
+        // evento chega a ser despachado. Um despachante que nao faz nada e mais honesto aqui do que
+        // montar o container inteiro da aplicacao para satisfazer um construtor.
+        return new SmartGraoDbContext(options, NoDomainEventDispatcher.Instance);
+    }
+
+    private sealed class NoDomainEventDispatcher : IDomainEventDispatcher
+    {
+        public static readonly NoDomainEventDispatcher Instance = new();
+
+        public Task DispatchAsync(
+            IReadOnlyCollection<IDomainEvent> domainEvents, CancellationToken cancellationToken = default) =>
+            Task.CompletedTask;
     }
 }

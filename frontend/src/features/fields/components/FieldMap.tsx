@@ -3,6 +3,8 @@ import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import { latLngBounds } from 'leaflet';
 import type { FieldViewModel } from '@/api/generated/model/fieldViewModel';
 import type { GeoJsonPolygon } from '@/api/generated/model/geoJsonPolygon';
+import type { SamplingPointViewModel } from '@/api/generated/model/samplingPointViewModel';
+import { SamplingPointsLayer } from '@/features/sampling/components/SamplingPointsLayer';
 import { BRAZIL_CENTER, toLeafletPositions, type LatLngTuple } from '../geo/geoJson';
 import { DrawControl } from './DrawControl';
 import { FieldPolygon } from './FieldPolygon';
@@ -16,6 +18,8 @@ interface FieldMapProps {
   farmCenter: LatLngTuple | null;
   selectedFieldId: string | null;
   editingFieldId: string | null;
+  samplingPoints: SamplingPointViewModel[];
+  isSamplingOutdated: boolean;
   onSelectField: (fieldId: string) => void;
   onPolygonDrawn: (boundary: GeoJsonPolygon) => void;
   onGeometryChange: (boundary: GeoJsonPolygon) => void;
@@ -61,6 +65,8 @@ export function FieldMap({
   farmCenter,
   selectedFieldId,
   editingFieldId,
+  samplingPoints,
+  isSamplingOutdated,
   onSelectField,
   onPolygonDrawn,
   onGeometryChange,
@@ -88,6 +94,13 @@ export function FieldMap({
           onGeometryChange={onGeometryChange}
         />
       ))}
+
+      {/* Os pontos ficam por cima dos contornos, e somem durante o redesenho: eles pertencem ao
+          contorno antigo, e mante-los na tela enquanto ele e arrastado mostraria uma malha que ja
+          nao corresponde ao talhao. */}
+      {editingFieldId === null && (
+        <SamplingPointsLayer points={samplingPoints} isOutdated={isSamplingOutdated} />
+      )}
 
       {/* A barra de desenho some durante a edicao de um contorno: desenhar um talhao novo enquanto
           outro esta aberto para edicao perderia as alteracoes ainda nao salvas. */}

@@ -40,6 +40,7 @@ internal sealed class SamplingPlanConfiguration : IEntityTypeConfiguration<Sampl
             .IsRequired();
 
         builder.Property(plan => plan.SubdivisionRecommended).IsRequired();
+        builder.Property(plan => plan.IsOutdated).IsRequired();
 
         builder.Property(plan => plan.CreatedAt).HasColumnType("timestamp with time zone");
         builder.Property(plan => plan.UpdatedAt).HasColumnType("timestamp with time zone");
