@@ -45,6 +45,20 @@ const messages: Record<string, string> = {
   'field.overlaps_another': 'Este contorno invade a área de outro talhão da mesma fazenda.',
   'field.unknown_crop': 'Cultura não reconhecida.',
 
+  // Amostragem
+  'sampling.not_found': 'Marcação de pontos não encontrada.',
+  'sampling.field_is_inactive':
+    'Este talhão está desativado. Reative-o para marcar pontos de amostragem.',
+  'sampling.field_too_narrow_for_edge_buffer':
+    'Este talhão é estreito demais. A amostragem descarta uma faixa junto à divisa, porque ali a praga se concentra e a contagem sairia alta demais — e nesse talhão não sobra área no meio.',
+  'sampling.no_points_fit_the_field':
+    'Nenhum ponto coube dentro deste talhão. Tente um detalhamento maior.',
+  'sampling.grid_too_dense':
+    'Esse detalhamento geraria pontos demais para um talhão deste tamanho. Escolha menos detalhe.',
+  'sampling.spacing_out_of_range': 'O detalhamento escolhido está fora do que o sistema aceita.',
+  'sampling.spacing_not_finite': 'O detalhamento escolhido é inválido.',
+  'sampling.unknown_mode': 'Tipo de amostragem não reconhecido.',
+
   // Transversais
   'validation.failed': 'Há campos preenchidos de forma inválida.',
   'network.unreachable':

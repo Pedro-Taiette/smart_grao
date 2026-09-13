@@ -17,6 +17,7 @@ export interface SamplingPlanSummaryViewModel {
   pointCount: number;
   fallsShortOfTarget: boolean;
   subdivisionRecommended: boolean;
+  isOutdated: boolean;
   fieldAreaHectares: number;
   createdAt: string;
 }

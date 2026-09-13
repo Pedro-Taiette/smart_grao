@@ -12,7 +12,9 @@ namespace SmartGrao.Infrastructure.Persistence;
 /// rastreia as alteracoes e as confirma numa transacao, entao nao ha um segundo objeto envolvendo
 /// o primeiro.
 /// </summary>
-public sealed class SmartGraoDbContext(DbContextOptions<SmartGraoDbContext> options)
+public sealed class SmartGraoDbContext(
+    DbContextOptions<SmartGraoDbContext> options,
+    IDomainEventDispatcher domainEventDispatcher)
     : DbContext(options), ISmartGraoDbContext
 {
     public DbSet<Farm> Farms => Set<Farm>();
@@ -37,14 +39,40 @@ public sealed class SmartGraoDbContext(DbContextOptions<SmartGraoDbContext> opti
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        var affected = await base.SaveChangesAsync(cancellationToken);
+        await DispatchDomainEventsAsync(cancellationToken);
 
-        // Os eventos so sao limpos depois do commit. Enquanto o despachante nao existe (Fase 3),
-        // deixa-los acumular na instancia rastreada faria um agregado relido dentro do mesmo escopo
-        // reapresentar eventos ja processados.
-        foreach (var entry in ChangeTracker.Entries<IHasDomainEvents>())
-            entry.Entity.ClearDomainEvents();
+        return await base.SaveChangesAsync(cancellationToken);
+    }
 
-        return affected;
+    /// <summary>
+    /// Entrega os eventos acumulados pelos agregados antes de gravar, para que o que os handlers
+    /// escreverem entre na mesma transacao.
+    /// <para>
+    /// O laco existe porque um handler pode fazer um agregado levantar outro evento. Ele termina
+    /// quando ninguem mais tem evento pendente — e nao ha risco de rodar para sempre enquanto os
+    /// eventos forem consequencia de mudancas de estado, ja que um agregado so publica de novo se
+    /// mudar de novo.
+    /// </para>
+    /// </summary>
+    private async Task DispatchDomainEventsAsync(CancellationToken cancellationToken)
+    {
+        while (true)
+        {
+            var pending = ChangeTracker.Entries<IHasDomainEvents>()
+                .Select(entry => entry.Entity)
+                .Where(entity => entity.DomainEvents.Count > 0)
+                .ToList();
+
+            if (pending.Count == 0) return;
+
+            var events = pending.SelectMany(entity => entity.DomainEvents).ToList();
+
+            // Limpa antes de entregar: um handler que consulte o mesmo contexto faria o EF
+            // reapresentar estes agregados, e sem a limpeza o mesmo evento seria entregue de novo.
+            foreach (var entity in pending)
+                entity.ClearDomainEvents();
+
+            await domainEventDispatcher.DispatchAsync(events, cancellationToken);
+        }
     }
 }

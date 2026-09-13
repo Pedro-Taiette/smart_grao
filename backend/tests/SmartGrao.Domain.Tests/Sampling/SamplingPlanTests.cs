@@ -153,6 +153,51 @@ public sealed class SamplingPlanTests
         Assert.All(plan.Points, point => Assert.Equal(plan.Id, point.SamplingPlanId));
     }
 
+    /// <summary>
+    /// Um plano nasce valendo para o contorno que o gerou.
+    /// </summary>
+    [Fact]
+    public void NewPlan_IsNotOutdated()
+    {
+        var plan = SamplingPlan.ForMonitoring(FieldId.New(), SquareOfArea(20d));
+
+        Assert.False(plan.IsOutdated);
+    }
+
+    /// <summary>
+    /// Redesenhado o talhao, a malha se declara defasada — mas nao perde os pontos. Apagar destruiria
+    /// o roteiro de uma caminhada que pode ja ter comecado.
+    /// </summary>
+    [Fact]
+    public void OutdatedPlan_KeepsItsPoints()
+    {
+        var plan = SamplingPlan.ForMonitoring(FieldId.New(), SquareOfArea(20d));
+        var pointsBefore = plan.PointCount;
+
+        plan.MarkAsOutdated();
+
+        Assert.True(plan.IsOutdated);
+        Assert.Equal(pointsBefore, plan.PointCount);
+        Assert.NotNull(plan.UpdatedAt);
+    }
+
+    /// <summary>
+    /// Idempotente: redesenhar tres vezes nao torna o plano mais defasado, e nao mexe no
+    /// <c>UpdatedAt</c> de novo a cada vez.
+    /// </summary>
+    [Fact]
+    public void MarkingAnOutdatedPlanAgain_ChangesNothing()
+    {
+        var plan = SamplingPlan.ForMonitoring(FieldId.New(), SquareOfArea(20d));
+
+        plan.MarkAsOutdated();
+        var firstTouch = plan.UpdatedAt;
+
+        plan.MarkAsOutdated();
+
+        Assert.Equal(firstTouch, plan.UpdatedAt);
+    }
+
     private static Boundary SquareOfArea(double hectares)
     {
         const double Latitude = -15.6;

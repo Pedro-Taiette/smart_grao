@@ -1,5 +1,6 @@
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using SmartGrao.Application.Abstractions;
 using SmartGrao.Application.Features.Fields;
 
 namespace SmartGrao.Application;
@@ -29,6 +30,14 @@ public static class DependencyInjection
         // compartilham — criar e atualizar — e batiza-lo para casar com a varredura diria que ele e
         // um ponto de entrada, quando ele e o oposto disso.
         services.AddScoped<FieldPlacementGuard>();
+
+        // Handlers de evento de dominio: registrados pela interface, e nao pelo nome, porque quem
+        // os procura e o despachante — que so conhece o tipo do evento.
+        services.Scan(scan => scan
+            .FromAssemblyOf<AssemblyMarker>()
+            .AddClasses(c => c.AssignableTo(typeof(IDomainEventHandler<>)))
+            .AsImplementedInterfaces()
+            .WithScopedLifetime());
 
         services.AddValidatorsFromAssemblyContaining<AssemblyMarker>();
 

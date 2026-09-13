@@ -49,6 +49,7 @@ public sealed record SamplingPlanSummaryViewModel(
     int PointCount,
     bool FallsShortOfTarget,
     bool SubdivisionRecommended,
+    bool IsOutdated,
     decimal FieldAreaHectares,
     DateTimeOffset CreatedAt)
 {
@@ -66,6 +67,7 @@ public sealed record SamplingPlanSummaryViewModel(
             plan.PointCount,
             plan.FallsShortOfTarget,
             plan.SubdivisionRecommended,
+            plan.IsOutdated,
             plan.FieldAreaHectares,
             plan.CreatedAt);
     }

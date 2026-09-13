@@ -35,6 +35,7 @@ public sealed class GetSamplingPlansByFieldQueryHandler(ISmartGraoDbContext dbCo
                 plan.Points.Count,
                 plan.TargetPointCount != null && plan.Points.Count < plan.TargetPointCount,
                 plan.SubdivisionRecommended,
+                plan.IsOutdated,
                 plan.FieldAreaHectares,
                 plan.CreatedAt))
             .ToListAsync(cancellationToken);
