@@ -6,7 +6,6 @@ import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import type { FieldViewModel } from '@/api/generated/model/fieldViewModel';
 import { formatDistance, formatHectares } from '@/shared/format';
-import { cropLabels } from '../cropLabels';
 
 interface FieldDetailsPanelProps {
   field: FieldViewModel;
@@ -61,7 +60,6 @@ export function FieldDetailsPanel({
       <Stack direction="row" spacing={3} sx={{ mb: 2 }}>
         <Measure label="Área" value={formatHectares(field.areaHectares)} />
         <Measure label="Perímetro" value={formatDistance(field.perimeterMeters)} />
-        <Measure label="Cultura" value={cropLabels[field.crop]} />
       </Stack>
 
       <Divider sx={{ mb: 2 }} />

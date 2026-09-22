@@ -28,6 +28,7 @@ public sealed class GetSamplingPlansByFieldQueryHandler(ISmartGraoDbContext dbCo
             .Select(plan => new SamplingPlanSummaryViewModel(
                 plan.Id.Value,
                 plan.FieldId.Value,
+                plan.CultivationId.HasValue ? plan.CultivationId.Value.Value : (Guid?)null,
                 plan.Mode,
                 Math.Round(plan.SpacingMeters, 2),
                 Math.Round(plan.EdgeBufferMeters, 2),

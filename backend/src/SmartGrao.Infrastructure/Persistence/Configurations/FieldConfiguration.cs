@@ -25,14 +25,6 @@ internal sealed class FieldConfiguration : IEntityTypeConfiguration<Field>
             .HasMaxLength(Field.MaximumNameLength)
             .IsRequired();
 
-        // Enum como texto: legivel direto no banco e imune a alguem reordenar os membros — com
-        // inteiros, inserir uma cultura no meio do enum reescreveria o significado das linhas ja
-        // gravadas.
-        builder.Property(field => field.Crop)
-            .HasConversion<string>()
-            .HasMaxLength(32)
-            .IsRequired();
-
         builder.Property(field => field.Geometry)
             .HasColumnName("boundary")
             .HasColumnType($"geography(Polygon,{Srid.Wgs84})")

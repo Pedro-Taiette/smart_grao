@@ -13,8 +13,10 @@ import { useSamplingPlans } from './useSamplingPlans';
  *
  * Existe para que a pagina de talhoes continue sendo layout depois de ganhar a amostragem.
  */
-export function useSamplingWorkspace(fieldId: string | null) {
-  const { plans, latestPlan, refetch } = useSamplingPlans(fieldId);
+export function useSamplingWorkspace(fieldId: string | null, cultivationId: string) {
+  const { plans: allPlans, refetch } = useSamplingPlans(fieldId);
+  const plans = allPlans.filter(plan => (plan.cultivationId ?? '') === cultivationId);
+  const latestPlan = plans[0] ?? null;
   const { generatePlan, isGenerating } = useGenerateSamplingPlan();
   const { removePlan, isRemoving } = useRemoveSamplingPlan();
 
@@ -28,10 +30,13 @@ export function useSamplingWorkspace(fieldId: string | null) {
   // Trocar de talhao descarta a escolha, que era sobre outro talhao. Ajuste durante a renderizacao,
   // e nao num efeito: o React reexecuta o componente antes de pintar a tela, entao nao chega a
   // existir um quadro mostrando a marcacao errada.
-  const [lastFieldId, setLastFieldId] = useState(fieldId);
-  if (fieldId !== lastFieldId) {
-    setLastFieldId(fieldId);
+  const context = `${fieldId}/${cultivationId}`;
+  const [lastContext, setLastContext] = useState(context);
+  if (context !== lastContext) {
+    setLastContext(context);
     setChosenPlanId(null);
+    setDialogOpen(false);
+    setPendingDeletion(null);
   }
 
   // Sem escolha explicita, vale a marcacao mais recente — que e o que o produtor espera ver ao abrir
@@ -46,9 +51,9 @@ export function useSamplingWorkspace(fieldId: string | null) {
 
   const confirmGeneration = useCallback(
     async (mode: SamplingMode, spacingMeters: number) => {
-      if (!fieldId) return;
+      if (!fieldId || !cultivationId) return;
 
-      const plan = await generatePlan({ fieldId, mode, spacingMeters });
+      const plan = await generatePlan({ fieldId, cultivationId, mode, spacingMeters });
       if (plan) {
         // Fixa a marcacao recem-criada em vez de esperar a lista recarregar: ate a consulta voltar,
         // "a mais recente" ainda seria a anterior, e o mapa piscaria a malha antiga.
@@ -56,7 +61,7 @@ export function useSamplingWorkspace(fieldId: string | null) {
         setDialogOpen(false);
       }
     },
-    [fieldId, generatePlan],
+    [fieldId, cultivationId, generatePlan],
   );
 
   const confirmDeletion = useCallback(async () => {

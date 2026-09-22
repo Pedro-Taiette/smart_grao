@@ -1,3 +1,4 @@
+using SmartGrao.Domain.Cultivations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SmartGrao.Domain.Fields;
@@ -19,6 +20,13 @@ internal sealed class SamplingPlanConfiguration : IEntityTypeConfiguration<Sampl
         builder.Property(plan => plan.FieldId)
             .HasConversion(id => id.Value, value => new FieldId(value))
             .IsRequired();
+
+        builder.Property(x => x.CultivationId)
+            .HasConversion(id => id!.Value.Value, value => new CultivationId(value));
+        builder.HasOne<Cultivation>().WithMany()
+            .HasForeignKey(x => new { x.CultivationId, x.FieldId })
+            .HasPrincipalKey(x => new { x.Id, x.FieldId })
+            .OnDelete(DeleteBehavior.Restrict);
 
         // Enum como texto, pela mesma razao da cultura do talhao: legivel no banco e imune a alguem
         // reordenar os membros. Aqui pesa mais ainda — o modo e a chave para interpretar todo o

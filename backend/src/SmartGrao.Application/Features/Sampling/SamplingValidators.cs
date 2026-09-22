@@ -9,6 +9,7 @@ public sealed class GenerateSamplingPlanViewModelValidator
     public GenerateSamplingPlanViewModelValidator()
     {
         RuleFor(x => x.FieldId).NotEmpty();
+        RuleFor(x => x.CultivationId).NotEmpty();
         RuleFor(x => x.Mode).IsInEnum();
 
         RuleFor(x => x.SpacingMeters)

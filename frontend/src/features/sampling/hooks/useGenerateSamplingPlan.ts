@@ -7,6 +7,7 @@ import { useNotifier } from '@/shared/notifications/useNotifier';
 
 export interface GeneratePlanInput {
   fieldId: string;
+  cultivationId: string;
   mode: SamplingMode;
   /** So no Mapeamento. No Monitoramento a densidade vem da tabela do MIP-Soja. */
   spacingMeters?: number;
@@ -29,10 +30,10 @@ export function useGenerateSamplingPlan(): UseGenerateSamplingPlanResult {
   const { notifySuccess, notifyError } = useNotifier();
   const mutation = useGenerateSamplingPlanMutation();
 
-  const generatePlan = async ({ fieldId, mode, spacingMeters }: GeneratePlanInput) => {
+  const generatePlan = async ({ fieldId, cultivationId, mode, spacingMeters }: GeneratePlanInput) => {
     try {
       const plan = await mutation.mutateAsync({
-        data: { fieldId, mode, spacingMeters: mode === 'Mapping' ? (spacingMeters ?? null) : null },
+        data: { fieldId, cultivationId, mode, spacingMeters: mode === 'Mapping' ? (spacingMeters ?? null) : null },
       });
 
       await queryClient.invalidateQueries({

@@ -127,6 +127,82 @@ public static class SmartGraoErrors
             Error.Validation("field.unknown_crop", "That crop is not in the catalog.");
     }
 
+    public static class Cultivation
+    {
+        public static Error ConcurrentChange => Error.Conflict("cultivation.concurrent_change", "The cultivation changed during this operation. Reload and try again.");
+        public static Error FarmHasSeasons => Error.Conflict("cultivation.farm_has_seasons", "This farm has seasons and cannot be deleted.");
+        public static Error SeasonNotFound => Error.NotFound("cultivation.season_not_found", "Season not found.");
+        public static Error InvalidSeasonName => Error.Validation("cultivation.invalid_season_name", "A season name of up to 80 characters is required.");
+        public static Error DuplicateSeason => Error.Conflict("cultivation.duplicate_season", "This farm already has that season.");
+        public static Error NotFound => Error.NotFound("cultivation.not_found", "Cultivation not found.");
+        public static Error WrongFarm => Error.Validation("cultivation.wrong_farm", "The season and field must belong to the same farm.");
+        public static Error InvalidCultivar => Error.Validation("cultivation.invalid_cultivar", "A cultivar of up to 120 characters is required.");
+        public static Error InvalidDate => Error.Validation("cultivation.invalid_date", "Dates must fall within the crop cycle and preserve recorded history.");
+        public static Error InvalidStage => Error.Validation("cultivation.invalid_stage", "A stage of up to 32 characters and notes of up to 1000 characters are accepted.");
+
+        /// <summary>
+        /// Milho e soja tem escala fenologica transcrita, e fora dela o codigo nao diz nada: dois
+        /// ciclos so se comparam — e um modelo so se alimenta — quando o mesmo estadio chega
+        /// sempre com o mesmo codigo.
+        /// </summary>
+        public static Error StageNotInScale => Error.Validation("cultivation.stage_not_in_scale", "That stage code is not in the phenological scale of this crop.");
+        public static Error DuplicateStageDate => Error.Conflict("cultivation.duplicate_stage_date", "A stage has already been recorded on this date.");
+        public static Error OverlappingCycle => Error.Conflict("cultivation.overlapping_cycle", "Crop cycles in a field cannot overlap. Close the current cycle first.");
+        public static Error Closed => Error.Conflict("cultivation.closed", "This cultivation is closed.");
+        public static Error HasHistory => Error.Conflict("cultivation.has_history", "This field has cultivation or sampling history; deactivate it instead.");
+        public static Error WrongField => Error.Validation("cultivation.wrong_field", "The cultivation does not belong to this field.");
+        public static Error UnsupportedMonitoring => Error.Validation("cultivation.unsupported_monitoring", "MIP-Soja monitoring is only available for soybean cultivations.");
+    }
+
+    public static class Protocol
+    {
+        public static Error TargetNotFound => Error.NotFound("protocol.target_not_found", "Monitoring target not found.");
+        public static Error InvalidTargetCode => Error.Validation("protocol.invalid_target_code", "A target code uses lowercase letters, digits and inner underscores, up to 60 characters.");
+        public static Error InvalidTargetName => Error.Validation("protocol.invalid_target_name", "A common and a scientific name of up to 120 characters are required.");
+        public static Error UnknownTargetKind => Error.Validation("protocol.unknown_target_kind", "A target is either a pest or a foliar disease.");
+        public static Error DuplicateTargetCode => Error.Conflict("protocol.duplicate_target_code", "That target code is already in the catalog.");
+        public static Error UnknownAutomation => Error.Validation("protocol.unknown_automation", "That automation capability is not in the catalog.");
+
+        /// <summary>
+        /// A escada da automacao existe para que o catalogo amplo nao vire promessa de diagnostico.
+        /// Pular a revisao humana anularia exatamente essa distincao.
+        /// </summary>
+        public static Error AutomationSkipsValidation =>
+            Error.BusinessRule("protocol.automation_skips_validation",
+                "A target must go through human-reviewed validation before automation is enabled.");
+
+        public static Error ConcurrentChange => Error.Conflict("protocol.concurrent_change", "The protocol changed during this operation. Reload and try again.");
+        public static Error NotFound => Error.NotFound("protocol.not_found", "Protocol not found.");
+        public static Error InvalidCode => Error.Validation("protocol.invalid_code", "A protocol code uses lowercase letters, digits and inner underscores, up to 60 characters.");
+        public static Error InvalidName => Error.Validation("protocol.invalid_name", "A protocol name of up to 120 characters is required.");
+        public static Error DuplicateVersion => Error.Conflict("protocol.duplicate_version", "That protocol version already exists.");
+        public static Error NotDraft => Error.Conflict("protocol.not_draft", "A published protocol is immutable; open the next version instead.");
+        public static Error NotPublished => Error.Conflict("protocol.not_published", "This protocol is not published.");
+        public static Error EmptyProtocol => Error.BusinessRule("protocol.empty", "A protocol needs at least one target before it can be published.");
+
+        /// <summary>
+        /// O criterio da fase 2: uma vistoria de milho nao pode herdar o MIP-Soja por omissao.
+        /// A barreira fica no modelo, e nao numa tela que alguem lembre de conferir.
+        /// </summary>
+        public static Error TargetFromAnotherCrop =>
+            Error.Validation("protocol.target_from_another_crop", "This target belongs to another crop.");
+
+        public static Error DuplicateItem => Error.Conflict("protocol.duplicate_item", "This protocol already observes that target on that organ.");
+        public static Error ItemNotFound => Error.NotFound("protocol.item_not_found", "Protocol item not found.");
+        public static Error UnknownUnit => Error.Validation("protocol.unknown_unit", "That counting unit is not in the catalog.");
+        public static Error OrganRequired => Error.Validation("protocol.organ_required", "This counting unit needs the plant organ being observed.");
+        public static Error OrganNotApplicable => Error.Validation("protocol.organ_not_applicable", "A trap count does not observe a plant organ.");
+        public static Error ReferenceLevelWithoutSource => Error.Validation("protocol.reference_level_without_source", "A reference level needs a source of up to 300 characters.");
+        public static Error ReferenceLevelNotApplicable => Error.Validation("protocol.reference_level_not_applicable", "A presence record has no reference level.");
+        public static Error ReferenceLevelOutOfRange => Error.Validation("protocol.reference_level_out_of_range", "The reference level falls outside the range of its counting unit.");
+        public static Error InvalidInstructions => Error.Validation("protocol.invalid_instructions", "Instructions of up to 2000 characters are required.");
+
+        public static Error TooManyPhotos(int maximum) =>
+            Error.Validation("protocol.too_many_photos",
+                string.Create(CultureInfo.InvariantCulture,
+                    $"Between 0 and {maximum} photos can be requested for a target."));
+    }
+
     public static class Sampling
     {
         public static Error NotFound =>

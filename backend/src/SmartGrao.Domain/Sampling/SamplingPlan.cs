@@ -1,3 +1,4 @@
+using SmartGrao.Domain.Cultivations;
 using SmartGrao.Domain.Abstractions;
 using SmartGrao.Domain.Fields;
 using SmartGrao.Domain.Geo;
@@ -21,6 +22,8 @@ public sealed class SamplingPlan : AggregateRoot<SamplingPlanId>
     private SamplingPlan()
     {
     }
+
+    public CultivationId? CultivationId { get; private set; }
 
     public FieldId FieldId { get; private set; }
 
@@ -83,11 +86,11 @@ public sealed class SamplingPlan : AggregateRoot<SamplingPlanId>
     /// Plano do modo Monitoramento: quantidade de pontos vinda da tabela do MIP-Soja, bordadura
     /// descartada.
     /// </summary>
-    public static SamplingPlan ForMonitoring(FieldId fieldId, Boundary boundary)
+    public static SamplingPlan ForMonitoring(FieldId fieldId, Boundary boundary, CultivationId cultivationId)
     {
         ArgumentNullException.ThrowIfNull(boundary);
 
-        return From(fieldId, SamplingMode.Monitoring, boundary,
+        return From(fieldId, cultivationId, SamplingMode.Monitoring, boundary,
             SamplingGridResolver.ForMonitoring(boundary));
     }
 
@@ -95,12 +98,12 @@ public sealed class SamplingPlan : AggregateRoot<SamplingPlanId>
     /// Plano do modo Mapeamento: espacamento escolhido, bordadura preservada porque o gradiente da
     /// borda para o interior e o que se quer enxergar.
     /// </summary>
-    public static SamplingPlan ForMapping(FieldId fieldId, Boundary boundary, SamplingSpacing spacing)
+    public static SamplingPlan ForMapping(FieldId fieldId, Boundary boundary, SamplingSpacing spacing, CultivationId cultivationId)
     {
         ArgumentNullException.ThrowIfNull(boundary);
         ArgumentNullException.ThrowIfNull(spacing);
 
-        return From(fieldId, SamplingMode.Mapping, boundary,
+        return From(fieldId, cultivationId, SamplingMode.Mapping, boundary,
             SamplingGridResolver.ForMapping(boundary, spacing));
     }
 
@@ -118,12 +121,13 @@ public sealed class SamplingPlan : AggregateRoot<SamplingPlanId>
     }
 
     private static SamplingPlan From(
-        FieldId fieldId, SamplingMode mode, Boundary boundary, ResolvedGrid grid)
+        FieldId fieldId, CultivationId cultivationId, SamplingMode mode, Boundary boundary, ResolvedGrid grid)
     {
         var plan = new SamplingPlan
         {
             Id = SamplingPlanId.New(),
             FieldId = fieldId,
+            CultivationId = cultivationId,
             Mode = mode,
             SpacingMeters = grid.Spacing.Meters,
             EdgeBufferMeters = grid.EdgeBuffer.Meters,

@@ -37,8 +37,6 @@ public sealed class Field : AggregateRoot<FieldId>
 
     public string Name { get; private set; } = string.Empty;
 
-    public Crop Crop { get; private set; }
-
     /// <summary>
     /// O contorno, como o PostGIS o guarda: <c>geography(Polygon,4326)</c>.
     /// <para>
@@ -68,19 +66,17 @@ public sealed class Field : AggregateRoot<FieldId>
     /// <summary>O contorno como objeto de valor, com as medidas derivadas. Nao e mapeado.</summary>
     public Boundary Boundary => _boundary ??= Boundary.FromPolygon(Geometry);
 
-    public static Field Create(FarmId farmId, string name, Crop crop, Boundary boundary)
+    public static Field Create(FarmId farmId, string name, Boundary boundary)
     {
         ArgumentNullException.ThrowIfNull(boundary);
 
         ValidateArea(boundary.AreaHectares);
-        ValidateCrop(crop);
 
         var field = new Field
         {
             Id = FieldId.New(),
             FarmId = farmId,
             Name = ValidateName(name),
-            Crop = crop,
         };
 
         field.ApplyBoundary(boundary);
@@ -92,13 +88,6 @@ public sealed class Field : AggregateRoot<FieldId>
     public void Rename(string name)
     {
         Name = ValidateName(name);
-        MarkAsUpdated();
-    }
-
-    public void ChangeCrop(Crop crop)
-    {
-        ValidateCrop(crop);
-        Crop = crop;
         MarkAsUpdated();
     }
 
@@ -165,9 +154,4 @@ public sealed class Field : AggregateRoot<FieldId>
             throw new DomainException(SmartGraoErrors.Field.AreaAboveMaximum(MaximumAreaHectares));
     }
 
-    private static void ValidateCrop(Crop crop)
-    {
-        if (!Enum.IsDefined(crop))
-            throw new DomainException(SmartGraoErrors.Field.UnknownCrop);
-    }
 }

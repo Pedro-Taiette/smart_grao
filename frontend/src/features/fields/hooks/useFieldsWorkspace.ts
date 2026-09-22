@@ -26,7 +26,7 @@ export function useFieldsWorkspace(farmId: string) {
 
   const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
 
-  // Cadastro: o contorno vem do mapa e espera o nome e a cultura.
+  // Cadastro: o contorno vem do mapa e espera o nome.
   const [drawnBoundary, setDrawnBoundary] = useState<GeoJsonPolygon | null>(null);
   const [editingField, setEditingField] = useState<FieldViewModel | null>(null);
   const [isFormOpen, setFormOpen] = useState(false);
@@ -88,7 +88,6 @@ export function useFieldsWorkspace(farmId: string) {
       fieldId: selectedField.id,
       farmId,
       name: selectedField.name,
-      crop: selectedField.crop,
       boundary: pendingGeometry,
     });
 

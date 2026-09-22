@@ -18,6 +18,7 @@ namespace SmartGrao.Application.Features.Sampling;
 /// </summary>
 public sealed record GenerateSamplingPlanViewModel(
     Guid FieldId,
+    Guid CultivationId,
     SamplingMode Mode,
     double? SpacingMeters);
 
@@ -42,6 +43,7 @@ public sealed record SamplingPointViewModel(Guid Id, int Sequence, GeoJsonPoint 
 public sealed record SamplingPlanSummaryViewModel(
     Guid Id,
     Guid FieldId,
+    Guid? CultivationId,
     SamplingMode Mode,
     double SpacingMeters,
     double EdgeBufferMeters,
@@ -60,6 +62,7 @@ public sealed record SamplingPlanSummaryViewModel(
         return new SamplingPlanSummaryViewModel(
             plan.Id.Value,
             plan.FieldId.Value,
+            plan.CultivationId?.Value,
             plan.Mode,
             Math.Round(plan.SpacingMeters, 2),
             Math.Round(plan.EdgeBufferMeters, 2),

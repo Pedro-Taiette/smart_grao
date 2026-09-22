@@ -1,4 +1,4 @@
-import { Box, Divider, IconButton, List, Paper, Stack, Typography } from '@mui/material';
+import { Box, Button, Divider, IconButton, List, MenuItem, Paper, Stack, TextField, Typography } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate, useParams } from 'react-router-dom';
 import { SamplingPanel } from '@/features/sampling/components/SamplingPanel';
@@ -12,6 +12,9 @@ import { FieldFormDialog } from '../components/FieldFormDialog';
 import { FieldListItem } from '../components/FieldListItem';
 import { FieldMap } from '../components/FieldMap';
 import { useFieldsWorkspace } from '../hooks/useFieldsWorkspace';
+import { useCultivations } from '@/features/cultivations/hooks/useCultivations';
+import { cycleDate } from '@/features/cultivations/cultivationSchema';
+import { cropLabels } from '../cropLabels';
 
 /**
  * A tela do Pilar 1: desenhar os talhoes sobre o mapa.
@@ -23,7 +26,8 @@ export function FieldsPage() {
   const { farmId = '' } = useParams<{ farmId: string }>();
   const navigate = useNavigate();
   const workspace = useFieldsWorkspace(farmId);
-  const sampling = useSamplingWorkspace(workspace.selectedFieldId);
+  const cycles = useCultivations(farmId, workspace.selectedFieldId);
+  const sampling = useSamplingWorkspace(workspace.selectedFieldId, cycles.selectedId);
 
   const totalHectares = workspace.fields.reduce((sum, field) => sum + field.areaHectares, 0);
 
@@ -40,6 +44,7 @@ export function FieldsPage() {
           display: 'flex',
           flexDirection: 'column',
           minHeight: 0,
+          overflowY: 'auto',
         }}
       >
         <Box sx={{ p: 2 }}>
@@ -59,7 +64,7 @@ export function FieldsPage() {
 
         <Divider />
 
-        <Box sx={{ flex: 1, minHeight: 0, overflow: 'auto', p: 1 }}>
+        <Box sx={{ flex: '1 0 120px', p: 1 }}>
           <QueryBoundary
             isLoading={workspace.isLoading}
             error={workspace.error}
@@ -109,10 +114,31 @@ export function FieldsPage() {
             {workspace.redrawingFieldId === null && (
               <>
                 <Divider />
+                <Box sx={{ p: 2 }}>
+                  <Button onClick={() => navigate(`/farms/${farmId}/fields/${workspace.selectedField!.id}/cultivations`)}>
+                    Safras e cultivos
+                  </Button>
+                  <QueryBoundary isLoading={cycles.isLoading} error={cycles.error} onRetry={cycles.refetch}>
+                    <TextField select fullWidth size="small" label="Cultivo da amostragem" value={cycles.selectedId}
+                      onChange={event => cycles.select(event.target.value)} sx={{ mt: 1 }}>
+                      {cycles.cultivations.map(c => <MenuItem key={c.id} value={c.id}>
+                        {cropLabels[c.crop]} · {cycleDate(c.plantedOn)}{c.endedOn ? ' · Encerrado' : ''}
+                      </MenuItem>)}
+                      <MenuItem value="">Histórico sem cultivo vinculado</MenuItem>
+                    </TextField>
+                    {!cycles.selected && <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                      Cadastre ou selecione um cultivo para marcar novos pontos.
+                    </Typography>}
+                    {cycles.selected?.endedOn && <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                      Cultivo encerrado. Os planos ficam disponíveis para consulta.
+                    </Typography>}
+                  </QueryBoundary>
+                </Box>
                 <SamplingPanel
                   plans={sampling.plans}
                   visiblePlanId={sampling.visiblePlanId}
                   isBusy={sampling.isBusy}
+                  canGenerate={Boolean(workspace.selectedField.active && cycles.selected && !cycles.selected.endedOn && !cycles.isLoading && !cycles.error)}
                   onGenerate={sampling.openDialog}
                   onSelectPlan={sampling.selectPlan}
                   onRemovePlan={sampling.requestDeletion}
@@ -147,8 +173,9 @@ export function FieldsPage() {
 
       {/* Montado so quando aberto: e o que faz a escolha voltar ao padrao a cada vez, sem o dialogo
           precisar de um efeito para se reinicializar. */}
-      {workspace.selectedField && sampling.isDialogOpen && (
+      {workspace.selectedField && cycles.selected && !cycles.selected.endedOn && sampling.isDialogOpen && (
         <SamplingPlanDialog
+          allowMonitoring={cycles.selected.crop === 'Soybean'}
           fieldName={workspace.selectedField.name}
           fieldAreaHectares={workspace.selectedField.areaHectares}
           isGenerating={sampling.isGenerating}
@@ -170,7 +197,7 @@ export function FieldsPage() {
       <ConfirmDialog
         open={workspace.pendingDeletion !== null}
         title="Excluir talhão"
-        message={`Excluir "${workspace.pendingDeletion?.name}"? O histórico do talhão vai junto. Para tirá-lo de operação sem perder nada, use "Desativar".`}
+        message={`Excluir "${workspace.pendingDeletion?.name}"? Talhões com histórico de cultivos ou amostragem não podem ser excluídos. Para tirá-los de operação, use "Desativar".`}
         isWorking={workspace.isBusy}
         onConfirm={workspace.confirmDeletion}
         onCancel={() => workspace.requestDeletion(null)}

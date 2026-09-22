@@ -9,6 +9,8 @@ import type { SamplingMode } from './samplingMode';
 export interface SamplingPlanSummaryViewModel {
   id: string;
   fieldId: string;
+  /** @nullable */
+  cultivationId: string | null;
   mode: SamplingMode;
   spacingMeters: number;
   edgeBufferMeters: number;

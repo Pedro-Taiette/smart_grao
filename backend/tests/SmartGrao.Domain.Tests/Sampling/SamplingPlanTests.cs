@@ -1,3 +1,4 @@
+using SmartGrao.Domain.Cultivations;
 using SmartGrao.Domain.Fields;
 using SmartGrao.Domain.Geo;
 using SmartGrao.Domain.Sampling;
@@ -17,9 +18,10 @@ public sealed class SamplingPlanTests
     public void MonitoringPlan_RecordsHowItWasDerived()
     {
         var boundary = SquareOfArea(20d);
+        var cultivationId = CultivationId.New();
+        var plan = SamplingPlan.ForMonitoring(FieldId.New(), boundary, cultivationId);
 
-        var plan = SamplingPlan.ForMonitoring(FieldId.New(), boundary);
-
+        Assert.Equal(cultivationId, plan.CultivationId);
         Assert.Equal(SamplingMode.Monitoring, plan.Mode);
         Assert.Equal(8, plan.TargetPointCount);
         Assert.True(plan.PointCount >= 8);
@@ -37,7 +39,7 @@ public sealed class SamplingPlanTests
     {
         var boundary = SquareOfArea(20d);
 
-        var plan = SamplingPlan.ForMapping(FieldId.New(), boundary, SamplingSpacing.Standard);
+        var plan = SamplingPlan.ForMapping(FieldId.New(), boundary, SamplingSpacing.Standard, CultivationId.New());
 
         Assert.Equal(SamplingMode.Mapping, plan.Mode);
         Assert.Null(plan.TargetPointCount);
@@ -53,7 +55,7 @@ public sealed class SamplingPlanTests
     [Fact]
     public void Points_AreSequentiallyNumberedFromOne()
     {
-        var plan = SamplingPlan.ForMonitoring(FieldId.New(), SquareOfArea(20d));
+        var plan = SamplingPlan.ForMonitoring(FieldId.New(), SquareOfArea(20d), CultivationId.New());
 
         Assert.Equal(
             Enumerable.Range(1, plan.PointCount),
@@ -67,7 +69,7 @@ public sealed class SamplingPlanTests
     [Fact]
     public void Points_CarryGeographyReadyGeometry()
     {
-        var plan = SamplingPlan.ForMonitoring(FieldId.New(), SquareOfArea(20d));
+        var plan = SamplingPlan.ForMonitoring(FieldId.New(), SquareOfArea(20d), CultivationId.New());
 
         Assert.All(plan.Points, point =>
         {
@@ -86,7 +88,7 @@ public sealed class SamplingPlanTests
     {
         var boundary = SquareOfArea(20d);
 
-        var plan = SamplingPlan.ForMonitoring(FieldId.New(), boundary);
+        var plan = SamplingPlan.ForMonitoring(FieldId.New(), boundary, CultivationId.New());
 
         Assert.Equal(boundary.AreaHectares, plan.FieldAreaHectares);
     }
@@ -99,7 +101,7 @@ public sealed class SamplingPlanTests
     [Fact]
     public void LargeField_IsFlaggedForSubdivision()
     {
-        var plan = SamplingPlan.ForMonitoring(FieldId.New(), SquareOfArea(150d));
+        var plan = SamplingPlan.ForMonitoring(FieldId.New(), SquareOfArea(150d), CultivationId.New());
 
         Assert.True(plan.SubdivisionRecommended);
         Assert.Equal(10, plan.TargetPointCount);
@@ -109,7 +111,7 @@ public sealed class SamplingPlanTests
     [Fact]
     public void MappingPlan_NeverFlagsSubdivision()
     {
-        var plan = SamplingPlan.ForMapping(FieldId.New(), SquareOfArea(150d), SamplingSpacing.Standard);
+        var plan = SamplingPlan.ForMapping(FieldId.New(), SquareOfArea(150d), SamplingSpacing.Standard, CultivationId.New());
 
         Assert.False(plan.SubdivisionRecommended);
     }
@@ -121,7 +123,7 @@ public sealed class SamplingPlanTests
     [Fact]
     public void PlanOnATinyField_AdmitsItFallsShort()
     {
-        var plan = SamplingPlan.ForMonitoring(FieldId.New(), SquareOfArea(0.15d));
+        var plan = SamplingPlan.ForMonitoring(FieldId.New(), SquareOfArea(0.15d), CultivationId.New());
 
         Assert.True(plan.FallsShortOfTarget);
         Assert.True(plan.PointCount < plan.TargetPointCount);
@@ -133,7 +135,7 @@ public sealed class SamplingPlanTests
     {
         var fieldId = FieldId.New();
 
-        var plan = SamplingPlan.ForMonitoring(fieldId, SquareOfArea(20d));
+        var plan = SamplingPlan.ForMonitoring(fieldId, SquareOfArea(20d), CultivationId.New());
 
         var raised = Assert.Single(plan.DomainEvents);
         var generated = Assert.IsType<SamplingPlanGeneratedEvent>(raised);
@@ -148,7 +150,7 @@ public sealed class SamplingPlanTests
     [Fact]
     public void EveryPoint_BelongsToItsPlan()
     {
-        var plan = SamplingPlan.ForMonitoring(FieldId.New(), SquareOfArea(20d));
+        var plan = SamplingPlan.ForMonitoring(FieldId.New(), SquareOfArea(20d), CultivationId.New());
 
         Assert.All(plan.Points, point => Assert.Equal(plan.Id, point.SamplingPlanId));
     }
@@ -159,7 +161,7 @@ public sealed class SamplingPlanTests
     [Fact]
     public void NewPlan_IsNotOutdated()
     {
-        var plan = SamplingPlan.ForMonitoring(FieldId.New(), SquareOfArea(20d));
+        var plan = SamplingPlan.ForMonitoring(FieldId.New(), SquareOfArea(20d), CultivationId.New());
 
         Assert.False(plan.IsOutdated);
     }
@@ -171,7 +173,7 @@ public sealed class SamplingPlanTests
     [Fact]
     public void OutdatedPlan_KeepsItsPoints()
     {
-        var plan = SamplingPlan.ForMonitoring(FieldId.New(), SquareOfArea(20d));
+        var plan = SamplingPlan.ForMonitoring(FieldId.New(), SquareOfArea(20d), CultivationId.New());
         var pointsBefore = plan.PointCount;
 
         plan.MarkAsOutdated();
@@ -188,7 +190,7 @@ public sealed class SamplingPlanTests
     [Fact]
     public void MarkingAnOutdatedPlanAgain_ChangesNothing()
     {
-        var plan = SamplingPlan.ForMonitoring(FieldId.New(), SquareOfArea(20d));
+        var plan = SamplingPlan.ForMonitoring(FieldId.New(), SquareOfArea(20d), CultivationId.New());
 
         plan.MarkAsOutdated();
         var firstTouch = plan.UpdatedAt;

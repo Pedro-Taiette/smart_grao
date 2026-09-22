@@ -19,6 +19,9 @@ public sealed class DeleteFarmCommandHandler(ISmartGraoDbContext dbContext)
         if (await dbContext.Fields.AnyAsync(f => f.FarmId == farmId, cancellationToken))
             throw new DomainException(SmartGraoErrors.Farm.HasFields);
 
+        if (await dbContext.Seasons.AnyAsync(x => x.FarmId == farmId, cancellationToken))
+            throw new DomainException(SmartGraoErrors.Cultivation.FarmHasSeasons);
+
         dbContext.Farms.Remove(farm);
         await dbContext.SaveChangesAsync(cancellationToken);
     }

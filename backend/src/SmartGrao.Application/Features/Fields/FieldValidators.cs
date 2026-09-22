@@ -10,7 +10,6 @@ public sealed class CreateFieldViewModelValidator : AbstractValidator<CreateFiel
     {
         RuleFor(x => x.FarmId).NotEmpty();
         RuleFor(x => x.Name).NotEmpty().MaximumLength(Field.MaximumNameLength);
-        RuleFor(x => x.Crop).IsInEnum();
         RuleFor(x => x.Boundary).NotNull().SetValidator(new GeoJsonPolygonValidator());
     }
 }
@@ -20,7 +19,6 @@ public sealed class UpdateFieldViewModelValidator : AbstractValidator<UpdateFiel
     public UpdateFieldViewModelValidator()
     {
         RuleFor(x => x.Name).NotEmpty().MaximumLength(Field.MaximumNameLength);
-        RuleFor(x => x.Crop).IsInEnum();
         RuleFor(x => x.Boundary).NotNull().SetValidator(new GeoJsonPolygonValidator());
     }
 }
