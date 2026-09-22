@@ -31,7 +31,7 @@ public sealed class CreateFieldCommandHandler(
         await placementGuard.EnsureNameIsAvailableAsync(farmId, model.Name, null, cancellationToken);
         await placementGuard.EnsureNoOverlapAsync(farmId, boundary, null, cancellationToken);
 
-        var field = Field.Create(farmId, model.Name, model.Crop, boundary);
+        var field = Field.Create(farmId, model.Name, boundary);
 
         dbContext.Fields.Add(field);
         await dbContext.SaveChangesAsync(cancellationToken);

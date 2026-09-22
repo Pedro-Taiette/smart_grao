@@ -1,0 +1,114 @@
+Podemos manter pragas e doenças foliares no escopo do produto. Minha sugestão é preparar toda a plataforma para esses
+  dois grupos, mas liberar a capacidade da IA por alvo validado. Assim, vocês conseguem registrar e acompanhar
+  diferentes problemas do milho desde o início, enquanto ampliam a automação gradualmente.
+
+  “Cobrir todo o cultivo” precisa ter dois significados distintos:
+
+  - Acompanhar o ciclo inteiro do milho: cadastros, vistorias, fotos, observações e histórico. Esse deve ser o objetivo
+    desta etapa.
+
+  - Identificar automaticamente qualquer problema do milho: é um programa contínuo de pesquisa, coleta e validação, com
+    escopo muito maior.
+
+  O backend pode aceitar diferentes modelos especializados no futuro. Não precisamos exigir que um único modelo
+  reconheça tudo.
+
+  Roadmap proposto
+
+   Fase                                    O que desenvolver                       Critério de conclusão
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   1 — Contexto agrícola                   Safras e cultivos vinculados ao         O mesmo talhão recebe cultivos
+                                           talhão; cultura, cultivar, datas de     sucessivos sem misturar históricos.
+                                           plantio/encerramento e registros do
+                                           estágio de desenvolvimento. Associar
+                                           os novos registros ao cultivo.
+  ──────────────────────────────────────  ──────────────────────────────────────  ──────────────────────────────────────
+   2 — Catálogo e protocolos               Catálogo de alvos: pragas e doenças     É possível configurar uma vistoria
+                                           foliares. Protocolos versionados com    de milho sem reutilizar
+                                           instruções, órgãos a observar, fotos    automaticamente o MIP-Soja.
+                                           solicitadas, campos de contagem e
+                                           unidades. Tornar explícita a
+                                           aplicabilidade das regras atuais de
+                                           soja.
+  ──────────────────────────────────────  ──────────────────────────────────────  ──────────────────────────────────────
+   3 — Vistorias e coleta                  Agendamento, responsável, pontos        Uma vistoria pode ser executada,
+                                           planejados e situação da vistoria.      concluída e repetida, preservando
+                                           Observações com horário, GPS            cada visita.
+                                           efetivo, precisão, estágio da
+                                           cultura, contagens e notas. Permitir
+                                           ocorrências fora dos pontos
+                                           planejados.
+  ──────────────────────────────────────  ──────────────────────────────────────  ──────────────────────────────────────
+   4 — Imagens e sincronização             Armazenamento de imagens, vínculo       O usuário coleta sem conexão e
+                                           com observações, metadados,             sincroniza depois sem perder ou
+                                           validação de arquivos e controle de     duplicar registros.
+                                           acesso. Identificadores gerados no
+                                           cliente e reenvio sem duplicação.
+                                           Interface móvel para captura,
+                                           armazenamento local e sincronização.
+  ──────────────────────────────────────  ──────────────────────────────────────  ──────────────────────────────────────
+   5 — Integração com a IA                 Fila persistente de análises,           Uma imagem percorre todo o
+                                           contrato de entrada/saída,              processamento simulado e o resultado
+                                           processador simulado, retentativas,     aparece na aplicação.
+                                           falhas e versionamento. Permitir
+                                           múltiplos resultados por imagem e
+                                           mais de um analisador.
+  ──────────────────────────────────────  ──────────────────────────────────────  ──────────────────────────────────────
+   6 — Revisão e acompanhamento            Revisão humana, confirmação/correção    O responsável recebe um caso,
+                                           das avaliações, ocorrências com         revisa, registra a providência e
+                                           evidências e histórico. Alertas de      acompanha a próxima vistoria.
+                                           suspeita, revisão pendente e retorno
+                                           programado.
+  ──────────────────────────────────────  ──────────────────────────────────────  ──────────────────────────────────────
+   7 — Dados para treinamento e            Tela de anotação/revisão, exportação    A equipe consegue produzir um
+   operação                                de imagens e rótulos,                   conjunto de dados revisado e operar
+                                           rastreabilidade por propriedade/        um piloto com usuários reais.
+                                           cultivo/visita e autorização de uso
+                                           dos dados. Monitoramento de falhas,
+                                           backups e testes do fluxo completo.
+
+  Acesso por usuário e propriedade deve começar na fase 1 e acompanhar todas as fases. Não deixaria esse isolamento para
+  uma correção ao final.
+
+  Para manter o desenvolvimento objetivo, cada fase deve incluir as telas mínimas necessárias para usar o que foi
+  implementado. Fazer somente endpoints deixaria uma parcela importante do produto pendente quando vocês chegassem à IA.
+
+  Como eu estruturaria o suporte amplo a pragas e doenças
+
+  Separaria três conceitos no sistema:
+
+   Conceito              Exemplo de função
+  ━━━━━━━━━━━━━━━━━━━━  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Alvo monitorado       O que a equipe deseja observar naquela vistoria
+  ────────────────────  ─────────────────────────────────────────────────
+   Evidência coletada    Foto, contagem, descrição de sintomas ou danos
+  ────────────────────  ─────────────────────────────────────────────────
+   Avaliação             Interpretação humana ou resultado de um modelo
+
+  Uma observação poderia ter vários alvos e várias avaliações. O protocolo indicaria o que coletar para cada objetivo.
+
+  Também registraria separadamente a capacidade de automação de cada alvo:
+
+  - Registro manual: disponível para monitoramento, sem análise automática.
+  - Em validação: modelo avaliado com revisão humana.
+  - Automação habilitada: modelo liberado para um uso definido, mantendo rastreabilidade.
+
+  Isso permite oferecer um catálogo amplo sem apresentar como diagnóstico automático aquilo que ainda não foi validado.
+  Um resultado negativo precisa indicar quais alvos foram avaliados; não pode significar “a planta está saudável”.
+
+  O que estará pronto ao final
+
+  O usuário conseguirá cadastrar o cultivo de milho, planejar vistorias, coletar fotos e observações, sincronizar,
+  revisar avaliações, acompanhar ocorrências e consultar o histórico. A equipe terá o fluxo de processamento integrado e
+  ferramentas para construir os dados de treinamento.
+
+  Ficarão pendentes o treinamento ou seleção dos modelos, sua avaliação em campo e a habilitação gradual dos alvos. O
+  processador simulado comprova a integração; a qualidade agronômica dependerá dessa validação posterior.
+
+  Eu deixaria drones, rovers, prescrição automática e gestão financeira fora deste roadmap. Podemos registrar a origem
+  da imagem desde já, mas implementar essas capacidades ampliaria bastante o trabalho.
+
+  A primeira entrega prática seria a fase 1, seguida de um protocolo inicial de milho na fase 2. Antes de fechar esse
+  protocolo, precisamos escolher, com apoio agronômico, os primeiros alvos de coleta — idealmente um de praga e um de
+  doença foliar. Isso mantém as duas frentes no produto e testa a flexibilidade do sistema sem exigir uma IA abrangente
+  logo de saída.

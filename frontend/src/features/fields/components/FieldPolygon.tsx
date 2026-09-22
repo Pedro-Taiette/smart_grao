@@ -3,7 +3,6 @@ import { Polygon, Tooltip } from 'react-leaflet';
 import type { Polygon as LeafletPolygon } from 'leaflet';
 import type { FieldViewModel } from '@/api/generated/model/fieldViewModel';
 import { formatHectares } from '@/shared/format';
-import { cropLabels } from '../cropLabels';
 import { layerToGeoJsonPolygon, toLeafletPositions } from '../geo/geoJson';
 import type { GeoJsonPolygon } from '@/api/generated/model/geoJsonPolygon';
 
@@ -82,7 +81,7 @@ export function FieldPolygon({
       <Tooltip sticky>
         <strong>{field.name}</strong>
         <br />
-        {cropLabels[field.crop]} — {formatHectares(field.areaHectares)}
+        {formatHectares(field.areaHectares)}
       </Tooltip>
     </Polygon>
   );

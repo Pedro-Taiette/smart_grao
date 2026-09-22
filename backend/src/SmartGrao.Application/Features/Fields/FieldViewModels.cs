@@ -6,7 +6,6 @@ namespace SmartGrao.Application.Features.Fields;
 public sealed record CreateFieldViewModel(
     Guid FarmId,
     string Name,
-    Crop Crop,
     GeoJsonPolygon Boundary);
 
 /// <summary>
@@ -15,14 +14,12 @@ public sealed record CreateFieldViewModel(
 /// </summary>
 public sealed record UpdateFieldViewModel(
     string Name,
-    Crop Crop,
     GeoJsonPolygon Boundary);
 
 public sealed record FieldViewModel(
     Guid Id,
     Guid FarmId,
     string Name,
-    Crop Crop,
     decimal AreaHectares,
     double PerimeterMeters,
     GeoCoordinateViewModel Center,
@@ -42,7 +39,6 @@ public sealed record FieldViewModel(
             field.Id.Value,
             field.FarmId.Value,
             field.Name,
-            field.Crop,
             field.AreaHectares,
             Math.Round(field.PerimeterMeters, 2),
             GeoCoordinateViewModel.From(boundary.Center),

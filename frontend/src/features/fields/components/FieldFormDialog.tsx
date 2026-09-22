@@ -9,9 +9,7 @@ import {
 } from '@mui/material';
 import type { FieldViewModel } from '@/api/generated/model/fieldViewModel';
 import type { GeoJsonPolygon } from '@/api/generated/model/geoJsonPolygon';
-import { FormSelectField } from '@/shared/components/FormSelectField';
 import { FormTextField } from '@/shared/components/FormTextField';
-import { cropLabels, cropOptions } from '../cropLabels';
 import type { FieldFormValues } from '../fieldSchema';
 import { useFieldForm } from '../hooks/useFieldForm';
 import { useSaveField } from '../hooks/useSaveField';
@@ -19,17 +17,16 @@ import { useSaveField } from '../hooks/useSaveField';
 interface FieldFormDialogProps {
   open: boolean;
   farmId: string;
-  /** `null` cadastra um talhao novo; um registro edita nome e cultura. */
+  /** `null` cadastra um talhao novo; um registro edita nome. */
   field: FieldViewModel | null;
   /** Contorno recem-desenhado, no cadastro. Na edicao, o contorno atual do talhao. */
   boundary: GeoJsonPolygon | null;
   onClose: () => void;
 }
 
-const cropSelectOptions = cropOptions.map((crop) => ({ value: crop, label: cropLabels[crop] }));
 
 /**
- * Formulario de talhao — nome e cultura.
+ * Formulario de talhao — nome.
  *
  * O contorno nao aparece como campo porque nao se digita um poligono: ele chega pronto do mapa,
  * pela prop `boundary`, e segue para a API sem passar pelo formulario.
@@ -45,7 +42,6 @@ export function FieldFormDialog({ open, farmId, field, boundary, onClose }: Fiel
       fieldId: field?.id,
       farmId,
       name: values.name,
-      crop: values.crop,
       boundary,
     });
 
@@ -67,12 +63,6 @@ export function FieldFormDialog({ open, farmId, field, boundary, onClose }: Fiel
 
             <FormTextField name="name" control={form.control} label="Nome do talhão" autoFocus />
 
-            <FormSelectField
-              name="crop"
-              control={form.control}
-              label="Cultura"
-              options={cropSelectOptions}
-            />
           </Stack>
         </DialogContent>
 

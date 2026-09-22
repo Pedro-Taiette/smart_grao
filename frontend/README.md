@@ -33,6 +33,9 @@ src/
   features/
     farms/          hooks, components, pages, schema de validação
     fields/         idem, mais geo/ (conversão GeoJSON ↔ Leaflet)
+    cultivations/   safras, ciclos e estágios de um talhão
+    sampling/       marcação de pontos, mais samplingLabels.ts (vocabulário)
+    protocols/      catálogo de alvos e protocolos, mais protocolLabels.ts
   shared/           componentes e utilidades sem dono
 ```
 
@@ -66,9 +69,14 @@ excluído.
 
 1. Cadastre a fazenda em **Fazendas**. A sede é opcional e serve para o mapa abrir sobre a sua terra.
 2. Clique em **Talhões**. A ferramenta de polígono fica no canto superior direito do mapa.
-3. Feche o contorno — o diálogo pede nome e cultura. A área em hectares é calculada pelo backend,
+3. Feche o contorno — o diálogo pede o nome. A área em hectares é calculada pelo backend,
    nunca digitada.
 4. Selecione um talhão para editar, redesenhar o contorno, desativar ou excluir.
+5. Em **Safras e cultivos**, cadastre a safra e o cultivo (milho é o padrão), registre estágios e
+   encerre o ciclo antes de iniciar outro. No mapa, selecione o cultivo para consultar seus planos.
+
+O fluxo, a migration necessária e o roteiro de validação estão em
+[Fase 1 — Safras e cultivos](../docs/fase-1-cultivos.md).
 
 O Geoman está com `allowSelfIntersection: false`, então o "nó de gravata" é barrado ainda durante o
 traçado. O backend recusa de novo (`geo.invalid_polygon`) — a checagem do navegador é só a que chega

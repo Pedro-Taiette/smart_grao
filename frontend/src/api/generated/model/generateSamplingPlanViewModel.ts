@@ -8,6 +8,7 @@ import type { SamplingMode } from './samplingMode';
 
 export interface GenerateSamplingPlanViewModel {
   fieldId: string;
+  cultivationId: string;
   mode: SamplingMode;
   /** @nullable */
   spacingMeters: number | null;

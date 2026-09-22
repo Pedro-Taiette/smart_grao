@@ -1,6 +1,8 @@
+using SmartGrao.Domain.Cultivations;
 using Microsoft.EntityFrameworkCore;
 using SmartGrao.Domain.Farms;
 using SmartGrao.Domain.Fields;
+using SmartGrao.Domain.Protocols;
 using SmartGrao.Domain.Sampling;
 
 namespace SmartGrao.Application.Abstractions;
@@ -23,9 +25,20 @@ namespace SmartGrao.Application.Abstractions;
 /// </summary>
 public interface ISmartGraoDbContext
 {
+    DbSet<Season> Seasons { get; }
+    DbSet<Cultivation> Cultivations { get; }
+
     DbSet<Farm> Farms { get; }
 
     DbSet<Field> Fields { get; }
+
+    /// <summary>
+    /// O catalogo de alvos e os protocolos. Nao ha <c>DbSet</c> para <c>ProtocolItem</c>: o item so
+    /// existe dentro da versao de protocolo que o declara.
+    /// </summary>
+    DbSet<MonitoringTarget> MonitoringTargets { get; }
+
+    DbSet<Protocol> Protocols { get; }
 
     /// <summary>
     /// Os planos de amostragem. Nao ha <c>DbSet</c> para <c>SamplingPoint</c>: o ponto so existe

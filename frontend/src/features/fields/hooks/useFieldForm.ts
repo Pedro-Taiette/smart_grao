@@ -20,7 +20,7 @@ export function useFieldForm(field: FieldViewModel | null, isOpen: boolean) {
 
   useEffect(() => {
     if (!isOpen) return;
-    reset(field ? { name: field.name, crop: field.crop } : emptyFieldForm);
+    reset(field ? { name: field.name } : emptyFieldForm);
   }, [field, isOpen, reset]);
 
   return form;

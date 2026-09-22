@@ -6,7 +6,8 @@ diagnóstico por visão computacional.
 | Pilar | O que faz | Situação |
 |---|---|---|
 | 1 — Mapeamento de talhões | o produtor desenha o contorno no mapa; o sistema valida a geometria e calcula a área em hectares | **pronto** |
-| 2 — Amostragem e diagnóstico | malha de pontos proporcional à área; foto no ponto → praga, severidade e confiança | a fazer |
+| Contexto agrícola — fase 1 | safras, cultivos por talhão, plantio, encerramento e estágios observados | implementado; validação funcional pendente |
+| 2 — Amostragem e diagnóstico | planos vinculados ao cultivo; coleta de fotos e IA nas próximas fases | malha implementada; coleta e IA a fazer |
 | 3 — Drone | ortomosaico sobreposto ao talhão para varredura de manchas | a fazer |
 
 ## Stack
@@ -68,6 +69,7 @@ docs/        decisões de arquitetura, regras de domínio e referência da API
 
 ## Documentação
 
+- [Fase 1 — Safras e cultivos](docs/fase-1-cultivos.md) — modelo, migration, API e roteiro de verificação.
 - [Arquitetura](docs/arquitetura.md) — camadas, decisões e o porquê de cada uma
 - [Domínio](docs/dominio.md) — regras do talhão e do plano de amostragem, geodésia e sobreposição
 - [Amostragem](docs/amostragem.md) — quantos pontos por talhão, e por quê: protocolo MIP-Soja,

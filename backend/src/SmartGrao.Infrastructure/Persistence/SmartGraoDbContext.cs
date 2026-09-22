@@ -1,8 +1,11 @@
+using Npgsql;
+using SmartGrao.Domain.Cultivations;
 using Microsoft.EntityFrameworkCore;
 using SmartGrao.Application.Abstractions;
 using SmartGrao.Domain.Abstractions;
 using SmartGrao.Domain.Farms;
 using SmartGrao.Domain.Fields;
+using SmartGrao.Domain.Protocols;
 using SmartGrao.Domain.Sampling;
 
 namespace SmartGrao.Infrastructure.Persistence;
@@ -17,9 +20,16 @@ public sealed class SmartGraoDbContext(
     IDomainEventDispatcher domainEventDispatcher)
     : DbContext(options), ISmartGraoDbContext
 {
+    public DbSet<Season> Seasons => Set<Season>();
+    public DbSet<Cultivation> Cultivations => Set<Cultivation>();
+
     public DbSet<Farm> Farms => Set<Farm>();
 
     public DbSet<Field> Fields => Set<Field>();
+
+    public DbSet<MonitoringTarget> MonitoringTargets => Set<MonitoringTarget>();
+
+    public DbSet<Protocol> Protocols => Set<Protocol>();
 
     public DbSet<SamplingPlan> SamplingPlans => Set<SamplingPlan>();
 
@@ -31,6 +41,7 @@ public sealed class SmartGraoDbContext(
         // Neon a extensao precisa ser habilitada uma vez por banco; sem esta linha a primeira
         // migration falharia ao criar uma coluna de um tipo que ainda nao existe.
         modelBuilder.HasPostgresExtension("postgis");
+        modelBuilder.HasPostgresExtension("btree_gist");
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(SmartGraoDbContext).Assembly);
 
@@ -41,7 +52,46 @@ public sealed class SmartGraoDbContext(
     {
         await DispatchDomainEventsAsync(cancellationToken);
 
-        return await base.SaveChangesAsync(cancellationToken);
+        try
+        {
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException exception)
+        {
+            throw new DomainException(exception.Entries.Any(entry => entry.Entity is Protocol)
+                ? SmartGraoErrors.Protocol.ConcurrentChange
+                : SmartGraoErrors.Cultivation.ConcurrentChange);
+        }
+        catch (DbUpdateException exception) when (exception.InnerException is PostgresException
+            { ConstraintName: "ex_cultivations_no_overlap" })
+        {
+            throw new DomainException(SmartGraoErrors.Cultivation.OverlappingCycle);
+        }
+        catch (DbUpdateException exception) when (exception.InnerException is PostgresException
+            { ConstraintName: "ix_seasons_name_per_farm" })
+        {
+            throw new DomainException(SmartGraoErrors.Cultivation.DuplicateSeason);
+        }
+        catch (DbUpdateException exception) when (exception.InnerException is PostgresException
+            { ConstraintName: "ix_stage_date_per_cultivation" })
+        {
+            throw new DomainException(SmartGraoErrors.Cultivation.DuplicateStageDate);
+        }
+        catch (DbUpdateException exception) when (exception.InnerException is PostgresException
+            { ConstraintName: "ix_monitoring_targets_code" })
+        {
+            throw new DomainException(SmartGraoErrors.Protocol.DuplicateTargetCode);
+        }
+        catch (DbUpdateException exception) when (exception.InnerException is PostgresException
+            { ConstraintName: "ix_protocols_code_version" })
+        {
+            throw new DomainException(SmartGraoErrors.Protocol.DuplicateVersion);
+        }
+        catch (DbUpdateException exception) when (exception.InnerException is PostgresException
+            { ConstraintName: "ix_protocol_items_target_per_organ" })
+        {
+            throw new DomainException(SmartGraoErrors.Protocol.DuplicateItem);
+        }
     }
 
     /// <summary>

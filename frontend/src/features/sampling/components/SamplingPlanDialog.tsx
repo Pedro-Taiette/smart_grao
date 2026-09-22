@@ -23,6 +23,7 @@ import {
 } from '../samplingLabels';
 
 interface SamplingPlanDialogProps {
+  allowMonitoring: boolean;
   fieldName: string;
   fieldAreaHectares: number;
   isGenerating: boolean;
@@ -48,13 +49,14 @@ const modes: SamplingMode[] = ['Monitoring', 'Mapping'];
  * ou outro momento da safra.
  */
 export function SamplingPlanDialog({
+  allowMonitoring,
   fieldName,
   fieldAreaHectares,
   isGenerating,
   onConfirm,
   onClose,
 }: SamplingPlanDialogProps) {
-  const [mode, setMode] = useState<SamplingMode>('Monitoring');
+  const [mode, setMode] = useState<SamplingMode>(allowMonitoring ? 'Monitoring' : 'Mapping');
   const [spacingMeters, setSpacingMeters] = useState(defaultDetailLevel.spacingMeters);
 
   return (
@@ -71,7 +73,7 @@ export function SamplingPlanDialog({
         </Typography>
 
         <Stack spacing={1.5}>
-          {modes.map((option) => (
+          {modes.filter(option => allowMonitoring || option !== 'Monitoring').map((option) => (
             <Card key={option} variant="outlined" sx={{ borderColor: mode === option ? 'primary.main' : undefined }}>
               <CardActionArea onClick={() => setMode(option)} sx={{ p: 2 }}>
                 <Stack direction="row" spacing={1.5} sx={{ alignItems: 'flex-start' }}>
@@ -131,8 +133,8 @@ export function SamplingPlanDialog({
             </Stack>
 
             <Alert severity="info" sx={{ mt: 1.5 }}>
-              Nesta opção os pontos vão até a divisa do talhão. É de propósito: a praga costuma
-              entrar pela borda, e é justamente lá que ela aparece primeiro.
+              A malha cobre o talhão até a divisa. O espaçamento organiza os pontos; o protocolo de
+              coleta e sua adequação à cultura devem ser definidos com a equipe técnica.
             </Alert>
           </Box>
         )}

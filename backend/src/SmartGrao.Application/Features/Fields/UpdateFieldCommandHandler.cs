@@ -29,7 +29,6 @@ public sealed class UpdateFieldCommandHandler(
         await placementGuard.EnsureNoOverlapAsync(field.FarmId, boundary, fieldId, cancellationToken);
 
         field.Rename(model.Name);
-        field.ChangeCrop(model.Crop);
         field.Redraw(boundary);
 
         await dbContext.SaveChangesAsync(cancellationToken);

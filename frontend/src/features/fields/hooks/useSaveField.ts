@@ -1,7 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { getGetFieldsByFarmQueryKey } from '@/api/generated/farms/farms';
 import { getGetFieldByIdQueryKey, useCreateField, useUpdateField } from '@/api/generated/fields/fields';
-import type { Crop } from '@/api/generated/model/crop';
 import type { FieldViewModel } from '@/api/generated/model/fieldViewModel';
 import type { GeoJsonPolygon } from '@/api/generated/model/geoJsonPolygon';
 import { useNotifier } from '@/shared/notifications/useNotifier';
@@ -11,7 +10,6 @@ export interface SaveFieldInput {
   fieldId?: string;
   farmId: string;
   name: string;
-  crop: Crop;
   boundary: GeoJsonPolygon;
 }
 
@@ -37,11 +35,11 @@ export function useSaveField(): UseSaveFieldResult {
   const createMutation = useCreateField();
   const updateMutation = useUpdateField();
 
-  const saveField = async ({ fieldId, farmId, name, crop, boundary }: SaveFieldInput) => {
+  const saveField = async ({ fieldId, farmId, name, boundary }: SaveFieldInput) => {
     try {
       const saved = fieldId
-        ? await updateMutation.mutateAsync({ id: fieldId, data: { name, crop, boundary } })
-        : await createMutation.mutateAsync({ data: { farmId, name, crop, boundary } });
+        ? await updateMutation.mutateAsync({ id: fieldId, data: { name, boundary } })
+        : await createMutation.mutateAsync({ data: { farmId, name, boundary } });
 
       await queryClient.invalidateQueries({ queryKey: getGetFieldsByFarmQueryKey(farmId) });
       if (fieldId) {

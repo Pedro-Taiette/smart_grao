@@ -22,7 +22,6 @@ A unidade de manejo: o pedaço de terra que se planta, se amostra e se pulveriza
 | `Geometry` | `geography(Polygon,4326)` — o contorno |
 | `AreaHectares` | `numeric(12,4)`, gravada junto com o contorno |
 | `PerimeterMeters` | idem |
-| `Crop` | enum fechado; o Pilar 2 roteia o modelo de visão por ela |
 | `Active` | desativar em vez de excluir |
 
 **Área e contorno nunca se separam.** Não existe setter público para `AreaHectares`: ela é reescrita
@@ -35,6 +34,11 @@ quando o contorno muda.
 ---
 
 ### `SamplingPlan` — o plano de amostragem
+
+Novos planos referenciam também um `CultivationId` imutável, impedindo misturar os registros de
+ciclos distintos. O vínculo é nulo somente nos planos anteriores à migration de cultivos.
+`Season`, `Cultivation` e os registros de estágio estão descritos em
+[Fase 1 — modelo e regras](fase-1-cultivos.md#modelo-e-regras).
 
 A malha georreferenciada que o agrônomo caminha num talhão, com o registro de **como ela foi
 derivada**. É o agregado central do Pilar 2.

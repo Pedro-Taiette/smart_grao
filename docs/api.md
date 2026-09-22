@@ -13,7 +13,7 @@ documento OpenAPI em `/openapi/v1.json` e no arquivo versionado `openapi/SmartGr
 | POST | `/api/farms` | cadastra; sede opcional |
 | GET | `/api/farms/{id}` | detalha |
 | PUT | `/api/farms/{id}` | atualiza |
-| DELETE | `/api/farms/{id}` | exclui; **409** se ainda houver talhões |
+| DELETE | `/api/farms/{id}` | exclui; **409** se ainda houver talhões ou safras |
 | GET | `/api/farms/{id}/fields` | talhões com contorno em GeoJSON — é o que o mapa consome |
 
 ### Talhões
@@ -22,11 +22,28 @@ documento OpenAPI em `/openapi/v1.json` e no arquivo versionado `openapi/SmartGr
 |---|---|---|
 | POST | `/api/fields` | cria a partir do polígono desenhado |
 | GET | `/api/fields/{id}` | detalha |
-| PUT | `/api/fields/{id}` | renomeia, troca a cultura e redesenha o contorno |
+| PUT | `/api/fields/{id}` | renomeia e redesenha o contorno |
 | PATCH | `/api/fields/{id}/status?active=` | ativa/desativa preservando o histórico |
-| DELETE | `/api/fields/{id}` | exclui |
+| DELETE | `/api/fields/{id}` | exclui; **409** se houver cultivos ou planos |
 
 `GET /api/farms/{id}/fields` aceita `?activeOnly=true`.
+
+### Safras e cultivos
+
+O contexto de cultura pertence ao cultivo, não ao talhão. Os endpoints de cadastro, consulta,
+encerramento e estágios estão em [Fase 1 — API](fase-1-cultivos.md#api).
+
+`GET /api/growth-stages?crop={c}` devolve a escala fenológica da cultura — milho e soja estão
+transcritas, e o estágio registrado precisa estar nelas. Ver
+[Escala fenológica](fase-2-protocolos.md#escala-fenológica).
+
+### Alvos e protocolos
+
+O catálogo de pragas e doenças foliares e os protocolos versionados de vistoria. Um protocolo
+declara a sua cultura e só aceita alvos dela — é o que impede uma vistoria de milho de herdar o
+MIP-Soja por omissão. Endpoints, regras e códigos de erro em
+[Fase 2 — API](fase-2-protocolos.md#api); os alvos e as fontes agronômicas em
+[Fase 2 — catálogo de alvos](fase-2-catalogo-alvos.md).
 
 ### Planos de amostragem
 
@@ -37,15 +54,19 @@ documento OpenAPI em `/openapi/v1.json` e no arquivo versionado `openapi/SmartGr
 | DELETE | `/api/sampling-plans/{id}` | apaga o plano e a malha junto |
 | GET | `/api/fields/{id}/sampling-plans` | histórico do talhão, mais recente primeiro, **sem** os pontos |
 
-O corpo do `POST` tem três campos, e o terceiro depende do primeiro:
+O corpo do `POST` identifica o talhão e seu cultivo. O espaçamento depende do modo:
 
 ```jsonc
 {
   "fieldId": "…",
+  "cultivationId": "…",
   "mode": "Monitoring",   // ou "Mapping"
   "spacingMeters": null   // obrigatório em Mapping; proibido em Monitoring
 }
 ```
+
+O cultivo precisa pertencer ao talhão e estar aberto. `Monitoring` é exclusivo para soja;
+no milho, está disponível `Mapping`. Os planos anteriores à fase 1 retornam `cultivationId: null`.
 
 **Por que o espaçamento é proibido no Monitoramento** e não apenas ignorado: nesse modo a densidade
 vem da tabela do MIP-Soja, e aceitar um valor sem efeito faria o cliente acreditar que escolheu a
@@ -77,7 +98,6 @@ chega aberto.
 {
   "farmId": "01a07cfe-728d-72e4-8c3e-6e58655b326f",
   "name": "Talhão Norte",
-  "crop": "Soybean",
   "boundary": {
     "type": "Polygon",
     "coordinates": [[

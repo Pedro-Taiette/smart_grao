@@ -14,6 +14,10 @@ public sealed class DeleteFieldCommandHandler(ISmartGraoDbContext dbContext)
         var field = await dbContext.Fields.FirstOrDefaultAsync(f => f.Id == fieldId, cancellationToken)
             ?? throw new DomainException(SmartGraoErrors.Field.NotFound);
 
+        if (await dbContext.Cultivations.AnyAsync(c => c.FieldId == fieldId, cancellationToken)
+            || await dbContext.SamplingPlans.AnyAsync(p => p.FieldId == fieldId, cancellationToken))
+            throw new DomainException(SmartGraoErrors.Cultivation.HasHistory);
+
         dbContext.Fields.Remove(field);
         await dbContext.SaveChangesAsync(cancellationToken);
     }

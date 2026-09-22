@@ -4,7 +4,6 @@
  * SmartGrao.WebApi | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { Crop } from './crop';
 import type { GeoCoordinateViewModel } from './geoCoordinateViewModel';
 import type { GeoJsonPolygon } from './geoJsonPolygon';
 
@@ -12,7 +11,6 @@ export interface FieldViewModel {
   id: string;
   farmId: string;
   name: string;
-  crop: Crop;
   areaHectares: number;
   perimeterMeters: number;
   center: GeoCoordinateViewModel;

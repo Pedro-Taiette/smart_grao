@@ -19,6 +19,7 @@ interface SamplingPanelProps {
   plans: SamplingPlanSummaryViewModel[];
   visiblePlanId: string | null;
   isBusy: boolean;
+  canGenerate: boolean;
   onGenerate: () => void;
   onSelectPlan: (planId: string) => void;
   onRemovePlan: (plan: SamplingPlanSummaryViewModel) => void;
@@ -35,6 +36,7 @@ export function SamplingPanel({
   plans,
   visiblePlanId,
   isBusy,
+  canGenerate,
   onGenerate,
   onSelectPlan,
   onRemovePlan,
@@ -53,7 +55,7 @@ export function SamplingPanel({
           size="small"
           startIcon={<PlaceOutlinedIcon />}
           onClick={onGenerate}
-          disabled={isBusy}
+          disabled={isBusy || !canGenerate}
         >
           Marcar pontos
         </Button>
@@ -98,7 +100,7 @@ export function SamplingPanel({
       )}
 
       <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: 'wrap' }}>
-        <Button size="small" startIcon={<PlaceOutlinedIcon />} onClick={onGenerate} disabled={isBusy}>
+        <Button size="small" startIcon={<PlaceOutlinedIcon />} onClick={onGenerate} disabled={isBusy || !canGenerate}>
           Marcar de novo
         </Button>
         <Button

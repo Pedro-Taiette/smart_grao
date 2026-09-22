@@ -21,8 +21,145 @@ namespace SmartGrao.Infrastructure.Persistence.Migrations
                 .HasAnnotation("ProductVersion", "10.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "btree_gist");
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "postgis");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("SmartGrao.Domain.Cultivations.Cultivation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Crop")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("crop");
+
+                    b.Property<string>("Cultivar")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("cultivar");
+
+                    b.Property<DateOnly?>("EndedOn")
+                        .HasColumnType("date")
+                        .HasColumnName("ended_on");
+
+                    b.Property<Guid>("FieldId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("field_id");
+
+                    b.Property<DateOnly>("PlantedOn")
+                        .HasColumnType("date")
+                        .HasColumnName("planted_on");
+
+                    b.Property<Guid>("SeasonId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("season_id");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id")
+                        .HasName("pk_cultivations");
+
+                    b.HasAlternateKey("Id", "FieldId")
+                        .HasName("ak_cultivations_id_field_id");
+
+                    b.HasIndex("SeasonId")
+                        .HasDatabaseName("ix_cultivations_season_id");
+
+                    b.HasIndex("FieldId", "PlantedOn")
+                        .IsDescending(false, true)
+                        .HasDatabaseName("ix_cultivations_field_id_planted_on");
+
+                    b.ToTable("cultivations", null, t =>
+                        {
+                            t.HasCheckConstraint("ck_cultivation_dates", "ended_on IS NULL OR ended_on >= planted_on");
+                        });
+                });
+
+            modelBuilder.Entity("SmartGrao.Domain.Cultivations.GrowthStageRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("CultivationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("cultivation_id");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("notes");
+
+                    b.Property<DateOnly>("ObservedOn")
+                        .HasColumnType("date")
+                        .HasColumnName("observed_on");
+
+                    b.Property<string>("Stage")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("stage");
+
+                    b.HasKey("Id")
+                        .HasName("pk_growth_stage_records");
+
+                    b.HasIndex("CultivationId", "ObservedOn")
+                        .IsUnique()
+                        .HasDatabaseName("ix_stage_date_per_cultivation");
+
+                    b.ToTable("growth_stage_records", (string)null);
+                });
+
+            modelBuilder.Entity("SmartGrao.Domain.Cultivations.Season", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("FarmId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("farm_id");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)")
+                        .HasColumnName("name");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_seasons");
+
+                    b.HasIndex("FarmId", "Name")
+                        .IsUnique()
+                        .HasDatabaseName("ix_seasons_name_per_farm");
+
+                    b.ToTable("seasons", (string)null);
+                });
 
             modelBuilder.Entity("SmartGrao.Domain.Farms.Farm", b =>
                 {
@@ -89,12 +226,6 @@ namespace SmartGrao.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<string>("Crop")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
-                        .HasColumnName("crop");
-
                     b.Property<Guid>("FarmId")
                         .HasColumnType("uuid")
                         .HasColumnName("farm_id");
@@ -133,6 +264,374 @@ namespace SmartGrao.Infrastructure.Persistence.Migrations
                     b.ToTable("fields", (string)null);
                 });
 
+            modelBuilder.Entity("SmartGrao.Domain.Protocols.MonitoringTarget", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Automation")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("automation");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("code");
+
+                    b.Property<string>("CommonName")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("common_name");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Crop")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("crop");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("kind");
+
+                    b.Property<string>("ScientificName")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("scientific_name");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_monitoring_targets");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("ix_monitoring_targets_code");
+
+                    b.HasIndex("Crop", "Kind")
+                        .HasDatabaseName("ix_monitoring_targets_crop_kind");
+
+                    b.ToTable("monitoring_targets", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("a1000000-0000-4000-8000-000000000001"),
+                            Automation = "ManualRecord",
+                            Code = "spodoptera_frugiperda",
+                            CommonName = "Lagarta-do-cartucho",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 9, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Crop = "Corn",
+                            Kind = "Pest",
+                            ScientificName = "Spodoptera frugiperda"
+                        },
+                        new
+                        {
+                            Id = new Guid("a1000000-0000-4000-8000-000000000002"),
+                            Automation = "ManualRecord",
+                            Code = "dalbulus_maidis",
+                            CommonName = "Cigarrinha-do-milho",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 9, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Crop = "Corn",
+                            Kind = "Pest",
+                            ScientificName = "Dalbulus maidis"
+                        },
+                        new
+                        {
+                            Id = new Guid("a1000000-0000-4000-8000-000000000003"),
+                            Automation = "ManualRecord",
+                            Code = "diceraeus_melacanthus",
+                            CommonName = "Percevejo-barriga-verde",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 9, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Crop = "Corn",
+                            Kind = "Pest",
+                            ScientificName = "Diceraeus melacanthus"
+                        },
+                        new
+                        {
+                            Id = new Guid("a1000000-0000-4000-8000-000000000004"),
+                            Automation = "ManualRecord",
+                            Code = "rhopalosiphum_maidis",
+                            CommonName = "Pulgão-do-milho",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 9, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Crop = "Corn",
+                            Kind = "Pest",
+                            ScientificName = "Rhopalosiphum maidis"
+                        },
+                        new
+                        {
+                            Id = new Guid("a1000000-0000-4000-8000-000000000005"),
+                            Automation = "ManualRecord",
+                            Code = "elasmopalpus_lignosellus",
+                            CommonName = "Lagarta-elasmo",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 9, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Crop = "Corn",
+                            Kind = "Pest",
+                            ScientificName = "Elasmopalpus lignosellus"
+                        },
+                        new
+                        {
+                            Id = new Guid("a1000000-0000-4000-8000-000000000006"),
+                            Automation = "ManualRecord",
+                            Code = "agrotis_ipsilon",
+                            CommonName = "Lagarta-rosca",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 9, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Crop = "Corn",
+                            Kind = "Pest",
+                            ScientificName = "Agrotis ipsilon"
+                        },
+                        new
+                        {
+                            Id = new Guid("a1000000-0000-4000-8000-000000000007"),
+                            Automation = "ManualRecord",
+                            Code = "diatraea_saccharalis",
+                            CommonName = "Broca-da-cana",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 9, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Crop = "Corn",
+                            Kind = "Pest",
+                            ScientificName = "Diatraea saccharalis"
+                        },
+                        new
+                        {
+                            Id = new Guid("a1000000-0000-4000-8000-000000000008"),
+                            Automation = "ManualRecord",
+                            Code = "helicoverpa_zea",
+                            CommonName = "Lagarta-da-espiga",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 9, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Crop = "Corn",
+                            Kind = "Pest",
+                            ScientificName = "Helicoverpa zea"
+                        },
+                        new
+                        {
+                            Id = new Guid("a1000000-0000-4000-8000-000000000009"),
+                            Automation = "ManualRecord",
+                            Code = "diabrotica_speciosa",
+                            CommonName = "Larva-alfinete",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 9, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Crop = "Corn",
+                            Kind = "Pest",
+                            ScientificName = "Diabrotica speciosa"
+                        },
+                        new
+                        {
+                            Id = new Guid("a1000000-0000-4000-8000-000000000010"),
+                            Automation = "ManualRecord",
+                            Code = "coros",
+                            CommonName = "Corós",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 9, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Crop = "Corn",
+                            Kind = "Pest",
+                            ScientificName = "Diloboderus abderus e Phyllophaga spp."
+                        },
+                        new
+                        {
+                            Id = new Guid("a1000000-0000-4000-8000-000000000011"),
+                            Automation = "ManualRecord",
+                            Code = "pantoea_ananatis",
+                            CommonName = "Mancha-branca",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 9, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Crop = "Corn",
+                            Kind = "FoliarDisease",
+                            ScientificName = "Pantoea ananatis"
+                        },
+                        new
+                        {
+                            Id = new Guid("a1000000-0000-4000-8000-000000000012"),
+                            Automation = "ManualRecord",
+                            Code = "cercospora_zeina",
+                            CommonName = "Cercosporiose",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 9, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Crop = "Corn",
+                            Kind = "FoliarDisease",
+                            ScientificName = "Cercospora zeina"
+                        },
+                        new
+                        {
+                            Id = new Guid("a1000000-0000-4000-8000-000000000013"),
+                            Automation = "ManualRecord",
+                            Code = "exserohilum_turcicum",
+                            CommonName = "Helmintosporiose",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 9, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Crop = "Corn",
+                            Kind = "FoliarDisease",
+                            ScientificName = "Exserohilum turcicum"
+                        },
+                        new
+                        {
+                            Id = new Guid("a1000000-0000-4000-8000-000000000014"),
+                            Automation = "ManualRecord",
+                            Code = "colletotrichum_graminicola",
+                            CommonName = "Antracnose foliar",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 9, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Crop = "Corn",
+                            Kind = "FoliarDisease",
+                            ScientificName = "Colletotrichum graminicola"
+                        },
+                        new
+                        {
+                            Id = new Guid("a1000000-0000-4000-8000-000000000015"),
+                            Automation = "ManualRecord",
+                            Code = "bipolaris_maydis",
+                            CommonName = "Mancha-de-bipolaris",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 9, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Crop = "Corn",
+                            Kind = "FoliarDisease",
+                            ScientificName = "Bipolaris maydis"
+                        },
+                        new
+                        {
+                            Id = new Guid("a1000000-0000-4000-8000-000000000016"),
+                            Automation = "ManualRecord",
+                            Code = "puccinia_polysora",
+                            CommonName = "Ferrugem-polissora",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 9, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Crop = "Corn",
+                            Kind = "FoliarDisease",
+                            ScientificName = "Puccinia polysora"
+                        },
+                        new
+                        {
+                            Id = new Guid("a1000000-0000-4000-8000-000000000017"),
+                            Automation = "ManualRecord",
+                            Code = "puccinia_sorghi",
+                            CommonName = "Ferrugem-comum",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 9, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Crop = "Corn",
+                            Kind = "FoliarDisease",
+                            ScientificName = "Puccinia sorghi"
+                        },
+                        new
+                        {
+                            Id = new Guid("a1000000-0000-4000-8000-000000000018"),
+                            Automation = "ManualRecord",
+                            Code = "physopella_zeae",
+                            CommonName = "Ferrugem-tropical",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 9, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Crop = "Corn",
+                            Kind = "FoliarDisease",
+                            ScientificName = "Physopella zeae"
+                        });
+                });
+
+            modelBuilder.Entity("SmartGrao.Domain.Protocols.Protocol", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Crop")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("crop");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("name");
+
+                    b.Property<uint>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("status");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("integer")
+                        .HasColumnName("version");
+
+                    b.HasKey("Id")
+                        .HasName("pk_protocols");
+
+                    b.HasIndex("Code", "Version")
+                        .IsUnique()
+                        .HasDatabaseName("ix_protocols_code_version");
+
+                    b.ToTable("protocols", (string)null);
+                });
+
+            modelBuilder.Entity("SmartGrao.Domain.Protocols.ProtocolItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Instructions")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("instructions");
+
+                    b.Property<string>("Organ")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("organ");
+
+                    b.Property<int>("PhotosRequested")
+                        .HasColumnType("integer")
+                        .HasColumnName("photos_requested");
+
+                    b.Property<Guid>("ProtocolId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("protocol_id");
+
+                    b.Property<Guid>("TargetId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("target_id");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("unit");
+
+                    b.HasKey("Id")
+                        .HasName("pk_protocol_items");
+
+                    b.HasIndex("ProtocolId")
+                        .HasDatabaseName("ix_protocol_items_protocol_id");
+
+                    b.HasIndex("TargetId")
+                        .HasDatabaseName("ix_protocol_items_target_id");
+
+                    b.ToTable("protocol_items", (string)null);
+                });
+
             modelBuilder.Entity("SmartGrao.Domain.Sampling.SamplingPlan", b =>
                 {
                     b.Property<Guid>("Id")
@@ -142,6 +641,10 @@ namespace SmartGrao.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
+
+                    b.Property<Guid?>("CultivationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("cultivation_id");
 
                     b.Property<double>("EdgeBufferMeters")
                         .HasColumnType("double precision")
@@ -185,6 +688,9 @@ namespace SmartGrao.Infrastructure.Persistence.Migrations
                     b.HasKey("Id")
                         .HasName("pk_sampling_plans");
 
+                    b.HasIndex("CultivationId", "FieldId")
+                        .HasDatabaseName("ix_sampling_plans_cultivation_id_field_id");
+
                     b.HasIndex("FieldId", "CreatedAt")
                         .IsDescending(false, true)
                         .HasDatabaseName("ix_sampling_plans_field_recent_first");
@@ -226,6 +732,43 @@ namespace SmartGrao.Infrastructure.Persistence.Migrations
                     b.ToTable("sampling_points", (string)null);
                 });
 
+            modelBuilder.Entity("SmartGrao.Domain.Cultivations.Cultivation", b =>
+                {
+                    b.HasOne("SmartGrao.Domain.Fields.Field", null)
+                        .WithMany()
+                        .HasForeignKey("FieldId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_cultivations_fields_field_id");
+
+                    b.HasOne("SmartGrao.Domain.Cultivations.Season", null)
+                        .WithMany()
+                        .HasForeignKey("SeasonId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_cultivations_seasons_season_id");
+                });
+
+            modelBuilder.Entity("SmartGrao.Domain.Cultivations.GrowthStageRecord", b =>
+                {
+                    b.HasOne("SmartGrao.Domain.Cultivations.Cultivation", null)
+                        .WithMany("Stages")
+                        .HasForeignKey("CultivationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_growth_stage_records_cultivations_cultivation_id");
+                });
+
+            modelBuilder.Entity("SmartGrao.Domain.Cultivations.Season", b =>
+                {
+                    b.HasOne("SmartGrao.Domain.Farms.Farm", null)
+                        .WithMany()
+                        .HasForeignKey("FarmId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_seasons_farms_farm_id");
+                });
+
             modelBuilder.Entity("SmartGrao.Domain.Fields.Field", b =>
                 {
                     b.HasOne("SmartGrao.Domain.Farms.Farm", null)
@@ -236,6 +779,51 @@ namespace SmartGrao.Infrastructure.Persistence.Migrations
                         .HasConstraintName("fk_fields_farms_farm_id");
                 });
 
+            modelBuilder.Entity("SmartGrao.Domain.Protocols.ProtocolItem", b =>
+                {
+                    b.HasOne("SmartGrao.Domain.Protocols.Protocol", null)
+                        .WithMany("Items")
+                        .HasForeignKey("ProtocolId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_protocol_items_protocols_protocol_id");
+
+                    b.HasOne("SmartGrao.Domain.Protocols.MonitoringTarget", null)
+                        .WithMany()
+                        .HasForeignKey("TargetId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_protocol_items_monitoring_targets_target_id");
+
+                    b.OwnsOne("SmartGrao.Domain.Protocols.ReferenceLevel", "ReferenceLevel", b1 =>
+                        {
+                            b1.Property<Guid>("ProtocolItemId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("id");
+
+                            b1.Property<string>("Source")
+                                .IsRequired()
+                                .HasMaxLength(300)
+                                .HasColumnType("character varying(300)")
+                                .HasColumnName("reference_source");
+
+                            b1.Property<decimal>("Threshold")
+                                .HasPrecision(10, 2)
+                                .HasColumnType("numeric(10,2)")
+                                .HasColumnName("reference_threshold");
+
+                            b1.HasKey("ProtocolItemId");
+
+                            b1.ToTable("protocol_items");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProtocolItemId")
+                                .HasConstraintName("fk_protocol_items_protocol_items_id");
+                        });
+
+                    b.Navigation("ReferenceLevel");
+                });
+
             modelBuilder.Entity("SmartGrao.Domain.Sampling.SamplingPlan", b =>
                 {
                     b.HasOne("SmartGrao.Domain.Fields.Field", null)
@@ -244,6 +832,13 @@ namespace SmartGrao.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_sampling_plans_fields_field_id");
+
+                    b.HasOne("SmartGrao.Domain.Cultivations.Cultivation", null)
+                        .WithMany()
+                        .HasForeignKey("CultivationId", "FieldId")
+                        .HasPrincipalKey("Id", "FieldId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_sampling_plans_cultivations_cultivation_id_field_id");
                 });
 
             modelBuilder.Entity("SmartGrao.Domain.Sampling.SamplingPoint", b =>
@@ -254,6 +849,16 @@ namespace SmartGrao.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_sampling_points_sampling_plans_sampling_plan_id");
+                });
+
+            modelBuilder.Entity("SmartGrao.Domain.Cultivations.Cultivation", b =>
+                {
+                    b.Navigation("Stages");
+                });
+
+            modelBuilder.Entity("SmartGrao.Domain.Protocols.Protocol", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("SmartGrao.Domain.Sampling.SamplingPlan", b =>

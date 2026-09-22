@@ -4,12 +4,10 @@
  * SmartGrao.WebApi | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { Crop } from './crop';
 import type { GeoJsonPolygon } from './geoJsonPolygon';
 
 export interface CreateFieldViewModel {
   farmId: string;
   name: string;
-  crop: Crop;
   boundary: GeoJsonPolygon;
 }

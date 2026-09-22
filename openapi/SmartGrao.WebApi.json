@@ -5,6 +5,210 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/cultivations": {
+      "get": {
+        "tags": [
+          "Cultivations"
+        ],
+        "operationId": "GetCultivations",
+        "parameters": [
+          {
+            "name": "fieldId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CultivationViewModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Cultivations"
+        ],
+        "operationId": "CreateCultivation",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCultivationViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCultivationViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCultivationViewModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CultivationViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cultivations/{id}": {
+      "get": {
+        "tags": [
+          "Cultivations"
+        ],
+        "operationId": "GetCultivationById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CultivationViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cultivations/{id}/closure": {
+      "put": {
+        "tags": [
+          "Cultivations"
+        ],
+        "operationId": "CloseCultivation",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CloseCultivationViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CloseCultivationViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CloseCultivationViewModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CultivationViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cultivations/{id}/stages": {
+      "post": {
+        "tags": [
+          "Cultivations"
+        ],
+        "operationId": "RecordGrowthStage",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordGrowthStageViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordGrowthStageViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordGrowthStageViewModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CultivationViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/farms": {
       "get": {
         "tags": [
@@ -539,6 +743,509 @@
         }
       }
     },
+    "/api/growth-stages": {
+      "get": {
+        "tags": [
+          "GrowthStages"
+        ],
+        "operationId": "GetGrowthStages",
+        "parameters": [
+          {
+            "name": "crop",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Crop"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GrowthStageOptionViewModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/monitoring-targets": {
+      "get": {
+        "tags": [
+          "MonitoringTargets"
+        ],
+        "operationId": "GetMonitoringTargets",
+        "parameters": [
+          {
+            "name": "crop",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Crop"
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/TargetKind"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MonitoringTargetViewModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "MonitoringTargets"
+        ],
+        "operationId": "CreateMonitoringTarget",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMonitoringTargetViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMonitoringTargetViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMonitoringTargetViewModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonitoringTargetViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/monitoring-targets/{id}/automation": {
+      "put": {
+        "tags": [
+          "MonitoringTargets"
+        ],
+        "operationId": "ChangeTargetAutomation",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeAutomationViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeAutomationViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeAutomationViewModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonitoringTargetViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/protocols": {
+      "get": {
+        "tags": [
+          "Protocols"
+        ],
+        "operationId": "GetProtocols",
+        "parameters": [
+          {
+            "name": "crop",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Crop"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/ProtocolStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProtocolSummaryViewModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Protocols"
+        ],
+        "operationId": "CreateProtocol",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProtocolViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProtocolViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProtocolViewModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProtocolViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/protocols/{id}": {
+      "get": {
+        "tags": [
+          "Protocols"
+        ],
+        "operationId": "GetProtocolById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProtocolViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/protocols/{id}/versions": {
+      "post": {
+        "tags": [
+          "Protocols"
+        ],
+        "operationId": "CreateProtocolVersion",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProtocolViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/protocols/{id}/name": {
+      "put": {
+        "tags": [
+          "Protocols"
+        ],
+        "operationId": "RenameProtocol",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RenameProtocolViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RenameProtocolViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RenameProtocolViewModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProtocolViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/protocols/{id}/items": {
+      "post": {
+        "tags": [
+          "Protocols"
+        ],
+        "operationId": "AddProtocolItem",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddProtocolItemViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddProtocolItemViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddProtocolItemViewModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProtocolViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/protocols/{id}/items/{itemId}": {
+      "delete": {
+        "tags": [
+          "Protocols"
+        ],
+        "operationId": "RemoveProtocolItem",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "itemId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProtocolViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/protocols/{id}/publication": {
+      "put": {
+        "tags": [
+          "Protocols"
+        ],
+        "operationId": "PublishProtocol",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProtocolViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/protocols/{id}/retirement": {
+      "put": {
+        "tags": [
+          "Protocols"
+        ],
+        "operationId": "RetireProtocol",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProtocolViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/sampling-plans/{id}": {
       "get": {
         "tags": [
@@ -694,15 +1401,205 @@
           }
         }
       }
+    },
+    "/api/seasons": {
+      "get": {
+        "tags": [
+          "Seasons"
+        ],
+        "operationId": "GetSeasons",
+        "parameters": [
+          {
+            "name": "farmId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SeasonViewModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Seasons"
+        ],
+        "operationId": "CreateSeason",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSeasonViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSeasonViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSeasonViewModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeasonViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AddProtocolItemViewModel": {
+        "required": [
+          "targetId",
+          "organ",
+          "unit",
+          "photosRequested",
+          "instructions",
+          "referenceLevel"
+        ],
+        "type": "object",
+        "properties": {
+          "targetId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "organ": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/PlantOrgan"
+              }
+            ]
+          },
+          "unit": {
+            "$ref": "#/components/schemas/CountUnit"
+          },
+          "photosRequested": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "instructions": {
+            "type": "string"
+          },
+          "referenceLevel": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ReferenceLevelViewModel"
+              }
+            ]
+          }
+        }
+      },
+      "AutomationCapability": {
+        "enum": [
+          "ManualRecord",
+          "UnderValidation",
+          "AutomationEnabled"
+        ]
+      },
+      "ChangeAutomationViewModel": {
+        "required": [
+          "automation"
+        ],
+        "type": "object",
+        "properties": {
+          "automation": {
+            "$ref": "#/components/schemas/AutomationCapability"
+          }
+        }
+      },
+      "CloseCultivationViewModel": {
+        "required": [
+          "endedOn"
+        ],
+        "type": "object",
+        "properties": {
+          "endedOn": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "CountUnit": {
+        "enum": [
+          "Undefined",
+          "AttackedPlantPercentage",
+          "AttackedPlantsPer10MetreRow",
+          "InsectsPerPlant",
+          "InsectsPerTenPlants",
+          "InsectsPerTrap",
+          "LesionedLeafAreaPercentage",
+          "SeverityScore1To9",
+          "Presence"
+        ]
+      },
+      "CreateCultivationViewModel": {
+        "required": [
+          "fieldId",
+          "seasonId",
+          "crop",
+          "cultivar",
+          "plantedOn"
+        ],
+        "type": "object",
+        "properties": {
+          "fieldId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "seasonId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "crop": {
+            "$ref": "#/components/schemas/Crop"
+          },
+          "cultivar": {
+            "type": "string"
+          },
+          "plantedOn": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
       "CreateFieldViewModel": {
         "required": [
           "farmId",
           "name",
-          "crop",
           "boundary"
         ],
         "type": "object",
@@ -714,11 +1611,70 @@
           "name": {
             "type": "string"
           },
+          "boundary": {
+            "$ref": "#/components/schemas/GeoJsonPolygon"
+          }
+        }
+      },
+      "CreateMonitoringTargetViewModel": {
+        "required": [
+          "code",
+          "commonName",
+          "scientificName",
+          "kind",
+          "crop"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "commonName": {
+            "type": "string"
+          },
+          "scientificName": {
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/TargetKind"
+          },
+          "crop": {
+            "$ref": "#/components/schemas/Crop"
+          }
+        }
+      },
+      "CreateProtocolViewModel": {
+        "required": [
+          "code",
+          "crop",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
           "crop": {
             "$ref": "#/components/schemas/Crop"
           },
-          "boundary": {
-            "$ref": "#/components/schemas/GeoJsonPolygon"
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateSeasonViewModel": {
+        "required": [
+          "farmId",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "farmId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
           }
         }
       },
@@ -736,6 +1692,56 @@
           "Sorghum",
           "Other"
         ]
+      },
+      "CultivationViewModel": {
+        "required": [
+          "id",
+          "fieldId",
+          "seasonId",
+          "crop",
+          "cultivar",
+          "plantedOn",
+          "endedOn",
+          "stages"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fieldId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "seasonId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "crop": {
+            "$ref": "#/components/schemas/Crop"
+          },
+          "cultivar": {
+            "type": "string"
+          },
+          "plantedOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "endedOn": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "stages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GrowthStageViewModel"
+            }
+          }
+        }
       },
       "FarmViewModel": {
         "required": [
@@ -790,7 +1796,6 @@
           "id",
           "farmId",
           "name",
-          "crop",
           "areaHectares",
           "perimeterMeters",
           "center",
@@ -812,9 +1817,6 @@
           },
           "name": {
             "type": "string"
-          },
-          "crop": {
-            "$ref": "#/components/schemas/Crop"
           },
           "areaHectares": {
             "type": "number",
@@ -853,12 +1855,17 @@
       "GenerateSamplingPlanViewModel": {
         "required": [
           "fieldId",
+          "cultivationId",
           "mode",
           "spacingMeters"
         ],
         "type": "object",
         "properties": {
           "fieldId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "cultivationId": {
             "type": "string",
             "format": "uuid"
           },
@@ -935,6 +1942,102 @@
           }
         }
       },
+      "GrowthStageOptionViewModel": {
+        "required": [
+          "code",
+          "description"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "GrowthStageViewModel": {
+        "required": [
+          "id",
+          "observedOn",
+          "stage",
+          "notes"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "observedOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "stage": {
+            "type": "string"
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "MonitoringTargetViewModel": {
+        "required": [
+          "id",
+          "code",
+          "commonName",
+          "scientificName",
+          "kind",
+          "crop",
+          "automation"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string"
+          },
+          "commonName": {
+            "type": "string"
+          },
+          "scientificName": {
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/TargetKind"
+          },
+          "crop": {
+            "$ref": "#/components/schemas/Crop"
+          },
+          "automation": {
+            "$ref": "#/components/schemas/AutomationCapability"
+          }
+        }
+      },
+      "PlantOrgan": {
+        "enum": [
+          "Undefined",
+          "Whorl",
+          "Leaf",
+          "EarLeaf",
+          "StalkBase",
+          "Stalk",
+          "Root",
+          "Ear",
+          "Tassel",
+          "Silk",
+          "Seedling",
+          "WholePlant",
+          null
+        ]
+      },
       "ProblemDetails": {
         "type": "object",
         "properties": {
@@ -971,6 +2074,205 @@
           }
         }
       },
+      "ProtocolItemViewModel": {
+        "required": [
+          "id",
+          "targetId",
+          "targetCode",
+          "targetCommonName",
+          "targetAutomation",
+          "organ",
+          "unit",
+          "photosRequested",
+          "instructions",
+          "referenceLevel"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "targetId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "targetCode": {
+            "type": "string"
+          },
+          "targetCommonName": {
+            "type": "string"
+          },
+          "targetAutomation": {
+            "$ref": "#/components/schemas/AutomationCapability"
+          },
+          "organ": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/PlantOrgan"
+              }
+            ]
+          },
+          "unit": {
+            "$ref": "#/components/schemas/CountUnit"
+          },
+          "photosRequested": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "instructions": {
+            "type": "string"
+          },
+          "referenceLevel": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ReferenceLevelViewModel"
+              }
+            ]
+          }
+        }
+      },
+      "ProtocolStatus": {
+        "enum": [
+          "Draft",
+          "Published",
+          "Retired"
+        ]
+      },
+      "ProtocolSummaryViewModel": {
+        "required": [
+          "id",
+          "code",
+          "version",
+          "crop",
+          "name",
+          "status",
+          "targetCount"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "crop": {
+            "$ref": "#/components/schemas/Crop"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ProtocolStatus"
+          },
+          "targetCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ProtocolViewModel": {
+        "required": [
+          "id",
+          "code",
+          "version",
+          "crop",
+          "name",
+          "status",
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "crop": {
+            "$ref": "#/components/schemas/Crop"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ProtocolStatus"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProtocolItemViewModel"
+            }
+          }
+        }
+      },
+      "RecordGrowthStageViewModel": {
+        "required": [
+          "observedOn",
+          "stage",
+          "notes"
+        ],
+        "type": "object",
+        "properties": {
+          "observedOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "stage": {
+            "type": "string"
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "ReferenceLevelViewModel": {
+        "required": [
+          "threshold",
+          "source"
+        ],
+        "type": "object",
+        "properties": {
+          "threshold": {
+            "type": "number",
+            "format": "double"
+          },
+          "source": {
+            "type": "string"
+          }
+        }
+      },
+      "RenameProtocolViewModel": {
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
       "SamplingMode": {
         "enum": [
           "Monitoring",
@@ -981,6 +2283,7 @@
         "required": [
           "id",
           "fieldId",
+          "cultivationId",
           "mode",
           "spacingMeters",
           "edgeBufferMeters",
@@ -1000,6 +2303,13 @@
           },
           "fieldId": {
             "type": "string",
+            "format": "uuid"
+          },
+          "cultivationId": {
+            "type": [
+              "null",
+              "string"
+            ],
             "format": "uuid"
           },
           "mode": {
@@ -1112,19 +2422,43 @@
           }
         }
       },
+      "SeasonViewModel": {
+        "required": [
+          "id",
+          "farmId",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "farmId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "TargetKind": {
+        "enum": [
+          "Undefined",
+          "Pest",
+          "FoliarDisease"
+        ]
+      },
       "UpdateFieldViewModel": {
         "required": [
           "name",
-          "crop",
           "boundary"
         ],
         "type": "object",
         "properties": {
           "name": {
             "type": "string"
-          },
-          "crop": {
-            "$ref": "#/components/schemas/Crop"
           },
           "boundary": {
             "$ref": "#/components/schemas/GeoJsonPolygon"
@@ -1135,13 +2469,28 @@
   },
   "tags": [
     {
+      "name": "Cultivations"
+    },
+    {
       "name": "Farms"
     },
     {
       "name": "Fields"
     },
     {
+      "name": "GrowthStages"
+    },
+    {
+      "name": "MonitoringTargets"
+    },
+    {
+      "name": "Protocols"
+    },
+    {
       "name": "SamplingPlans"
+    },
+    {
+      "name": "Seasons"
     }
   ]
 }

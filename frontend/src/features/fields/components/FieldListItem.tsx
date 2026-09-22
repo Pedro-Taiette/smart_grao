@@ -1,7 +1,6 @@
 import { Box, Chip, ListItemButton, Stack, Typography } from '@mui/material';
 import type { FieldViewModel } from '@/api/generated/model/fieldViewModel';
 import { formatHectares } from '@/shared/format';
-import { cropLabels } from '../cropLabels';
 
 interface FieldListItemProps {
   field: FieldViewModel;
@@ -29,7 +28,7 @@ export function FieldListItem({ field, isSelected, onSelect }: FieldListItemProp
 
       <Box>
         <Typography variant="body2" color="text.secondary">
-          {cropLabels[field.crop]} — {formatHectares(field.areaHectares)}
+          {formatHectares(field.areaHectares)}
         </Typography>
       </Box>
     </ListItemButton>

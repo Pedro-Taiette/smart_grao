@@ -15,7 +15,7 @@ public sealed class FieldTests
     [Fact]
     public void Create_MeasuresTheAreaAndAnnouncesTheEvent()
     {
-        var field = Field.Create(AFarm, "Talhao Sede", Crop.Soybean, OneHundredHectares());
+        var field = Field.Create(AFarm, "Talhao Sede", OneHundredHectares());
 
         Assert.InRange(field.AreaHectares, 99.5m, 100.5m);
         Assert.Equal(Srid.Wgs84, field.Geometry.SRID);
@@ -36,7 +36,7 @@ public sealed class FieldTests
         ]);
 
         var exception = Assert.Throws<DomainException>(
-            () => Field.Create(AFarm, "Migalha", Crop.Soybean, tiny));
+            () => Field.Create(AFarm, "Migalha", tiny));
 
         Assert.Equal("field.area_below_minimum", exception.Error.Code);
         Assert.Equal(ErrorType.BusinessRule, exception.Error.Type);
@@ -48,25 +48,15 @@ public sealed class FieldTests
     public void Create_WithoutAName_IsRejected(string name)
     {
         var exception = Assert.Throws<DomainException>(
-            () => Field.Create(AFarm, name, Crop.Soybean, OneHundredHectares()));
+            () => Field.Create(AFarm, name, OneHundredHectares()));
 
         Assert.Equal("field.name_required", exception.Error.Code);
     }
 
     [Fact]
-    public void Create_WithACropOutsideTheCatalog_IsRejected()
-    {
-        // O inteiro convertido a forca no enum e o que chega quando o cliente inventa um valor.
-        var exception = Assert.Throws<DomainException>(
-            () => Field.Create(AFarm, "Talhao 1", (Crop)999, OneHundredHectares()));
-
-        Assert.Equal("field.unknown_crop", exception.Error.Code);
-    }
-
-    [Fact]
     public void Name_IsStoredTrimmed()
     {
-        var field = Field.Create(AFarm, "  Talhao Norte  ", Crop.Corn, OneHundredHectares());
+        var field = Field.Create(AFarm, "  Talhao Norte  ", OneHundredHectares());
 
         Assert.Equal("Talhao Norte", field.Name);
     }
@@ -78,7 +68,7 @@ public sealed class FieldTests
     [Fact]
     public void Redraw_RewritesTheAreaAndAnnouncesTheChange()
     {
-        var field = Field.Create(AFarm, "Talhao 1", Crop.Soybean, OneHundredHectares());
+        var field = Field.Create(AFarm, "Talhao 1", OneHundredHectares());
         field.ClearDomainEvents();
 
         var originalArea = field.AreaHectares;
@@ -96,7 +86,7 @@ public sealed class FieldTests
     [Fact]
     public void Deactivate_KeepsTheFieldAndItsHistory()
     {
-        var field = Field.Create(AFarm, "Talhao 1", Crop.Coffee, OneHundredHectares());
+        var field = Field.Create(AFarm, "Talhao 1", OneHundredHectares());
 
         Assert.True(field.Active);
 
