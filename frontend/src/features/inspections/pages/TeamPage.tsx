@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Box, Button, Chip, Paper, Stack, Typography } from '@mui/material';
+import { Alert, Box, Button, Chip, Paper, Stack, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import type { PersonViewModel } from '@/api/generated/model/personViewModel';
-import { PageContainer } from '@/shared/components/AppLayout';
+import { PageContainer, PageHeader } from '@/shared/components/AppLayout';
 import { EmptyState } from '@/shared/components/EmptyState';
 import { QueryBoundary } from '@/shared/components/QueryBoundary';
+import { useFarmContext } from '@/features/farms/useFarmContext';
 import { PersonDialog } from '../components/InspectionDialogs';
 import { personRoleLabel } from '../inspectionLabels';
 import { usePeople, usePersonActions } from '../hooks/usePeople';
@@ -17,8 +18,8 @@ import { usePeople, usePersonActions } from '../hooks/usePeople';
  * para ela, e apagar a linha levaria junto o registro de quem esteve naquele talhao.
  */
 export function TeamPage() {
-  const { farmId = '' } = useParams();
   const navigate = useNavigate();
+  const { farm, farmId } = useFarmContext();
   const { people, isLoading, error, refetch } = usePeople(farmId);
   const actions = usePersonActions(farmId);
   const [editing, setEditing] = useState<PersonViewModel | null>(null);
@@ -27,20 +28,29 @@ export function TeamPage() {
   const active = people.filter(person => person.active);
   const former = people.filter(person => !person.active);
 
+  if (!farm) {
+    return (
+      <PageContainer>
+        <Alert
+          severity="info"
+          action={<Button color="inherit" onClick={() => navigate('/ajustes/fazendas')}>Cadastrar</Button>}
+        >
+          A equipe pertence a uma fazenda. Cadastre a propriedade primeiro.
+        </Alert>
+      </PageContainer>
+    );
+  }
+
   return (
     <PageContainer>
-      <Button sx={{ mb: 2 }} onClick={() => navigate(`/farms/${farmId}/fields`)}>Voltar aos talhões</Button>
-
-      <Stack direction="row" sx={{ mb: 3, justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-        <Box>
-          <Typography variant="h5" component="h1">Equipe</Typography>
-          <Typography variant="body2" color="text.secondary">
-            Quem pode ser responsável por uma vistoria nesta fazenda.
-          </Typography>
-        </Box>
-        <Button variant="contained" startIcon={<AddIcon />} disabled={actions.isSaving}
-          onClick={() => setCreating(true)}>Nova pessoa</Button>
-      </Stack>
+      <PageHeader
+        title="Equipe"
+        description={`Quem pode ser responsável por uma vistoria em ${farm.name}.`}
+        action={
+          <Button variant="contained" startIcon={<AddIcon />} disabled={actions.isSaving}
+            onClick={() => setCreating(true)}>Nova pessoa</Button>
+        }
+      />
 
       <QueryBoundary isLoading={isLoading} error={error} onRetry={refetch}>
         {people.length === 0 ? (

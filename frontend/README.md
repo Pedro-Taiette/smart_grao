@@ -31,14 +31,24 @@ src/
     apiErrors.ts    código → mensagem em português
   app/              tema, providers, router, política de cache
   features/
-    farms/          hooks, components, pages, schema de validação
-    fields/         idem, mais geo/ (conversão GeoJSON ↔ Leaflet)
+    today/          a tela de abertura: pendências e agenda do dia
+    farms/          cadastro das propriedades, mais FarmContext.tsx (a fazenda em uso)
+    fields/         mapa e página do talhão, mais geo/ (GeoJSON ↔ Leaflet)
     cultivations/   safras, ciclos e estágios de um talhão
     sampling/       marcação de pontos, mais samplingLabels.ts (vocabulário)
-    protocols/      catálogo de alvos e protocolos, mais protocolLabels.ts
+    protocols/      pragas, doenças e protocolos, mais protocolLabels.ts
     inspections/    equipe, vistorias e coleta em campo, mais inspectionLabels.ts
+    settings/       o hub dos cadastros de referência
   shared/           componentes e utilidades sem dono
 ```
+
+## Navegação
+
+Três destinos de trabalho — **Hoje**, **Talhões**, **Vistorias** — e um porão de cadastro em
+**Ajustes**. A fazenda não é uma tela: é um seletor fixo na barra do topo, lembrado entre sessões.
+
+As razões de cada decisão, o que se perdeu ao tirar a fazenda da URL e o mapa completo de rotas
+estão em [`docs/navegacao.md`](../docs/navegacao.md).
 
 ## As regras que mantêm isso desacoplado
 

@@ -47,7 +47,7 @@ public sealed record ObservationViewModel(
 
 /// <summary>Resumo para listas e para a agenda: não carrega as observações.</summary>
 public sealed record InspectionSummaryViewModel(
-    Guid Id, Guid FieldId, Guid CultivationId, Guid SamplingPlanId, Guid ProtocolId,
+    Guid Id, Guid FieldId, string FieldName, Guid CultivationId, Guid SamplingPlanId, Guid ProtocolId,
     Guid ResponsibleId, string ResponsibleName, Crop Crop, DateOnly ScheduledFor,
     InspectionStatus Status, DateTimeOffset? StartedAt, DateTimeOffset? CompletedAt,
     string? CancellationReason, int ObservationCount, int VisitedPointCount, int PointCount);

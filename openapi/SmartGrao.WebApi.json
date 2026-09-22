@@ -19,6 +19,14 @@
               "type": "string",
               "format": "uuid"
             }
+          },
+          {
+            "name": "farmId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         ],
         "responses": {
@@ -782,6 +790,14 @@
         ],
         "operationId": "GetInspections",
         "parameters": [
+          {
+            "name": "farmId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
           {
             "name": "cultivationId",
             "in": "query",
@@ -2527,6 +2543,7 @@
         "required": [
           "id",
           "fieldId",
+          "fieldName",
           "cultivationId",
           "samplingPlanId",
           "protocolId",
@@ -2551,6 +2568,9 @@
           "fieldId": {
             "type": "string",
             "format": "uuid"
+          },
+          "fieldName": {
+            "type": "string"
           },
           "cultivationId": {
             "type": "string",

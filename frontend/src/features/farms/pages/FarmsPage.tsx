@@ -1,26 +1,31 @@
 import { useState } from 'react';
-import { Box, Button, Stack, Typography } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
 import type { FarmViewModel } from '@/api/generated/model/farmViewModel';
 import { ConfirmDialog } from '@/shared/components/ConfirmDialog';
 import { EmptyState } from '@/shared/components/EmptyState';
-import { PageContainer } from '@/shared/components/AppLayout';
+import { PageContainer, PageHeader } from '@/shared/components/AppLayout';
 import { QueryBoundary } from '@/shared/components/QueryBoundary';
 import { FarmCard } from '../components/FarmCard';
 import { FarmFormDialog } from '../components/FarmFormDialog';
-import { useFarms } from '../hooks/useFarms';
+import { useFarmContext } from '../useFarmContext';
 import { useRemoveFarm } from '../hooks/useRemoveFarm';
 
 /**
- * Lista de fazendas — a porta de entrada do sistema.
+ * As propriedades cadastradas.
+ *
+ * Deixou de ser a porta de entrada: quem opera uma fazenda nao quer comecar por um indice de
+ * fazendas. Virou cadastro, em Ajustes, e a troca de propriedade no dia a dia acontece pelo seletor
+ * da barra do topo. Escolher uma aqui tambem troca o contexto — e o que torna a tela util para quem
+ * tem mais de uma.
  *
  * O unico estado que a pagina carrega e "qual dialogo esta aberto e sobre qual registro". Dados,
  * carregamento e erro vem dos hooks; salvar e excluir tambem.
  */
 export function FarmsPage() {
   const navigate = useNavigate();
-  const { farms, isLoading, error, refetch } = useFarms();
+  const { farms, farmId, isLoading, error, refetch, selectFarm } = useFarmContext();
   const { removeFarm, isRemoving } = useRemoveFarm();
 
   const [editing, setEditing] = useState<FarmViewModel | null>(null);
@@ -45,20 +50,15 @@ export function FarmsPage() {
 
   return (
     <PageContainer>
-      <Stack direction="row" sx={{ mb: 3, justifyContent: 'space-between', alignItems: 'center' }}>
-        <Box>
-          <Typography variant="h5" component="h1">
-            Fazendas
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Cadastre a propriedade para começar a desenhar os talhões.
-          </Typography>
-        </Box>
-
-        <Button variant="contained" startIcon={<AddIcon />} onClick={openCreate}>
-          Nova fazenda
-        </Button>
-      </Stack>
+      <PageHeader
+        title="Fazendas"
+        description="As propriedades. A que estiver selecionada é a que o resto do sistema mostra."
+        action={
+          <Button variant="contained" startIcon={<AddIcon />} onClick={openCreate}>
+            Nova fazenda
+          </Button>
+        }
+      />
 
       <QueryBoundary isLoading={isLoading} error={error} onRetry={refetch}>
         {farms.length === 0 ? (
@@ -83,8 +83,10 @@ export function FarmsPage() {
               <FarmCard
                 key={farm.id}
                 farm={farm}
-                onOpenFields={(selected) => navigate(`/farms/${selected.id}/fields`)}
-                onOpenTeam={(selected) => navigate(`/farms/${selected.id}/team`)}
+                isSelected={farm.id === farmId}
+                // Trocar de propriedade leva ao mapa dela: ficar na lista depois de escolher
+                // esconderia o unico efeito visivel do clique.
+                onSelect={(selected) => { selectFarm(selected.id); navigate('/talhoes'); }}
                 onEdit={openEdit}
                 onDelete={setPendingDeletion}
               />

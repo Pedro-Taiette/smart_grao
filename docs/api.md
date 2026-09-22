@@ -51,6 +51,18 @@ A visita ao talhão amarra o cultivo (fase 1), o protocolo (fase 2) e a malha de
 é caminhado muitas vezes, e cada caminhada é uma vistoria própria. Endpoints, regras e códigos de
 erro em [Fase 3 — API](fase-3-vistorias.md#api).
 
+`GET /api/inspections` aceita `farmId` além de `cultivationId`, `responsibleId` e `status` — a
+agenda de quem opera é a da propriedade inteira, não a de um talhão. O resumo carrega `fieldName`
+pelo mesmo motivo que já carregava `responsibleName`: numa lista que mistura talhões, um id não
+situa ninguém. Ver [navegacao.md](navegacao.md).
+
+### Safras e cultivos, por propriedade
+
+`GET /api/cultivations` aceita `fieldId` **ou** `farmId`, ambos opcionais. O recorte por fazenda
+existe para a tela de abertura: "quais talhões estão sem cultivo aberto" é pergunta sobre a
+propriedade, e respondê-la por talhão faria o painel disparar uma requisição por talhão cadastrado.
+Talhão inexistente continua sendo `field.not_found` (404), e não lista vazia.
+
 ### Planos de amostragem
 
 | Verbo | Rota | O que faz |

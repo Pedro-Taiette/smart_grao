@@ -29,7 +29,7 @@ function ProtocolWorkspace({ protocolId }: { protocolId: string }) {
   return (
     <PageContainer>
       <Stack spacing={2.5}>
-        <Button sx={{ alignSelf: 'flex-start' }} onClick={() => navigate('/protocols')}>Voltar aos protocolos</Button>
+        <Button sx={{ alignSelf: 'flex-start' }} onClick={() => navigate('/ajustes/protocolos')}>Voltar aos protocolos</Button>
 
         <QueryBoundary isLoading={w.isLoading} error={w.error} onRetry={w.refetch}>
           {protocol === undefined ? null : <>
@@ -56,7 +56,7 @@ function ProtocolWorkspace({ protocolId }: { protocolId: string }) {
               {w.isPublished && <>
                 <Button variant="contained" disabled={w.isSaving} onClick={async () => {
                   const next = await w.createVersion(protocol.id);
-                  if (next) navigate(`/protocols/${next.id}`);
+                  if (next) navigate(`/ajustes/protocolos/${next.id}`);
                 }}>Abrir próxima versão</Button>
                 <Button color="error" disabled={w.isSaving}
                   onClick={() => w.retireProtocol(protocol.id)}>Aposentar</Button>

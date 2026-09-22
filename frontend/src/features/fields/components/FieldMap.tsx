@@ -20,6 +20,8 @@ interface FieldMapProps {
   editingFieldId: string | null;
   samplingPoints: SamplingPointViewModel[];
   isSamplingOutdated: boolean;
+  /** Mapa de consulta: sem a barra de desenho. O traçado vive só na tela de talhões. */
+  readOnly?: boolean;
   onSelectField: (fieldId: string) => void;
   onPolygonDrawn: (boundary: GeoJsonPolygon) => void;
   onGeometryChange: (boundary: GeoJsonPolygon) => void;
@@ -67,6 +69,7 @@ export function FieldMap({
   editingFieldId,
   samplingPoints,
   isSamplingOutdated,
+  readOnly = false,
   onSelectField,
   onPolygonDrawn,
   onGeometryChange,
@@ -104,7 +107,7 @@ export function FieldMap({
 
       {/* A barra de desenho some durante a edicao de um contorno: desenhar um talhao novo enquanto
           outro esta aberto para edicao perderia as alteracoes ainda nao salvas. */}
-      {editingFieldId === null && <DrawControl onPolygonDrawn={onPolygonDrawn} />}
+      {editingFieldId === null && !readOnly && <DrawControl onPolygonDrawn={onPolygonDrawn} />}
     </MapContainer>
   );
 }

@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Box, Button, Chip, MenuItem, Paper, Stack, TextField, Typography } from '@mui/material';
+import { Button, Chip, MenuItem, Paper, Stack, TextField, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
 import { Crop } from '@/api/generated/model/crop';
 import { cropLabels, cropOptions } from '@/features/fields/cropLabels';
-import { PageContainer } from '@/shared/components/AppLayout';
+import { PageContainer, PageHeader } from '@/shared/components/AppLayout';
 import { EmptyState } from '@/shared/components/EmptyState';
 import { QueryBoundary } from '@/shared/components/QueryBoundary';
 import { ProtocolDialog } from '../components/ProtocolDialogs';
@@ -26,17 +26,15 @@ export function ProtocolsPage() {
 
   return (
     <PageContainer>
-      <Stack direction="row" sx={{ mb: 3, justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-        <Box>
-          <Typography variant="h5" component="h1">Protocolos de vistoria</Typography>
-          <Typography variant="body2" color="text.secondary">
-            O que coletar em campo, por cultura. Cada versão publicada fica registrada como foi usada.
-          </Typography>
-        </Box>
-        <Button variant="contained" startIcon={<AddIcon />} disabled={actions.isSaving} onClick={() => setCreating(true)}>
-          Novo protocolo
-        </Button>
-      </Stack>
+      <PageHeader
+        title="Protocolos de vistoria"
+        description="A receita da visita: o que observar em cada parada e em que unidade medir. Cada versão publicada fica registrada como foi usada."
+        action={
+          <Button variant="contained" startIcon={<AddIcon />} disabled={actions.isSaving} onClick={() => setCreating(true)}>
+            Novo protocolo
+          </Button>
+        }
+      />
 
       <TextField select size="small" label="Cultura" sx={{ mb: 3, minWidth: 180 }}
         value={crop} onChange={(event) => setCrop(event.target.value as Crop)}>
@@ -66,7 +64,7 @@ export function ProtocolsPage() {
                       <Typography variant="body2" color="text.secondary">
                         {version.targetCount === 1 ? '1 alvo' : `${version.targetCount} alvos`}
                       </Typography>
-                      <Button size="small" onClick={() => navigate(`/protocols/${version.id}`)}>Abrir</Button>
+                      <Button size="small" onClick={() => navigate(`/ajustes/protocolos/${version.id}`)}>Abrir</Button>
                     </Stack>
                   ))}
                 </Stack>
@@ -79,7 +77,7 @@ export function ProtocolsPage() {
       {isCreating && <ProtocolDialog isSaving={actions.isSaving} crop={crop} onClose={() => setCreating(false)}
         onSave={async (values) => {
           const created = await actions.createProtocol(values);
-          if (created) navigate(`/protocols/${created.id}`);
+          if (created) navigate(`/ajustes/protocolos/${created.id}`);
           return created !== null;
         }} />}
     </PageContainer>

@@ -5,7 +5,7 @@ import type { MonitoringTargetViewModel } from '@/api/generated/model/monitoring
 import { Crop } from '@/api/generated/model/crop';
 import { TargetKind } from '@/api/generated/model/targetKind';
 import { cropLabels, cropOptions } from '@/features/fields/cropLabels';
-import { PageContainer } from '@/shared/components/AppLayout';
+import { PageContainer, PageHeader } from '@/shared/components/AppLayout';
 import { EmptyState } from '@/shared/components/EmptyState';
 import { QueryBoundary } from '@/shared/components/QueryBoundary';
 import { AutomationDialog, TargetDialog } from '../components/TargetDialogs';
@@ -33,17 +33,17 @@ export function TargetCatalogPage() {
 
   return (
     <PageContainer>
-      <Stack direction="row" sx={{ mb: 3, justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-        <Box>
-          <Typography variant="h5" component="h1">Catálogo de alvos</Typography>
-          <Typography variant="body2" color="text.secondary">
-            As pragas e doenças foliares que a equipe pode monitorar. Vale para qualquer lavoura da cultura.
-          </Typography>
-        </Box>
-        <Button variant="contained" startIcon={<AddIcon />} disabled={actions.isSaving} onClick={() => setCreating(true)}>
-          Novo alvo
-        </Button>
-      </Stack>
+      {/* "Alvo" é o termo do modelo; quem usa o sistema diz praga e doença. O título fala a língua
+          de quem lê, e a palavra do modelo fica para o código. */}
+      <PageHeader
+        title="Pragas e doenças"
+        description="O que a equipe pode monitorar. Vale para qualquer lavoura da cultura, não é configurado por fazenda."
+        action={
+          <Button variant="contained" startIcon={<AddIcon />} disabled={actions.isSaving} onClick={() => setCreating(true)}>
+            Cadastrar
+          </Button>
+        }
+      />
 
       <Stack direction="row" spacing={2} sx={{ mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <TextField select size="small" label="Cultura" sx={{ minWidth: 180 }}

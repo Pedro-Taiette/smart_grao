@@ -7,6 +7,7 @@
 import type { InspectionStatus } from './inspectionStatus';
 
 export type GetInspectionsParams = {
+farmId?: string;
 cultivationId?: string;
 responsibleId?: string;
 status?: InspectionStatus;

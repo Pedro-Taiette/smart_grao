@@ -12,10 +12,10 @@ public sealed class InspectionsController : ControllerBase
     [HttpGet(Name = "GetInspections")]
     [ProducesResponseType(typeof(IReadOnlyList<InspectionSummaryViewModel>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<InspectionSummaryViewModel>>> List(
-        [FromQuery] Guid? cultivationId, [FromQuery] Guid? responsibleId,
+        [FromQuery] Guid? farmId, [FromQuery] Guid? cultivationId, [FromQuery] Guid? responsibleId,
         [FromQuery] InspectionStatus? status,
         [FromServices] GetInspectionsQueryHandler handler, CancellationToken cancellationToken)
-        => Ok(await handler.HandleAsync(cultivationId, responsibleId, status, cancellationToken));
+        => Ok(await handler.HandleAsync(farmId, cultivationId, responsibleId, status, cancellationToken));
 
     [HttpGet("{id:guid}", Name = "GetInspectionById")]
     [ProducesResponseType(typeof(InspectionViewModel), StatusCodes.Status200OK)]

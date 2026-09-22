@@ -5,11 +5,18 @@ import { formatHectares } from '@/shared/format';
 interface FieldListItemProps {
   field: FieldViewModel;
   isSelected: boolean;
+  /**
+   * O que está plantado agora, já em português, ou `null` em pousio.
+   *
+   * A lista dizia só nome e área — o mesmo talhão em qualquer safra. Com o cultivo na linha ela
+   * responde "o que está acontecendo na fazenda" sem abrir um talhão de cada vez.
+   */
+  cultivation: string | null;
   onSelect: (fieldId: string) => void;
 }
 
 /** Uma linha da lista lateral de talhoes. */
-export function FieldListItem({ field, isSelected, onSelect }: FieldListItemProps) {
+export function FieldListItem({ field, isSelected, cultivation, onSelect }: FieldListItemProps) {
   return (
     <ListItemButton
       selected={isSelected}
@@ -29,6 +36,7 @@ export function FieldListItem({ field, isSelected, onSelect }: FieldListItemProp
       <Box>
         <Typography variant="body2" color="text.secondary">
           {formatHectares(field.areaHectares)}
+          {cultivation ? ` · ${cultivation}` : ' · em pousio'}
         </Typography>
       </Box>
     </ListItemButton>
