@@ -5,6 +5,8 @@ using SmartGrao.Application.Abstractions;
 using SmartGrao.Domain.Abstractions;
 using SmartGrao.Domain.Farms;
 using SmartGrao.Domain.Fields;
+using SmartGrao.Domain.Inspections;
+using SmartGrao.Domain.People;
 using SmartGrao.Domain.Protocols;
 using SmartGrao.Domain.Sampling;
 
@@ -30,6 +32,10 @@ public sealed class SmartGraoDbContext(
     public DbSet<MonitoringTarget> MonitoringTargets => Set<MonitoringTarget>();
 
     public DbSet<Protocol> Protocols => Set<Protocol>();
+
+    public DbSet<Person> People => Set<Person>();
+
+    public DbSet<Inspection> Inspections => Set<Inspection>();
 
     public DbSet<SamplingPlan> SamplingPlans => Set<SamplingPlan>();
 
@@ -58,9 +64,12 @@ public sealed class SmartGraoDbContext(
         }
         catch (DbUpdateConcurrencyException exception)
         {
-            throw new DomainException(exception.Entries.Any(entry => entry.Entity is Protocol)
-                ? SmartGraoErrors.Protocol.ConcurrentChange
-                : SmartGraoErrors.Cultivation.ConcurrentChange);
+            throw new DomainException(exception.Entries.Select(entry => entry.Entity).FirstOrDefault() switch
+            {
+                Protocol => SmartGraoErrors.Protocol.ConcurrentChange,
+                Inspection => SmartGraoErrors.Inspection.ConcurrentChange,
+                _ => SmartGraoErrors.Cultivation.ConcurrentChange,
+            });
         }
         catch (DbUpdateException exception) when (exception.InnerException is PostgresException
             { ConstraintName: "ex_cultivations_no_overlap" })
@@ -91,6 +100,16 @@ public sealed class SmartGraoDbContext(
             { ConstraintName: "ix_protocol_items_target_per_organ" })
         {
             throw new DomainException(SmartGraoErrors.Protocol.DuplicateItem);
+        }
+        catch (DbUpdateException exception) when (exception.InnerException is PostgresException
+            { ConstraintName: "ix_observations_point_per_inspection" })
+        {
+            throw new DomainException(SmartGraoErrors.Inspection.DuplicatePointObservation);
+        }
+        catch (DbUpdateException exception) when (exception.InnerException is PostgresException
+            { ConstraintName: "ix_target_counts_item_per_observation" })
+        {
+            throw new DomainException(SmartGraoErrors.Inspection.DuplicateCount);
         }
     }
 

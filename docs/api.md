@@ -45,6 +45,12 @@ MIP-Soja por omissão. Endpoints, regras e códigos de erro em
 [Fase 2 — API](fase-2-protocolos.md#api); os alvos e as fontes agronômicas em
 [Fase 2 — catálogo de alvos](fase-2-catalogo-alvos.md).
 
+### Equipe e vistorias
+
+A visita ao talhão amarra o cultivo (fase 1), o protocolo (fase 2) e a malha de amostragem: um plano
+é caminhado muitas vezes, e cada caminhada é uma vistoria própria. Endpoints, regras e códigos de
+erro em [Fase 3 — API](fase-3-vistorias.md#api).
+
 ### Planos de amostragem
 
 | Verbo | Rota | O que faz |

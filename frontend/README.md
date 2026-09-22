@@ -36,6 +36,7 @@ src/
     cultivations/   safras, ciclos e estágios de um talhão
     sampling/       marcação de pontos, mais samplingLabels.ts (vocabulário)
     protocols/      catálogo de alvos e protocolos, mais protocolLabels.ts
+    inspections/    equipe, vistorias e coleta em campo, mais inspectionLabels.ts
   shared/           componentes e utilidades sem dono
 ```
 

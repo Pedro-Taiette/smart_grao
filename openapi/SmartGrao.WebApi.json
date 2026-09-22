@@ -775,6 +775,338 @@
         }
       }
     },
+    "/api/inspections": {
+      "get": {
+        "tags": [
+          "Inspections"
+        ],
+        "operationId": "GetInspections",
+        "parameters": [
+          {
+            "name": "cultivationId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "responsibleId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/InspectionStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InspectionSummaryViewModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Inspections"
+        ],
+        "operationId": "ScheduleInspection",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScheduleInspectionViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScheduleInspectionViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScheduleInspectionViewModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InspectionViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inspections/{id}": {
+      "get": {
+        "tags": [
+          "Inspections"
+        ],
+        "operationId": "GetInspectionById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InspectionViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inspections/{id}/schedule": {
+      "put": {
+        "tags": [
+          "Inspections"
+        ],
+        "operationId": "RescheduleInspection",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RescheduleInspectionViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RescheduleInspectionViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RescheduleInspectionViewModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InspectionViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inspections/{id}/start": {
+      "put": {
+        "tags": [
+          "Inspections"
+        ],
+        "operationId": "StartInspection",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InspectionViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inspections/{id}/observations": {
+      "post": {
+        "tags": [
+          "Inspections"
+        ],
+        "operationId": "RecordObservation",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordObservationViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordObservationViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordObservationViewModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InspectionViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inspections/{id}/completion": {
+      "put": {
+        "tags": [
+          "Inspections"
+        ],
+        "operationId": "CompleteInspection",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InspectionViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inspections/{id}/cancellation": {
+      "put": {
+        "tags": [
+          "Inspections"
+        ],
+        "operationId": "CancelInspection",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelInspectionViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelInspectionViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelInspectionViewModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InspectionViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/monitoring-targets": {
       "get": {
         "tags": [
@@ -896,6 +1228,173 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/MonitoringTargetViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/people": {
+      "get": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "GetPeople",
+        "parameters": [
+          {
+            "name": "farmId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "activeOnly",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PersonViewModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "CreatePerson",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePersonViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePersonViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePersonViewModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/people/{id}": {
+      "put": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "UpdatePerson",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePersonViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePersonViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePersonViewModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/people/{id}/status": {
+      "put": {
+        "tags": [
+          "People"
+        ],
+        "operationId": "SetPersonStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "active",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonViewModel"
                 }
               }
             }
@@ -1530,6 +2029,17 @@
           "AutomationEnabled"
         ]
       },
+      "CancelInspectionViewModel": {
+        "required": [
+          "reason"
+        ],
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string"
+          }
+        }
+      },
       "ChangeAutomationViewModel": {
         "required": [
           "automation"
@@ -1640,6 +2150,26 @@
           },
           "crop": {
             "$ref": "#/components/schemas/Crop"
+          }
+        }
+      },
+      "CreatePersonViewModel": {
+        "required": [
+          "farmId",
+          "name",
+          "role"
+        ],
+        "type": "object",
+        "properties": {
+          "farmId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/PersonRole"
           }
         }
       },
@@ -1985,6 +2515,204 @@
           }
         }
       },
+      "InspectionStatus": {
+        "enum": [
+          "Scheduled",
+          "InProgress",
+          "Completed",
+          "Cancelled"
+        ]
+      },
+      "InspectionSummaryViewModel": {
+        "required": [
+          "id",
+          "fieldId",
+          "cultivationId",
+          "samplingPlanId",
+          "protocolId",
+          "responsibleId",
+          "responsibleName",
+          "crop",
+          "scheduledFor",
+          "status",
+          "startedAt",
+          "completedAt",
+          "cancellationReason",
+          "observationCount",
+          "visitedPointCount",
+          "pointCount"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fieldId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "cultivationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "samplingPlanId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "protocolId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "responsibleId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "responsibleName": {
+            "type": "string"
+          },
+          "crop": {
+            "$ref": "#/components/schemas/Crop"
+          },
+          "scheduledFor": {
+            "type": "string",
+            "format": "date"
+          },
+          "status": {
+            "$ref": "#/components/schemas/InspectionStatus"
+          },
+          "startedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "completedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "cancellationReason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "observationCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "visitedPointCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pointCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "InspectionViewModel": {
+        "required": [
+          "id",
+          "fieldId",
+          "cultivationId",
+          "samplingPlanId",
+          "protocolId",
+          "protocolName",
+          "protocolVersion",
+          "responsibleId",
+          "responsibleName",
+          "crop",
+          "scheduledFor",
+          "status",
+          "startedAt",
+          "completedAt",
+          "cancellationReason",
+          "pointCount",
+          "observations"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fieldId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "cultivationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "samplingPlanId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "protocolId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "protocolName": {
+            "type": "string"
+          },
+          "protocolVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "responsibleId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "responsibleName": {
+            "type": "string"
+          },
+          "crop": {
+            "$ref": "#/components/schemas/Crop"
+          },
+          "scheduledFor": {
+            "type": "string",
+            "format": "date"
+          },
+          "status": {
+            "$ref": "#/components/schemas/InspectionStatus"
+          },
+          "startedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "completedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "cancellationReason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "pointCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "observations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ObservationViewModel"
+            }
+          }
+        }
+      },
       "MonitoringTargetViewModel": {
         "required": [
           "id",
@@ -2018,6 +2746,143 @@
           },
           "automation": {
             "$ref": "#/components/schemas/AutomationCapability"
+          }
+        }
+      },
+      "ObservationCountViewModel": {
+        "required": [
+          "protocolItemId",
+          "value",
+          "detected"
+        ],
+        "type": "object",
+        "properties": {
+          "protocolItemId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "value": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "detected": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ObservationViewModel": {
+        "required": [
+          "id",
+          "samplingPointId",
+          "pointSequence",
+          "recordedAt",
+          "location",
+          "accuracyMeters",
+          "hasPoorAccuracy",
+          "growthStage",
+          "notes",
+          "isOffPlan",
+          "counts"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "samplingPointId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "pointSequence": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "recordedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "location": {
+            "$ref": "#/components/schemas/GeoCoordinateViewModel"
+          },
+          "accuracyMeters": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "hasPoorAccuracy": {
+            "type": "boolean"
+          },
+          "growthStage": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "isOffPlan": {
+            "type": "boolean"
+          },
+          "counts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TargetCountViewModel"
+            }
+          }
+        }
+      },
+      "PersonRole": {
+        "enum": [
+          "Undefined",
+          "Agronomist",
+          "Technician",
+          "Operator",
+          "Producer",
+          "Other"
+        ]
+      },
+      "PersonViewModel": {
+        "required": [
+          "id",
+          "farmId",
+          "name",
+          "role",
+          "active"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "farmId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/PersonRole"
+          },
+          "active": {
+            "type": "boolean"
           }
         }
       },
@@ -2246,6 +3111,59 @@
           }
         }
       },
+      "RecordObservationViewModel": {
+        "required": [
+          "samplingPointId",
+          "recordedAt",
+          "location",
+          "accuracyMeters",
+          "growthStage",
+          "notes",
+          "counts"
+        ],
+        "type": "object",
+        "properties": {
+          "samplingPointId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "recordedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "location": {
+            "$ref": "#/components/schemas/GeoCoordinateViewModel"
+          },
+          "accuracyMeters": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "growthStage": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "counts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ObservationCountViewModel"
+            }
+          }
+        }
+      },
       "ReferenceLevelViewModel": {
         "required": [
           "threshold",
@@ -2270,6 +3188,23 @@
         "properties": {
           "name": {
             "type": "string"
+          }
+        }
+      },
+      "RescheduleInspectionViewModel": {
+        "required": [
+          "responsibleId",
+          "scheduledFor"
+        ],
+        "type": "object",
+        "properties": {
+          "responsibleId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "scheduledFor": {
+            "type": "string",
+            "format": "date"
           }
         }
       },
@@ -2422,6 +3357,38 @@
           }
         }
       },
+      "ScheduleInspectionViewModel": {
+        "required": [
+          "cultivationId",
+          "samplingPlanId",
+          "protocolId",
+          "responsibleId",
+          "scheduledFor"
+        ],
+        "type": "object",
+        "properties": {
+          "cultivationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "samplingPlanId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "protocolId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "responsibleId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "scheduledFor": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
       "SeasonViewModel": {
         "required": [
           "id",
@@ -2440,6 +3407,52 @@
           },
           "name": {
             "type": "string"
+          }
+        }
+      },
+      "TargetCountViewModel": {
+        "required": [
+          "id",
+          "protocolItemId",
+          "targetId",
+          "targetCode",
+          "targetCommonName",
+          "unit",
+          "value",
+          "detected"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "protocolItemId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "targetId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "targetCode": {
+            "type": "string"
+          },
+          "targetCommonName": {
+            "type": "string"
+          },
+          "unit": {
+            "$ref": "#/components/schemas/CountUnit"
+          },
+          "value": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "detected": {
+            "type": "boolean"
           }
         }
       },
@@ -2464,6 +3477,21 @@
             "$ref": "#/components/schemas/GeoJsonPolygon"
           }
         }
+      },
+      "UpdatePersonViewModel": {
+        "required": [
+          "name",
+          "role"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/PersonRole"
+          }
+        }
       }
     }
   },
@@ -2481,7 +3509,13 @@
       "name": "GrowthStages"
     },
     {
+      "name": "Inspections"
+    },
+    {
       "name": "MonitoringTargets"
+    },
+    {
+      "name": "People"
     },
     {
       "name": "Protocols"
