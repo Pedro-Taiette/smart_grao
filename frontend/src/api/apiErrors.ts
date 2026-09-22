@@ -100,6 +100,42 @@ const messages: Record<string, string> = {
   'protocol.concurrent_change':
     'O protocolo foi alterado durante esta operação. Atualize os dados e tente novamente.',
 
+  // Equipe e vistorias
+  'inspection.person_not_found': 'Pessoa não encontrada.',
+  'inspection.invalid_person_name': 'Informe um nome de até 120 caracteres.',
+  'inspection.unknown_role': 'Função não reconhecida.',
+  'inspection.person_inactive': 'Esta pessoa não está mais na equipe. Traga-a de volta ou escolha outra.',
+  'inspection.person_from_another_farm': 'Esta pessoa é de outra fazenda.',
+  'inspection.person_has_history':
+    'Esta pessoa tem vistorias registradas. Use “Tirar da equipe” para preservar o histórico.',
+  'inspection.not_found': 'Vistoria não encontrada.',
+  'inspection.invalid_date': 'A data da vistoria precisa cair dentro do ciclo do cultivo.',
+  'inspection.plan_from_another_cultivation':
+    'Essa marcação de pontos é de outro cultivo. Escolha uma do cultivo em andamento.',
+  'inspection.protocol_not_published':
+    'Só um protocolo publicado vai a campo. Publique a versão antes de agendar.',
+  'inspection.protocol_from_another_crop': 'Este protocolo é de outra cultura.',
+  'inspection.not_scheduled': 'Esta vistoria já começou e não pode mais ser remarcada.',
+  'inspection.not_in_progress': 'Inicie a vistoria antes de registrar paradas.',
+  'inspection.already_finished': 'Esta vistoria já foi encerrada.',
+  'inspection.invalid_timing': 'O horário de conclusão não pode ser anterior ao de início.',
+  'inspection.no_observations':
+    'Registre ao menos uma parada antes de concluir — ou marque a vistoria como não realizada.',
+  'inspection.cancellation_needs_reason': 'Diga por que a vistoria não aconteceu.',
+  'inspection.observation_not_found': 'Parada não encontrada.',
+  'inspection.point_from_another_plan': 'Essa parada não pertence à caminhada desta vistoria.',
+  'inspection.duplicate_point_observation': 'Esta parada já foi registrada nesta vistoria.',
+  'inspection.invalid_accuracy': 'A precisão do GPS precisa ser um número de metros não negativo.',
+  'inspection.invalid_notes': 'As observações aceitam até 1.000 caracteres.',
+  'inspection.unknown_count_target': 'Cada contagem precisa apontar para um alvo do protocolo.',
+  'inspection.count_from_another_protocol': 'Esse alvo não está no protocolo desta vistoria.',
+  'inspection.duplicate_count': 'O mesmo alvo foi contado duas vezes nesta parada.',
+  'inspection.presence_takes_no_value': 'Este alvo é só presença: não tem contagem.',
+  'inspection.count_value_required': 'Informe a contagem — use 0 se avaliou e não encontrou nada.',
+  'inspection.count_value_out_of_range': 'O valor está fora da faixa possível para essa unidade.',
+  'inspection.concurrent_change':
+    'A vistoria foi alterada durante esta operação. Atualize os dados e tente novamente.',
+
   // Amostragem
   'sampling.not_found': 'Marcação de pontos não encontrada.',
   'sampling.field_is_inactive':

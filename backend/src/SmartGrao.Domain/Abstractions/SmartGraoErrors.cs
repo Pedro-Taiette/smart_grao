@@ -203,6 +203,54 @@ public static class SmartGraoErrors
                     $"Between 0 and {maximum} photos can be requested for a target."));
     }
 
+    public static class Inspection
+    {
+        // ── Pessoa ───────────────────────────────────────────────────────────
+        public static Error PersonNotFound => Error.NotFound("inspection.person_not_found", "Person not found.");
+        public static Error InvalidPersonName => Error.Validation("inspection.invalid_person_name", "A name of up to 120 characters is required.");
+        public static Error UnknownRole => Error.Validation("inspection.unknown_role", "That role is not in the catalog.");
+        public static Error PersonInactive => Error.Conflict("inspection.person_inactive", "This person is no longer on the team.");
+        public static Error PersonFromAnotherFarm => Error.Validation("inspection.person_from_another_farm", "This person belongs to another farm.");
+        public static Error PersonHasHistory => Error.Conflict("inspection.person_has_history", "This person has inspection history; deactivate instead of deleting.");
+
+        // ── Agendamento ──────────────────────────────────────────────────────
+        public static Error NotFound => Error.NotFound("inspection.not_found", "Inspection not found.");
+        public static Error ConcurrentChange => Error.Conflict("inspection.concurrent_change", "The inspection changed during this operation. Reload and try again.");
+        public static Error InvalidDate => Error.Validation("inspection.invalid_date", "The scheduled date must fall within the crop cycle.");
+        public static Error PlanFromAnotherCultivation => Error.Validation("inspection.plan_from_another_cultivation", "The sampling plan does not belong to this cultivation.");
+        public static Error ProtocolNotPublished => Error.Conflict("inspection.protocol_not_published", "Only a published protocol version can be used in the field.");
+        public static Error ProtocolFromAnotherCrop => Error.Validation("inspection.protocol_from_another_crop", "The protocol belongs to another crop.");
+
+        // ── Execucao ─────────────────────────────────────────────────────────
+        public static Error NotScheduled => Error.Conflict("inspection.not_scheduled", "This inspection already started; it cannot be rescheduled.");
+        public static Error NotInProgress => Error.Conflict("inspection.not_in_progress", "This inspection is not in progress.");
+        public static Error AlreadyFinished => Error.Conflict("inspection.already_finished", "This inspection is already finished.");
+        public static Error InvalidTiming => Error.Validation("inspection.invalid_timing", "The completion time cannot precede the start.");
+
+        /// <summary>
+        /// Vistoria sem nenhuma parada registrada nao e vistoria concluida: e vistoria que nao
+        /// aconteceu, e para isso existe o cancelamento com motivo.
+        /// </summary>
+        public static Error NoObservations => Error.BusinessRule("inspection.no_observations", "Record at least one observation before completing the inspection.");
+
+        public static Error CancellationNeedsReason => Error.Validation("inspection.cancellation_needs_reason", "A reason of up to 500 characters is required to cancel.");
+
+        // ── Observacao ───────────────────────────────────────────────────────
+        public static Error ObservationNotFound => Error.NotFound("inspection.observation_not_found", "Observation not found.");
+        public static Error PointFromAnotherPlan => Error.Validation("inspection.point_from_another_plan", "That point does not belong to this inspection's sampling plan.");
+        public static Error DuplicatePointObservation => Error.Conflict("inspection.duplicate_point_observation", "This point has already been recorded in this inspection.");
+        public static Error InvalidAccuracy => Error.Validation("inspection.invalid_accuracy", "The GPS accuracy must be a non-negative number of metres.");
+        public static Error InvalidNotes => Error.Validation("inspection.invalid_notes", "Notes of up to 1000 characters are accepted.");
+
+        // ── Contagem ─────────────────────────────────────────────────────────
+        public static Error UnknownCountTarget => Error.Validation("inspection.unknown_count_target", "Every count must point at a target of the protocol.");
+        public static Error CountFromAnotherProtocol => Error.Validation("inspection.count_from_another_protocol", "That target is not in this inspection's protocol version.");
+        public static Error DuplicateCount => Error.Conflict("inspection.duplicate_count", "That target was counted twice in the same observation.");
+        public static Error PresenceTakesNoValue => Error.Validation("inspection.presence_takes_no_value", "A presence record carries no count.");
+        public static Error CountValueRequired => Error.Validation("inspection.count_value_required", "This counting unit needs a value.");
+        public static Error CountValueOutOfRange => Error.Validation("inspection.count_value_out_of_range", "The value falls outside the range of its counting unit.");
+    }
+
     public static class Sampling
     {
         public static Error NotFound =>

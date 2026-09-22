@@ -84,6 +84,7 @@ export function FarmsPage() {
                 key={farm.id}
                 farm={farm}
                 onOpenFields={(selected) => navigate(`/farms/${selected.id}/fields`)}
+                onOpenTeam={(selected) => navigate(`/farms/${selected.id}/team`)}
                 onEdit={openEdit}
                 onDelete={setPendingDeletion}
               />

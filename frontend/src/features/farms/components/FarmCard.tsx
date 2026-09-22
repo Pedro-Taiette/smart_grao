@@ -9,18 +9,20 @@ import {
 } from '@mui/material';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
 import MapOutlinedIcon from '@mui/icons-material/MapOutlined';
 import type { FarmViewModel } from '@/api/generated/model/farmViewModel';
 
 interface FarmCardProps {
   farm: FarmViewModel;
   onOpenFields: (farm: FarmViewModel) => void;
+  onOpenTeam: (farm: FarmViewModel) => void;
   onEdit: (farm: FarmViewModel) => void;
   onDelete: (farm: FarmViewModel) => void;
 }
 
 /** Uma fazenda na lista. Recebe tudo por prop e nao consulta nada — puramente apresentacional. */
-export function FarmCard({ farm, onOpenFields, onEdit, onDelete }: FarmCardProps) {
+export function FarmCard({ farm, onOpenFields, onOpenTeam, onEdit, onDelete }: FarmCardProps) {
   return (
     <Card>
       <CardContent>
@@ -33,14 +35,19 @@ export function FarmCard({ farm, onOpenFields, onEdit, onDelete }: FarmCardProps
       </CardContent>
 
       <CardActions sx={{ px: 2, pb: 2, pt: 0, justifyContent: 'space-between' }}>
-        <Button
-          size="small"
-          variant="contained"
-          startIcon={<MapOutlinedIcon />}
-          onClick={() => onOpenFields(farm)}
-        >
-          Talhões
-        </Button>
+        <Stack direction="row" spacing={1}>
+          <Button
+            size="small"
+            variant="contained"
+            startIcon={<MapOutlinedIcon />}
+            onClick={() => onOpenFields(farm)}
+          >
+            Talhões
+          </Button>
+          <Button size="small" startIcon={<GroupOutlinedIcon />} onClick={() => onOpenTeam(farm)}>
+            Equipe
+          </Button>
+        </Stack>
 
         <Stack direction="row" spacing={0.5}>
           <IconButton aria-label={`Editar ${farm.name}`} onClick={() => onEdit(farm)}>

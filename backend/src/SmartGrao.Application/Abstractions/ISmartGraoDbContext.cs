@@ -2,6 +2,8 @@ using SmartGrao.Domain.Cultivations;
 using Microsoft.EntityFrameworkCore;
 using SmartGrao.Domain.Farms;
 using SmartGrao.Domain.Fields;
+using SmartGrao.Domain.Inspections;
+using SmartGrao.Domain.People;
 using SmartGrao.Domain.Protocols;
 using SmartGrao.Domain.Sampling;
 
@@ -39,6 +41,15 @@ public interface ISmartGraoDbContext
     DbSet<MonitoringTarget> MonitoringTargets { get; }
 
     DbSet<Protocol> Protocols { get; }
+
+    /// <summary>
+    /// Quem vai a campo, e as visitas. Nao ha <c>DbSet</c> para <c>Observation</c> nem
+    /// <c>TargetCount</c>: a parada so existe dentro da visita que a produziu, e a contagem so
+    /// dentro da parada.
+    /// </summary>
+    DbSet<Person> People { get; }
+
+    DbSet<Inspection> Inspections { get; }
 
     /// <summary>
     /// Os planos de amostragem. Nao ha <c>DbSet</c> para <c>SamplingPoint</c>: o ponto so existe

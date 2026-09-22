@@ -118,6 +118,9 @@ export function FieldsPage() {
                   <Button onClick={() => navigate(`/farms/${farmId}/fields/${workspace.selectedField!.id}/cultivations`)}>
                     Safras e cultivos
                   </Button>
+                  <Button onClick={() => navigate(`/farms/${farmId}/fields/${workspace.selectedField!.id}/inspections`)}>
+                    Vistorias
+                  </Button>
                   <QueryBoundary isLoading={cycles.isLoading} error={cycles.error} onRetry={cycles.refetch}>
                     <TextField select fullWidth size="small" label="Cultivo da amostragem" value={cycles.selectedId}
                       onChange={event => cycles.select(event.target.value)} sx={{ mt: 1 }}>
