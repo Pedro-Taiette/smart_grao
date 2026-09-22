@@ -10,9 +10,11 @@ public sealed class CultivationsController : ControllerBase
 {
     [HttpGet(Name = "GetCultivations")]
     [ProducesResponseType(typeof(IReadOnlyList<CultivationViewModel>), StatusCodes.Status200OK)]
+    /// <summary>Os ciclos de um talhão (<c>fieldId</c>) ou de uma propriedade (<c>farmId</c>).</summary>
     public async Task<ActionResult<IReadOnlyList<CultivationViewModel>>> List(
-        [FromQuery] Guid fieldId, [FromServices] GetCultivationsQueryHandler handler, CancellationToken cancellationToken)
-        => Ok(await handler.HandleAsync(fieldId, cancellationToken));
+        [FromQuery] Guid? fieldId, [FromQuery] Guid? farmId,
+        [FromServices] GetCultivationsQueryHandler handler, CancellationToken cancellationToken)
+        => Ok(await handler.HandleAsync(fieldId, farmId, cancellationToken));
 
     [HttpGet("{id:guid}", Name = "GetCultivationById")]
     [ProducesResponseType(typeof(CultivationViewModel), StatusCodes.Status200OK)]

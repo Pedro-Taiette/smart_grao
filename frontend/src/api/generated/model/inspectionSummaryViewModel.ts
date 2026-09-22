@@ -10,6 +10,7 @@ import type { InspectionStatus } from './inspectionStatus';
 export interface InspectionSummaryViewModel {
   id: string;
   fieldId: string;
+  fieldName: string;
   cultivationId: string;
   samplingPlanId: string;
   protocolId: string;

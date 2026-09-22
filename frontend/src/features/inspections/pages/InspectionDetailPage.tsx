@@ -1,7 +1,9 @@
 import { Alert, Box, Button, Chip, Divider, Paper, Stack, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate, useParams } from 'react-router-dom';
 import { cropLabels } from '@/features/fields/cropLabels';
+import { useSyncFarmFromRecord } from '@/features/farms/useFarmContext';
 import { PageContainer } from '@/shared/components/AppLayout';
 import { QueryBoundary } from '@/shared/components/QueryBoundary';
 import { CancelInspectionDialog, RescheduleDialog } from '../components/InspectionDialogs';
@@ -30,14 +32,20 @@ function InspectionWorkspace({ inspectionId }: { inspectionId: string }) {
   });
   const { people } = usePeople(fieldQuery.data?.farmId ?? '', true);
 
+  // Esta é a tela que chega por link no celular, sem passar pela navegação: alinhar o contexto aqui
+  // é o que faz o resto do sistema abrir na propriedade certa depois.
+  useSyncFarmFromRecord(fieldQuery.data?.farmId);
+
   return (
     <PageContainer>
       <Stack spacing={2.5}>
-        <Button sx={{ alignSelf: 'flex-start' }}
-          onClick={() => inspection && fieldQuery.data
-            ? navigate(`/farms/${fieldQuery.data.farmId}/fields/${inspection.fieldId}/inspections`)
-            : navigate('/farms')}>
-          Voltar às vistorias
+        {/* Volta para o talhão, e não para a lista geral: quem abriu esta visita veio de lá, e é
+            onde estão as outras visitas da mesma malha. */}
+        <Button startIcon={<ArrowBackIcon />} sx={{ alignSelf: 'flex-start', ml: -1 }}
+          onClick={() => inspection
+            ? navigate(`/talhoes/${inspection.fieldId}?aba=vistorias`)
+            : navigate('/vistorias')}>
+          Voltar
         </Button>
 
         <QueryBoundary isLoading={w.isLoading} error={w.error} onRetry={w.refetch}>

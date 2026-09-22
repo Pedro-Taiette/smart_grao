@@ -87,3 +87,37 @@ export function formatMoment(value: string): string {
 export function formatDay(value: string): string {
   return value.split('-').reverse().join('/');
 }
+
+/** Hoje no calendário local, no formato `aaaa-mm-dd` que a API usa para `DateOnly`. */
+export function today(): string {
+  const now = new Date();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${now.getFullYear()}-${month}-${day}`;
+}
+
+/**
+ * Distância em dias entre uma data de calendário e hoje.
+ *
+ * Contada sobre o meio-dia UTC dos dois lados: às 23h de um dia de horário de verão, a diferença
+ * bruta entre duas meias-noites não dá 24 horas, e o arredondamento erraria o dia.
+ */
+export function daysFromToday(value: string): number {
+  const at = (day: string) => Date.parse(`${day}T12:00:00Z`);
+  return Math.round((at(value) - at(today())) / 86_400_000);
+}
+
+/**
+ * A data como quem opera a lê.
+ *
+ * "22/09/2026" obriga a conferir o calendário para saber se já passou. O painel do dia precisa
+ * responder isso na própria frase.
+ */
+export function describeDay(value: string): string {
+  const days = daysFromToday(value);
+  if (days === 0) return 'Hoje';
+  if (days === 1) return 'Amanhã';
+  if (days === -1) return 'Ontem';
+  if (days < 0) return `Atrasada há ${-days} dias`;
+  return `Em ${days} dias — ${formatDay(value)}`;
+}

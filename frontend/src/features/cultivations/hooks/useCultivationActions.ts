@@ -20,7 +20,10 @@ export function useCultivationActions(farmId: string, fieldId: string) {
     try {
       await operation();
       await Promise.all([
-        cache.invalidateQueries({ queryKey: getGetCultivationsQueryKey({ fieldId }) }),
+        // Sem filtro na chave: o mesmo cultivo esta em cache sob o recorte do talhao (a aba de
+        // cultivo) e sob o da fazenda (a tela Hoje, a lista de talhoes, a aba de pontos). Invalidar
+        // so `{ fieldId }` deixava as outras com o dado velho ate um F5.
+        cache.invalidateQueries({ queryKey: getGetCultivationsQueryKey() }),
         cache.invalidateQueries({ queryKey: getGetSeasonsQueryKey({ farmId }) }),
         ...(id ? [cache.invalidateQueries({ queryKey: getGetCultivationByIdQueryKey(id) })] : []),
       ]);

@@ -48,7 +48,7 @@ export function SamplingPanel({
     return (
       <Box sx={{ p: 2 }}>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
-          Nenhum ponto de amostragem marcado neste talhão.
+          Nenhum ponto de coleta marcado neste talhão ainda.
         </Typography>
         <Button
           variant="contained"
@@ -66,7 +66,7 @@ export function SamplingPanel({
   return (
     <Box sx={{ p: 2 }}>
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 0.5 }}>
-        <Typography variant="subtitle2">Pontos de amostragem</Typography>
+        <Typography variant="subtitle2">Pontos de coleta</Typography>
         <Chip label={modeLabel[current.mode]} size="small" />
       </Stack>
 

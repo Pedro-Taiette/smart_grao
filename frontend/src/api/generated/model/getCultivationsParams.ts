@@ -7,4 +7,5 @@
 
 export type GetCultivationsParams = {
 fieldId?: string;
+farmId?: string;
 };
