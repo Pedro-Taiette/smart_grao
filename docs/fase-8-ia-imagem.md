@@ -87,3 +87,17 @@ Migration: `AnalysisQueue`. **Aplicada**. Cria `assessments` e `analysis_jobs`
 - 208 testes de domínio (novos em `Analysis/AnalysisTests.cs`) e 7 do serviço Python.
 - Contra o banco: a foto da vistoria de demonstração passou pela fila com o processador simulado e,
   reenfileirada com o serviço, saiu **cercosporiose 64%** pelo modelo 0.1.0, com mapa.
+
+## Extra — estação sentinela simulada
+
+`analytics/service/simulate_station.py` faz o papel da estação: envia fotos de folhas de baixo para
+um cultivo pela mesma rota que o hardware usaria (`POST /api/photos/device`, origem `Station`,
+`isSimulated = true`). As fotos vêm do teste da divisão agrupada, só de conjuntos de campo.
+
+```powershell
+cd analytics/service
+.venv/Scripts/python simulate_station.py --cultivation <id> --count 6 --latitude -22.32 --longitude -49.95
+```
+
+Cada foto entra na fila de análise como qualquer outra. Na aba de risco do talhão, o painel
+**Estação sentinela (simulada)** mostra as fotos e o resultado, e diz de onde elas vêm.
