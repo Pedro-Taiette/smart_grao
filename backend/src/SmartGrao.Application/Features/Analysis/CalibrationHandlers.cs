@@ -15,7 +15,9 @@ public sealed record ModelSummaryViewModel(
 public sealed record ModelCardViewModel(
     string ModelVersion, string? Split, ModelSummaryViewModel Test, IReadOnlyList<string> ConfusionLabels,
     IReadOnlyList<IReadOnlyList<int>> ConfusionMatrix, IReadOnlyList<ModelSummaryViewModel> ByDomain,
-    IReadOnlyList<ModelSummaryViewModel> ByDataset);
+    IReadOnlyList<ModelSummaryViewModel> ByDataset, OutOfDomainViewModel? OutOfDomain);
+
+public sealed record OutOfDomainViewModel(string Holdout, ModelSummaryViewModel Test, double? ValidationMacroF1);
 
 public sealed record ReviewMetricsViewModel(
     int Photos, int Analyzed, int Reviewed, int SimulatedExcluded, double? RecallCercosporiose, double? PrecisionCercosporiose,

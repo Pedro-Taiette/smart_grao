@@ -60,6 +60,18 @@ Números de conjuntos públicos de outros países — não são acurácia no cam
 aferimento diz isso. Na foto de demonstração, o mapa mostra o modelo olhando também o fundo, não só as
 lesões: é o viés de captura que a pesquisa apontou, e um motivo a mais para a revisão humana.
 
+**Fora do domínio.** O mesmo treino, sem nenhuma foto do Craze (África do Sul), testado nas 2.075
+fotos de lá: sensibilidade para cercosporiose 63%, precisão 67%, F1 macro 0,48, ECE 0,159 — e a folha
+sadia quase nunca reconhecida (10%). Na validação, o mesmo treino dava F1 0,98. É o teste mais
+próximo de "lavoura nova" que dá para fazer sem lavoura: o número dos conjuntos conhecidos não prevê
+o campo, e a confiança do modelo deixa de valer. Fica em `metrics.json` (`out_of_domain`) e aparece
+no aferimento.
+
+**Em outra máquina.** Treino e uso são separados. O treino (`analytics/vision`) precisa de GPU e dos
+~24 GB de imagens, e roda uma vez por versão. O uso precisa só do `model.onnx` (16 MB, no git), do
+`labels.json` e do serviço: clonar, criar o ambiente de `analytics/service`
+(`pip install -r requirements.txt`) e subir o uvicorn. Roda na CPU, menos de 1 s por foto.
+
 ## Telas
 
 - Cada foto da parada mostra *"Analisando…"*, o resultado (*"Cercosporiose 64%"*) ou *"Análise

@@ -5,6 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { ModelSummaryViewModel } from './modelSummaryViewModel';
+import type { OutOfDomainViewModel } from './outOfDomainViewModel';
 
 export interface ModelCardViewModel {
   modelVersion: string;
@@ -15,4 +16,5 @@ export interface ModelCardViewModel {
   confusionMatrix: number[][];
   byDomain: ModelSummaryViewModel[];
   byDataset: ModelSummaryViewModel[];
+  outOfDomain: null | OutOfDomainViewModel;
 }

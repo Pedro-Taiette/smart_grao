@@ -3956,7 +3956,8 @@
           "confusionLabels",
           "confusionMatrix",
           "byDomain",
-          "byDataset"
+          "byDataset",
+          "outOfDomain"
         ],
         "type": "object",
         "properties": {
@@ -3999,6 +4000,16 @@
             "items": {
               "$ref": "#/components/schemas/ModelSummaryViewModel"
             }
+          },
+          "outOfDomain": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutOfDomainViewModel"
+              }
+            ]
           }
         }
       },
@@ -4195,6 +4206,29 @@
             "items": {
               "$ref": "#/components/schemas/TargetCountViewModel"
             }
+          }
+        }
+      },
+      "OutOfDomainViewModel": {
+        "required": [
+          "holdout",
+          "test",
+          "validationMacroF1"
+        ],
+        "type": "object",
+        "properties": {
+          "holdout": {
+            "type": "string"
+          },
+          "test": {
+            "$ref": "#/components/schemas/ModelSummaryViewModel"
+          },
+          "validationMacroF1": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
           }
         }
       },

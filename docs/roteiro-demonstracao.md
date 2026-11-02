@@ -105,6 +105,9 @@ chegando pela mesma rota — e a tela diz que são simuladas.
   campo × laboratório separados.
 - Por que não 98%: a divisão é por planta e sessão de captura. Trabalhos com 98% misturam a mesma
   planta no treino e no teste.
+- **Numa lavoura que o modelo nunca viu**: treinado sem as fotos da África do Sul, acerta 63% das
+  cercosporioses de lá, contra F1 0,98 na validação. É o número que mais importa e o motivo de a
+  revisão humana existir.
 - Revisões: as métricas recalculadas só com o que alguém daqui confirmou.
 - **Antecedência**: vazia, com o motivo — sem lavoura, não houve confirmação em campo. É a medida que
   diria se a detecção foi precoce.

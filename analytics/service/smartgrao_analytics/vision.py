@@ -15,7 +15,7 @@ from pathlib import Path
 
 import numpy as np
 import onnxruntime as ort
-from PIL import Image
+from PIL import Image, ImageOps
 
 MODELS_DIR = Path(os.environ.get("SMARTGRAO_MODELS_DIR", Path(__file__).resolve().parents[2] / "models"))
 GRID = 8
@@ -47,6 +47,7 @@ def model_card() -> dict:
     labels = json.loads((directory / "labels.json").read_text(encoding="utf-8"))
     metrics = json.loads((directory / "metrics.json").read_text(encoding="utf-8"))
     test = metrics["test"]
+    outside = metrics.get("out_of_domain")
     return {
         "model_version": f"{labels.get('arch', 'modelo')}-{labels['version']}",
         "split": metrics.get("split_file"),
@@ -55,6 +56,11 @@ def model_card() -> dict:
         "confusion_matrix": test["confusion_matrix"]["rows_true_cols_pred"],
         "by_domain": [{"name": name} | _summary(part) for name, part in test.get("by_domain", {}).items()],
         "by_dataset": [{"name": name} | _summary(part) for name, part in test.get("by_dataset", {}).items()],
+        "out_of_domain": None if outside is None else {
+            "holdout": outside["holdout"],
+            "test": {"name": outside["holdout"]} | _summary(outside) | {"ece": outside.get("calibration", {}).get("ece")},
+            "validation_macro_f1": outside.get("val_macro_f1"),
+        },
     }
 
 
@@ -106,7 +112,7 @@ def _overlay(image: Image.Image, heat: np.ndarray, size: int = 448) -> bytes:
 
 def classify(content: bytes, with_heatmap: bool = True) -> dict:
     session, labels = load()
-    image = Image.open(io.BytesIO(content))
+    image = ImageOps.exif_transpose(Image.open(io.BytesIO(content)))
     tensor = _prepare(image, labels)
     name = session.get_inputs()[0].name
     probabilities = _softmax(session.run(None, {name: tensor[None]})[0])[0]

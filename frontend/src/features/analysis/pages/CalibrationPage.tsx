@@ -119,6 +119,22 @@ export function CalibrationPage() {
                   <Confusion labels={model.confusionLabels.map(label => classNames[label] ?? label)} matrix={model.confusionMatrix} />
                   <Breakdown title="Campo e laboratório" rows={model.byDomain} names={domainNames} />
                   <Breakdown title="Por conjunto de origem" rows={model.byDataset} />
+                  {model.outOfDomain && <>
+                    <Box>
+                      <Typography variant="subtitle1">Numa lavoura que o modelo nunca viu</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Mesmo treino, sem nenhuma foto da África do Sul; teste em todas as {model.outOfDomain.test.n} fotos de lá.
+                        Na validação o F1 era {model.outOfDomain.validationMacroF1?.toFixed(2) ?? '—'}: o número dos conjuntos
+                        conhecidos não prevê uma lavoura nova.
+                      </Typography>
+                    </Box>
+                    <Stack direction="row" useFlexGap spacing={4} sx={{ flexWrap: 'wrap' }}>
+                      <Stat label="das folhas com cercosporiose são apontadas" value={percent(model.outOfDomain.test.recallCercosporiose)} />
+                      <Stat label="dos alertas de cercosporiose estão certos" value={percent(model.outOfDomain.test.precisionCercosporiose)} />
+                      <Stat label="F1 macro (as três classes)" value={model.outOfDomain.test.macroF1?.toFixed(2) ?? '—'} />
+                      <Stat label="erro de calibração (ECE)" value={model.outOfDomain.test.ece?.toFixed(3) ?? '—'} />
+                    </Stack>
+                  </>}
                 </>}
               </Stack>
             </Paper>

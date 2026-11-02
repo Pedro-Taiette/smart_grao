@@ -37,3 +37,18 @@ def test_heatmap_is_a_png():
     result = vision.classify(leaf_png())
     import base64
     assert base64.b64decode(result["heatmap_png"])[:8] == b"\x89PNG\r\n\x1a\n"
+
+
+def test_exif_rotation_is_applied():
+    rotated = Image.open(io.BytesIO(leaf_png()))
+    exif = rotated.getexif()
+    exif[0x0112] = 6
+    buffer = io.BytesIO()
+    rotated.convert("RGB").save(buffer, format="JPEG", exif=exif)
+    assert vision.classify(buffer.getvalue(), with_heatmap=False)["label"] in {"cercosporiose", "saudavel", "outras_manchas"}
+
+
+def test_model_card_brings_the_out_of_domain_test():
+    card = vision.model_card()
+    assert card["out_of_domain"]["holdout"] == "craze"
+    assert card["out_of_domain"]["test"]["n"] > 0
