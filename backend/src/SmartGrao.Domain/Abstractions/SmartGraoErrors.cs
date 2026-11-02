@@ -152,6 +152,8 @@ public static class SmartGraoErrors
         public static Error HasHistory => Error.Conflict("cultivation.has_history", "This field has cultivation or sampling history; deactivate it instead.");
         public static Error WrongField => Error.Validation("cultivation.wrong_field", "The cultivation does not belong to this field.");
         public static Error UnsupportedMonitoring => Error.Validation("cultivation.unsupported_monitoring", "MIP-Soja monitoring is only available for soybean cultivations.");
+        public static Error UnknownRiskFactor => Error.Validation("cultivation.unknown_risk_factor", "A risk factor value is outside the catalogue.");
+        public static Error RiskFactorsNotApplicable => Error.Validation("cultivation.risk_factors_not_applicable", "Cercospora risk factors only apply to corn cultivations.");
     }
 
     public static class Protocol

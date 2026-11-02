@@ -1,7 +1,10 @@
 import { Alert, Box, Button, Chip, Divider, Paper, Stack, Typography } from '@mui/material';
+import { Crop } from '@/api/generated/model/crop';
+import { CropSequence } from '@/api/generated/model/cropSequence';
 import { cropLabels } from '@/features/fields/cropLabels';
 import { QueryBoundary } from '@/shared/components/QueryBoundary';
-import { CultivationDialog, SeasonDialog, StageDialog, ClosureDialog } from './CultivationDialogs';
+import { CultivationDialog, SeasonDialog, StageDialog, ClosureDialog, RiskFactorsDialog } from './CultivationDialogs';
+import { riskFactorsSummary, unknownRiskFactors } from '../riskFactorLabels';
 import { cycleDate } from '../cultivationSchema';
 import { useCultivationWorkspace } from '../hooks/useCultivationWorkspace';
 
@@ -22,6 +25,11 @@ function Workspace({ farmId, fieldId }: { farmId: string; fieldId: string }) {
   const w = useCultivationWorkspace(farmId, fieldId);
   const common = { isSaving: w.isSaving, onClose: w.closeDialog };
   const hasOpenCycle = w.cultivations.some(c => c.endedOn === null);
+  const previous = w.cultivations.reduce<typeof w.cultivations[number] | undefined>(
+    (latest, c) => (!latest || c.plantedOn > latest.plantedOn ? c : latest), undefined);
+  const newCycleRisk = previous
+    ? { ...unknownRiskFactors, cropSequence: previous.crop === Crop.Corn ? CropSequence.CornAfterCorn : CropSequence.Rotation }
+    : unknownRiskFactors;
 
   return <>
     <QueryBoundary isLoading={w.isLoading} error={w.error} onRetry={w.refetch}>
@@ -72,6 +80,7 @@ function Workspace({ farmId, fieldId }: { farmId: string; fieldId: string }) {
               Safra {w.seasons.find(s => s.id === c.seasonId)?.name ?? '—'} · Plantio em {cycleDate(c.plantedOn)}
               {c.endedOn ? ` · Encerrado em ${cycleDate(c.endedOn)}` : ''}
             </Typography>
+            {c.crop === Crop.Corn && <Typography variant="body2" color="text.secondary">{riskFactorsSummary(c.riskFactors)}</Typography>}
             <Divider />
             <Typography variant="subtitle2">Estágios observados</Typography>
             {c.stages.length === 0 && <Typography variant="body2" color="text.secondary">
@@ -86,6 +95,9 @@ function Workspace({ farmId, fieldId }: { farmId: string; fieldId: string }) {
               <Button disabled={w.isSaving} onClick={() => w.openDialog({ kind: 'stage', cultivation: c })}>
                 Registrar estágio
               </Button>
+              {c.crop === Crop.Corn && <Button disabled={w.isSaving} onClick={() => w.openDialog({ kind: 'risk', cultivation: c })}>
+                Risco de cercosporiose
+              </Button>}
               {!c.endedOn && <Button disabled={w.isSaving} onClick={() => w.openDialog({ kind: 'closure', cultivation: c })}>
                 Encerrar cultivo
               </Button>}
@@ -96,7 +108,11 @@ function Workspace({ farmId, fieldId }: { farmId: string; fieldId: string }) {
     </QueryBoundary>
 
     {w.dialog?.kind === 'season' && <SeasonDialog {...common} onSave={w.createSeason} />}
-    {w.dialog?.kind === 'cultivation' && <CultivationDialog {...common} seasons={w.seasons} onSave={w.createCultivation} />}
+    {w.dialog?.kind === 'cultivation' && <CultivationDialog {...common} seasons={w.seasons} riskFactors={newCycleRisk} onSave={w.createCultivation} />}
+    {w.dialog?.kind === 'risk' && <RiskFactorsDialog {...common} riskFactors={w.dialog.cultivation.riskFactors}
+      onSave={values => w.dialog?.kind === 'risk'
+        ? w.updateRiskFactors(w.dialog.cultivation.id, values)
+        : Promise.resolve(false)} />}
     {w.dialog?.kind === 'stage' && <StageDialog {...common} cultivation={w.dialog.cultivation}
       onSave={values => w.dialog?.kind === 'stage'
         ? w.recordStage(w.dialog.cultivation.id, { ...values, notes: values.notes || null })

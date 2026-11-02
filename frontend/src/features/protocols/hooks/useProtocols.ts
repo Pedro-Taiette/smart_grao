@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import { useGetProtocols } from '@/api/generated/protocols/protocols';
-import { Crop } from '@/api/generated/model/crop';
+import { focusCrop } from '@/features/fields/cropLabels';
 import type { ProtocolSummaryViewModel } from '@/api/generated/model/protocolSummaryViewModel';
 
 /** Uma familia de versoes do mesmo `code`, da mais recente para a mais antiga. */
@@ -11,7 +10,7 @@ export interface ProtocolFamily {
 }
 
 export function useProtocols() {
-  const [crop, setCrop] = useState<Crop>(Crop.Corn);
+  const crop = focusCrop;
   const query = useGetProtocols({ crop });
   const protocols = query.data ?? [];
 
@@ -25,7 +24,7 @@ export function useProtocols() {
   }
 
   return {
-    families, crop, setCrop,
+    families, crop,
     isLoading: query.isPending,
     error: query.error,
     refetch: () => { void query.refetch(); },

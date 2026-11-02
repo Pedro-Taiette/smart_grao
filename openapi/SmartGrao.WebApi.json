@@ -166,6 +166,57 @@
         }
       }
     },
+    "/api/cultivations/{id}/risk-factors": {
+      "put": {
+        "tags": [
+          "Cultivations"
+        ],
+        "operationId": "UpdateCultivationRiskFactors",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CercosporaRiskFactorsViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CercosporaRiskFactorsViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CercosporaRiskFactorsViewModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CultivationViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/cultivations/{id}/stages": {
       "post": {
         "tags": [
@@ -2056,6 +2107,25 @@
           }
         }
       },
+      "CercosporaRiskFactorsViewModel": {
+        "required": [
+          "hybridReaction",
+          "cropSequence",
+          "tillage"
+        ],
+        "type": "object",
+        "properties": {
+          "hybridReaction": {
+            "$ref": "#/components/schemas/HybridReaction"
+          },
+          "cropSequence": {
+            "$ref": "#/components/schemas/CropSequence"
+          },
+          "tillage": {
+            "$ref": "#/components/schemas/TillageSystem"
+          }
+        }
+      },
       "ChangeAutomationViewModel": {
         "required": [
           "automation"
@@ -2119,6 +2189,16 @@
           "plantedOn": {
             "type": "string",
             "format": "date"
+          },
+          "riskFactors": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/CercosporaRiskFactorsViewModel"
+              }
+            ]
           }
         }
       },
@@ -2239,6 +2319,13 @@
           "Other"
         ]
       },
+      "CropSequence": {
+        "enum": [
+          "Unknown",
+          "CornAfterCorn",
+          "Rotation"
+        ]
+      },
       "CultivationViewModel": {
         "required": [
           "id",
@@ -2248,6 +2335,7 @@
           "cultivar",
           "plantedOn",
           "endedOn",
+          "riskFactors",
           "stages"
         ],
         "type": "object",
@@ -2280,6 +2368,9 @@
               "string"
             ],
             "format": "date"
+          },
+          "riskFactors": {
+            "$ref": "#/components/schemas/CercosporaRiskFactorsViewModel"
           },
           "stages": {
             "type": "array",
@@ -2530,6 +2621,15 @@
             ]
           }
         }
+      },
+      "HybridReaction": {
+        "enum": [
+          "Unknown",
+          "Resistant",
+          "ModeratelyResistant",
+          "ModeratelySusceptible",
+          "Susceptible"
+        ]
       },
       "InspectionStatus": {
         "enum": [
@@ -2911,6 +3011,7 @@
           "Undefined",
           "Whorl",
           "Leaf",
+          "LowerLeaves",
           "EarLeaf",
           "StalkBase",
           "Stalk",
@@ -3481,6 +3582,13 @@
           "Undefined",
           "Pest",
           "FoliarDisease"
+        ]
+      },
+      "TillageSystem": {
+        "enum": [
+          "Unknown",
+          "NoTill",
+          "Conventional"
         ]
       },
       "UpdateFieldViewModel": {

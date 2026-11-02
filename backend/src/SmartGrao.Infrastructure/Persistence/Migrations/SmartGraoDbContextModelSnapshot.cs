@@ -980,6 +980,42 @@ namespace SmartGrao.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_cultivations_seasons_season_id");
+
+                    b.OwnsOne("SmartGrao.Domain.Cultivations.CercosporaRiskFactors", "RiskFactors", b1 =>
+                        {
+                            b1.Property<Guid>("CultivationId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("id");
+
+                            b1.Property<string>("CropSequence")
+                                .IsRequired()
+                                .HasMaxLength(32)
+                                .HasColumnType("character varying(32)")
+                                .HasColumnName("risk_crop_sequence");
+
+                            b1.Property<string>("HybridReaction")
+                                .IsRequired()
+                                .HasMaxLength(32)
+                                .HasColumnType("character varying(32)")
+                                .HasColumnName("risk_hybrid_reaction");
+
+                            b1.Property<string>("Tillage")
+                                .IsRequired()
+                                .HasMaxLength(32)
+                                .HasColumnType("character varying(32)")
+                                .HasColumnName("risk_tillage");
+
+                            b1.HasKey("CultivationId");
+
+                            b1.ToTable("cultivations");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CultivationId")
+                                .HasConstraintName("fk_cultivations_cultivations_id");
+                        });
+
+                    b.Navigation("RiskFactors")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("SmartGrao.Domain.Cultivations.GrowthStageRecord", b =>

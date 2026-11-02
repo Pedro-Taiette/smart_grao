@@ -1,11 +1,13 @@
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack } from '@mui/material';
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
+import type { Control, FieldValues, Path } from 'react-hook-form';
+import type { CercosporaRiskFactorsViewModel } from '@/api/generated/model/cercosporaRiskFactorsViewModel';
 import type { CultivationViewModel } from '@/api/generated/model/cultivationViewModel';
 import type { SeasonViewModel } from '@/api/generated/model/seasonViewModel';
 import { FormTextField } from '@/shared/components/FormTextField';
 import { FormSelectField } from '@/shared/components/FormSelectField';
-import { cropLabels, cropOptions } from '@/features/fields/cropLabels';
-import type { CultivationValues, StageValues } from '../cultivationSchema';
-import { useSeasonForm, useCultivationForm, useStageForm, useClosureForm } from '../hooks/useCultivationForms';
+import type { CultivationValues, RiskFactorsValues, StageValues } from '../cultivationSchema';
+import { useSeasonForm, useCultivationForm, useStageForm, useClosureForm, useRiskFactorsForm } from '../hooks/useCultivationForms';
+import { cropSequenceOptions, hybridReactionOptions, tillageOptions } from '../riskFactorLabels';
 import { useGrowthStages } from '../hooks/useGrowthStages';
 
 interface CommonProps { isSaving: boolean; onClose: () => void }
@@ -29,19 +31,30 @@ export function SeasonDialog(props: CommonProps & { onSave: (name: string) => Pr
   </Dialog>;
 }
 
+function RiskFactorFields<T extends FieldValues>({ control, prefix }: { control: Control<T>; prefix: string }) {
+  const name = (field: string) => (prefix + field) as Path<T>;
+  return <>
+    <Typography variant="subtitle2">Risco de cercosporiose</Typography>
+    <FormSelectField name={name('hybridReaction')} control={control} label="Como o híbrido reage à cercosporiose? (está no catálogo da semente)" options={hybridReactionOptions} />
+    <FormSelectField name={name('cropSequence')} control={control} label="O que estava plantado antes neste talhão?" options={cropSequenceOptions} />
+    <FormSelectField name={name('tillage')} control={control} label="Como foi o plantio?" options={tillageOptions} />
+  </>;
+}
+
 export function CultivationDialog(props: CommonProps & {
-  seasons: SeasonViewModel[]; onSave: (values: CultivationValues) => Promise<boolean>;
+  seasons: SeasonViewModel[]; riskFactors: CercosporaRiskFactorsViewModel;
+  onSave: (values: CultivationValues) => Promise<boolean>;
 }) {
-  const form = useCultivationForm(props.seasons[0]?.id ?? '');
+  const form = useCultivationForm(props.seasons[0]?.id ?? '', props.riskFactors);
   return <Dialog open onClose={props.isSaving ? undefined : props.onClose} maxWidth="sm" fullWidth>
     <form noValidate onSubmit={form.handleSubmit(async values => { if (await props.onSave(values)) props.onClose(); })}>
       <DialogTitle>Novo cultivo</DialogTitle>
       <DialogContent><Stack spacing={2} sx={{ pt: 1 }}>
         <Alert severity="info">Confira os dados antes de salvar. Cada cultivo mantém seu próprio histórico e o plantio deve ocorrer após o encerramento do ciclo anterior.</Alert>
         <FormSelectField name="seasonId" control={form.control} label="Safra" options={props.seasons.map(s => ({ value: s.id, label: s.name }))} />
-        <FormSelectField name="crop" control={form.control} label="Cultura" options={cropOptions.filter(c => c !== 'Undefined').map(c => ({ value: c, label: cropLabels[c] }))} />
         <FormTextField name="cultivar" control={form.control} label="Cultivar ou híbrido" />
         <FormTextField name="plantedOn" control={form.control} label="Data do plantio" type="date" slotProps={{ inputLabel: { shrink: true } }} />
+        <RiskFactorFields control={form.control} prefix="riskFactors." />
       </Stack></DialogContent>
       <Actions {...props} />
     </form>
@@ -70,6 +83,21 @@ export function StageDialog(props: CommonProps & {
           : <FormTextField name="stage" control={form.control} label="Estágio"
               helperText="Esta cultura não tem escala cadastrada. Informe o código usado pela equipe técnica." />}
         <FormTextField name="notes" control={form.control} label="Observações (opcional)" multiline minRows={2} />
+      </Stack></DialogContent>
+      <Actions {...props} />
+    </form>
+  </Dialog>;
+}
+
+export function RiskFactorsDialog(props: CommonProps & {
+  riskFactors: CercosporaRiskFactorsViewModel; onSave: (values: RiskFactorsValues) => Promise<boolean>;
+}) {
+  const form = useRiskFactorsForm(props.riskFactors);
+  return <Dialog open onClose={props.isSaving ? undefined : props.onClose} maxWidth="sm" fullWidth>
+    <form noValidate onSubmit={form.handleSubmit(async values => { if (await props.onSave(values)) props.onClose(); })}>
+      <DialogTitle>Risco de cercosporiose</DialogTitle>
+      <DialogContent><Stack spacing={2} sx={{ pt: 1 }}>
+        <RiskFactorFields control={form.control} prefix="" />
       </Stack></DialogContent>
       <Actions {...props} />
     </form>

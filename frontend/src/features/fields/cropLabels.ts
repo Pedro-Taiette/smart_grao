@@ -20,6 +20,9 @@ export const cropLabels: Record<Crop, string> = {
   [Crop.Other]: 'Outra',
 };
 
+/** A cultura do recorte do semestre. As demais seguem no modelo, fora das telas. */
+export const focusCrop = Crop.Corn;
+
 /** Opcoes na ordem em que fazem sentido no seletor: as culturas mais comuns primeiro. */
 export const cropOptions = [
   Crop.Soybean,

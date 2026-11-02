@@ -26,7 +26,8 @@ public sealed class CreateCultivationCommandHandler(ISmartGraoDbContext db, IVal
         if (await db.Cultivations.AnyAsync(x => x.FieldId == fieldId
             && (x.EndedOn == null || x.EndedOn >= model.PlantedOn), cancellationToken))
             throw new DomainException(SmartGraoErrors.Cultivation.OverlappingCycle);
-        var cultivation = Cultivation.Create(fieldId, seasonId, model.Crop, model.Cultivar, model.PlantedOn);
+        var cultivation = Cultivation.Create(
+            fieldId, seasonId, model.Crop, model.Cultivar, model.PlantedOn, model.RiskFactors?.ToDomain());
         db.Cultivations.Add(cultivation);
         await db.SaveChangesAsync(cancellationToken);
         return CultivationViewModel.From(cultivation);

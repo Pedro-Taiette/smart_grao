@@ -4,6 +4,7 @@
  * SmartGrao.WebApi | v1
  * OpenAPI spec version: 1.0.0
  */
+import type { CercosporaRiskFactorsViewModel } from './cercosporaRiskFactorsViewModel';
 import type { Crop } from './crop';
 import type { GrowthStageViewModel } from './growthStageViewModel';
 
@@ -16,5 +17,6 @@ export interface CultivationViewModel {
   plantedOn: string;
   /** @nullable */
   endedOn: string | null;
+  riskFactors: CercosporaRiskFactorsViewModel;
   stages: GrowthStageViewModel[];
 }

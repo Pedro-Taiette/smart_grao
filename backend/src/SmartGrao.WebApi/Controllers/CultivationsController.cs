@@ -39,6 +39,13 @@ public sealed class CultivationsController : ControllerBase
         [FromServices] CloseCultivationCommandHandler handler, CancellationToken cancellationToken)
         => Ok(await handler.HandleAsync(id, model, cancellationToken));
 
+    [HttpPut("{id:guid}/risk-factors", Name = "UpdateCultivationRiskFactors")]
+    [ProducesResponseType(typeof(CultivationViewModel), StatusCodes.Status200OK)]
+    public async Task<ActionResult<CultivationViewModel>> UpdateRiskFactors(
+        Guid id, [FromBody] CercosporaRiskFactorsViewModel model,
+        [FromServices] UpdateRiskFactorsCommandHandler handler, CancellationToken cancellationToken)
+        => Ok(await handler.HandleAsync(id, model, cancellationToken));
+
     [HttpPost("{id:guid}/stages", Name = "RecordGrowthStage")]
     [ProducesResponseType(typeof(CultivationViewModel), StatusCodes.Status200OK)]
     public async Task<ActionResult<CultivationViewModel>> RecordStage(

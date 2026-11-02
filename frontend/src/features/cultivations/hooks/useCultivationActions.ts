@@ -1,10 +1,11 @@
 import { useQueryClient } from '@tanstack/react-query';
 import {
   getGetCultivationsQueryKey, getGetCultivationByIdQueryKey,
-  useCreateCultivation, useCloseCultivation, useRecordGrowthStage,
+  useCreateCultivation, useCloseCultivation, useRecordGrowthStage, useUpdateCultivationRiskFactors,
 } from '@/api/generated/cultivations/cultivations';
 import { getGetSeasonsQueryKey, useCreateSeason } from '@/api/generated/seasons/seasons';
 import type { CreateCultivationViewModel } from '@/api/generated/model/createCultivationViewModel';
+import type { CercosporaRiskFactorsViewModel } from '@/api/generated/model/cercosporaRiskFactorsViewModel';
 import type { RecordGrowthStageViewModel } from '@/api/generated/model/recordGrowthStageViewModel';
 import { useNotifier } from '@/shared/notifications/useNotifier';
 
@@ -15,6 +16,7 @@ export function useCultivationActions(farmId: string, fieldId: string) {
   const create = useCreateCultivation();
   const close = useCloseCultivation();
   const stage = useRecordGrowthStage();
+  const risk = useUpdateCultivationRiskFactors();
 
   async function save(operation: () => Promise<unknown>, message: string, id?: string) {
     try {
@@ -36,7 +38,7 @@ export function useCultivationActions(farmId: string, fieldId: string) {
   }
 
   return {
-    isSaving: season.isPending || create.isPending || close.isPending || stage.isPending,
+    isSaving: season.isPending || create.isPending || close.isPending || stage.isPending || risk.isPending,
     createSeason: (name: string) => save(() => season.mutateAsync({ data: { farmId, name } }), 'Safra cadastrada.'),
     createCultivation: (data: Omit<CreateCultivationViewModel, 'fieldId'>) =>
       save(() => create.mutateAsync({ data: { ...data, fieldId } }), 'Cultivo cadastrado.'),
@@ -44,5 +46,7 @@ export function useCultivationActions(farmId: string, fieldId: string) {
       save(() => close.mutateAsync({ id, data: { endedOn } }), 'Cultivo encerrado.', id),
     recordStage: (id: string, data: RecordGrowthStageViewModel) =>
       save(() => stage.mutateAsync({ id, data }), 'Estágio registrado.', id),
+    updateRiskFactors: (id: string, data: CercosporaRiskFactorsViewModel) =>
+      save(() => risk.mutateAsync({ id, data }), 'Risco atualizado.', id),
   };
 }

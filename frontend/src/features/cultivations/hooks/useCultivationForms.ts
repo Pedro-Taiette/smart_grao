@@ -1,18 +1,23 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import type { CercosporaRiskFactorsViewModel } from '@/api/generated/model/cercosporaRiskFactorsViewModel';
+import { focusCrop } from '@/features/fields/cropLabels';
 import {
-  seasonSchema, cultivationSchema, stageSchema, closureSchema, today,
-  type SeasonValues, type CultivationValues, type StageValues, type ClosureValues,
+  seasonSchema, cultivationSchema, stageSchema, closureSchema, riskFactorsSchema, today,
+  type SeasonValues, type CultivationValues, type StageValues, type ClosureValues, type RiskFactorsValues,
 } from '../cultivationSchema';
 
 export function useSeasonForm() {
   return useForm<SeasonValues>({ resolver: zodResolver(seasonSchema), defaultValues: { name: '' } });
 }
-export function useCultivationForm(seasonId: string) {
+export function useCultivationForm(seasonId: string, riskFactors: CercosporaRiskFactorsViewModel) {
   return useForm<CultivationValues>({
     resolver: zodResolver(cultivationSchema),
-    defaultValues: { seasonId, crop: 'Corn', cultivar: '', plantedOn: today() },
+    defaultValues: { seasonId, crop: focusCrop, cultivar: '', plantedOn: today(), riskFactors },
   });
+}
+export function useRiskFactorsForm(riskFactors: CercosporaRiskFactorsViewModel) {
+  return useForm<RiskFactorsValues>({ resolver: zodResolver(riskFactorsSchema), defaultValues: riskFactors });
 }
 export function useStageForm() {
   return useForm<StageValues>({

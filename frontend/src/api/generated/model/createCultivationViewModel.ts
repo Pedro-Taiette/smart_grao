@@ -4,6 +4,7 @@
  * SmartGrao.WebApi | v1
  * OpenAPI spec version: 1.0.0
  */
+import type { CercosporaRiskFactorsViewModel } from './cercosporaRiskFactorsViewModel';
 import type { Crop } from './crop';
 
 export interface CreateCultivationViewModel {
@@ -12,4 +13,5 @@ export interface CreateCultivationViewModel {
   crop: Crop;
   cultivar: string;
   plantedOn: string;
+  riskFactors?: null | CercosporaRiskFactorsViewModel;
 }

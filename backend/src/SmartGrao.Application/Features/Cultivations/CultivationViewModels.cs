@@ -9,7 +9,17 @@ public sealed record SeasonViewModel(Guid Id, Guid FarmId, string Name)
     public static SeasonViewModel From(Season season) => new(season.Id.Value, season.FarmId.Value, season.Name);
 }
 
-public sealed record CreateCultivationViewModel(Guid FieldId, Guid SeasonId, Crop Crop, string Cultivar, DateOnly PlantedOn);
+public sealed record CercosporaRiskFactorsViewModel(HybridReaction HybridReaction, CropSequence CropSequence, TillageSystem Tillage)
+{
+    public static CercosporaRiskFactorsViewModel From(CercosporaRiskFactors factors) =>
+        new(factors.HybridReaction, factors.CropSequence, factors.Tillage);
+
+    public CercosporaRiskFactors ToDomain() => CercosporaRiskFactors.Create(HybridReaction, CropSequence, Tillage);
+}
+
+public sealed record CreateCultivationViewModel(
+    Guid FieldId, Guid SeasonId, Crop Crop, string Cultivar, DateOnly PlantedOn,
+    CercosporaRiskFactorsViewModel? RiskFactors = null);
 public sealed record CloseCultivationViewModel(DateOnly EndedOn);
 public sealed record RecordGrowthStageViewModel(DateOnly ObservedOn, string Stage, string? Notes);
 
@@ -19,11 +29,12 @@ public sealed record GrowthStageOptionViewModel(string Code, string Description)
 public sealed record GrowthStageViewModel(Guid Id, DateOnly ObservedOn, string Stage, string? Notes);
 public sealed record CultivationViewModel(
     Guid Id, Guid FieldId, Guid SeasonId, Crop Crop, string Cultivar, DateOnly PlantedOn,
-    DateOnly? EndedOn, IReadOnlyList<GrowthStageViewModel> Stages)
+    DateOnly? EndedOn, CercosporaRiskFactorsViewModel RiskFactors, IReadOnlyList<GrowthStageViewModel> Stages)
 {
     public static CultivationViewModel From(Cultivation cultivation) => new(
         cultivation.Id.Value, cultivation.FieldId.Value, cultivation.SeasonId.Value,
         cultivation.Crop, cultivation.Cultivar, cultivation.PlantedOn, cultivation.EndedOn,
+        CercosporaRiskFactorsViewModel.From(cultivation.RiskFactors),
         cultivation.Stages.OrderByDescending(x => x.ObservedOn)
             .Select(x => new GrowthStageViewModel(x.Id.Value, x.ObservedOn, x.Stage, x.Notes)).ToList());
 }

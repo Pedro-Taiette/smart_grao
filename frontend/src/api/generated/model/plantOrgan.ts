@@ -12,6 +12,7 @@ export const PlantOrgan = {
   Undefined: 'Undefined',
   Whorl: 'Whorl',
   Leaf: 'Leaf',
+  LowerLeaves: 'LowerLeaves',
   EarLeaf: 'EarLeaf',
   StalkBase: 'StalkBase',
   Stalk: 'Stalk',

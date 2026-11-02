@@ -2,9 +2,7 @@ import { useState } from 'react';
 import { Box, Button, Chip, MenuItem, Paper, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import type { MonitoringTargetViewModel } from '@/api/generated/model/monitoringTargetViewModel';
-import { Crop } from '@/api/generated/model/crop';
 import { TargetKind } from '@/api/generated/model/targetKind';
-import { cropLabels, cropOptions } from '@/features/fields/cropLabels';
 import { PageContainer, PageHeader } from '@/shared/components/AppLayout';
 import { EmptyState } from '@/shared/components/EmptyState';
 import { QueryBoundary } from '@/shared/components/QueryBoundary';
@@ -46,12 +44,6 @@ export function TargetCatalogPage() {
       />
 
       <Stack direction="row" spacing={2} sx={{ mb: 3, flexWrap: 'wrap', gap: 2 }}>
-        <TextField select size="small" label="Cultura" sx={{ minWidth: 180 }}
-          value={catalog.crop} onChange={(event) => catalog.setCrop(event.target.value as Crop)}>
-          {cropOptions.filter((c) => c !== Crop.Undefined).map((c) => (
-            <MenuItem key={c} value={c}>{cropLabels[c]}</MenuItem>
-          ))}
-        </TextField>
         <TextField select size="small" label="Tipo" sx={{ minWidth: 180 }}
           value={catalog.kind} onChange={(event) => catalog.setKind(event.target.value as TargetKind | '')}>
           <MenuItem value="">Todos</MenuItem>

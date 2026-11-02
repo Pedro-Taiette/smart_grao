@@ -4,7 +4,7 @@ import type { CultivationViewModel } from '@/api/generated/model/cultivationView
 import { useCultivations } from './useCultivations';
 import { useCultivationActions } from './useCultivationActions';
 
-type Dialog = { kind: 'season' | 'cultivation' } | { kind: 'stage' | 'closure'; cultivation: CultivationViewModel } | null;
+type Dialog = { kind: 'season' | 'cultivation' } | { kind: 'stage' | 'closure' | 'risk'; cultivation: CultivationViewModel } | null;
 
 export function useCultivationWorkspace(farmId: string, fieldId: string) {
   const data = useCultivations(farmId, fieldId);

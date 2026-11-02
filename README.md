@@ -69,6 +69,12 @@ docs/        decisões de arquitetura, regras de domínio e referência da API
 
 ## Documentação
 
+- [Roadmap — cercosporiose no milho](docs/roadmap-cercosporiose.md) — fases 4 a 9 do semestre:
+  risco climático, satélite, vistoria dirigida e IA de imagem, com o calendário até a entrega
+- [Pesquisa — cercosporiose](docs/pesquisa-cercosporiose.md) — amostragem, índice de risco, espécie,
+  Sentinel-2 e conjuntos de imagens, com fontes
+- [Fase 4 — Recorte milho + cercosporiose](docs/fase-4-recorte.md) — fatores de risco, protocolo
+  semeado e telas só de milho
 - [Fase 1 — Safras e cultivos](docs/fase-1-cultivos.md) — modelo, migration, API e roteiro de verificação.
 - [Arquitetura](docs/arquitetura.md) — camadas, decisões e o porquê de cada uma
 - [Domínio](docs/dominio.md) — regras do talhão e do plano de amostragem, geodésia e sobreposição
