@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using SmartGrao.Application.Abstractions;
 using SmartGrao.Application.Common;
+using SmartGrao.Application.Features.Analysis;
 using SmartGrao.Domain.Abstractions;
+using SmartGrao.Domain.Analysis;
 using SmartGrao.Domain.Cultivations;
 using SmartGrao.Domain.Geo;
 using SmartGrao.Domain.Inspections;
@@ -13,7 +15,8 @@ namespace SmartGrao.Application.Features.Photos;
 public sealed record PhotoViewModel(
     Guid Id, Guid FieldId, Guid CultivationId, Guid? InspectionId, Guid? ObservationId, Guid? TargetId,
     PlantOrgan Organ, string? GrowthStage, GeoJsonPoint? Location, double? AccuracyMeters, PhotoSource Source,
-    bool IsSimulated, DateTimeOffset TakenAt, string ContentType, long SizeBytes)
+    bool IsSimulated, DateTimeOffset TakenAt, string ContentType, long SizeBytes,
+    AnalysisJobStatus? AnalysisStatus = null, IReadOnlyList<AssessmentViewModel>? Assessments = null)
 {
     public static PhotoViewModel From(Photo photo) => new(
         photo.Id.Value, photo.FieldId.Value, photo.CultivationId.Value, photo.InspectionId?.Value, photo.ObservationId?.Value,
@@ -77,8 +80,9 @@ public sealed class UploadPhotoCommandHandler(ISmartGraoDbContext db, IPhotoStor
     {
         await storage.SaveAsync(photo.StorageKey, content, cancellationToken);
         db.Photos.Add(photo);
+        db.AnalysisJobs.Add(AnalysisJob.For(photo.Id, DateTimeOffset.UtcNow));
         await db.SaveChangesAsync(cancellationToken);
-        return PhotoViewModel.From(photo);
+        return PhotoViewModel.From(photo) with { AnalysisStatus = AnalysisJobStatus.Pending, Assessments = [] };
     }
 }
 
@@ -100,7 +104,16 @@ public sealed class GetPhotosQueryHandler(ISmartGraoDbContext db)
         if (inspectionId is null && cultivationId is null)
             throw new DomainException(SmartGraoErrors.Common.ValidationFailed("Inform inspectionId or cultivationId."));
         var photos = await query.OrderBy(x => x.TakenAt).ToListAsync(cancellationToken);
-        return photos.Select(PhotoViewModel.From).ToList();
+        var ids = photos.Select(x => x.Id).ToList();
+        var assessments = (await db.Assessments.AsNoTracking().Where(x => ids.Contains(x.PhotoId)).OrderBy(x => x.AssessedAt)
+            .ToListAsync(cancellationToken)).ToLookup(x => x.PhotoId);
+        var jobs = (await db.AnalysisJobs.AsNoTracking().Where(x => ids.Contains(x.PhotoId)).ToListAsync(cancellationToken))
+            .GroupBy(x => x.PhotoId).ToDictionary(g => g.Key, g => g.MaxBy(x => x.CreatedAt)!.Status);
+        return photos.Select(photo => PhotoViewModel.From(photo) with
+        {
+            AnalysisStatus = jobs.TryGetValue(photo.Id, out var status) ? status : null,
+            Assessments = assessments[photo.Id].Select(AssessmentViewModel.From).ToList(),
+        }).ToList();
     }
 }
 

@@ -156,6 +156,16 @@ public static class SmartGraoErrors
         public static Error RiskFactorsNotApplicable => Error.Validation("cultivation.risk_factors_not_applicable", "Cercospora risk factors only apply to corn cultivations.");
     }
 
+    public static class Analysis
+    {
+        public static Error InvalidModelVersion => Error.Validation("analysis.invalid_model_version", "A model version of up to 60 characters is required.");
+        public static Error InvalidProbabilities => Error.Validation("analysis.invalid_probabilities", "Class probabilities must be between 0 and 1 and add up to 1.");
+        public static Error UnknownLabel => Error.Validation("analysis.unknown_label", "That label is not one of the model classes.");
+        public static Error InvalidReview => Error.Validation("analysis.invalid_review", "A reviewer name of up to 120 characters is required; notes up to 500.");
+        public static Error ReviewOfReview => Error.Validation("analysis.review_of_review", "Only a model assessment can be reviewed.");
+        public static Error AssessmentNotFound => Error.NotFound("analysis.assessment_not_found", "Assessment not found.");
+    }
+
     public static class Photo
     {
         public static Error NotFound => Error.NotFound("photo.not_found", "Photo not found.");

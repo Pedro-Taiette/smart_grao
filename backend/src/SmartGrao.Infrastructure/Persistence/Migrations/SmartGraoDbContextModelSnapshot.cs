@@ -25,6 +25,145 @@ namespace SmartGrao.Infrastructure.Persistence.Migrations
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "postgis");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("SmartGrao.Domain.Analysis.AnalysisJob", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("integer")
+                        .HasColumnName("attempts");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTimeOffset?>("FinishedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("finished_at");
+
+                    b.Property<string>("LastError")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("last_error");
+
+                    b.Property<DateTimeOffset>("NextAttemptAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("next_attempt_at");
+
+                    b.Property<Guid>("PhotoId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("photo_id");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("status");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_analysis_jobs");
+
+                    b.HasIndex("PhotoId")
+                        .HasDatabaseName("ix_analysis_jobs_photo_id");
+
+                    b.HasIndex("Status", "NextAttemptAt")
+                        .HasDatabaseName("ix_analysis_jobs_queue");
+
+                    b.ToTable("analysis_jobs", (string)null);
+                });
+
+            modelBuilder.Entity("SmartGrao.Domain.Analysis.Assessment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("AssessedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("assessed_at");
+
+                    b.Property<double?>("CercosporioseProbability")
+                        .HasColumnType("double precision")
+                        .HasColumnName("cercosporiose_probability");
+
+                    b.Property<double?>("Confidence")
+                        .HasColumnType("double precision")
+                        .HasColumnName("confidence");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<double?>("HealthyProbability")
+                        .HasColumnType("double precision")
+                        .HasColumnName("healthy_probability");
+
+                    b.Property<string>("HeatmapKey")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("heatmap_key");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(24)
+                        .HasColumnType("character varying(24)")
+                        .HasColumnName("label");
+
+                    b.Property<string>("ModelVersion")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("model_version");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("notes");
+
+                    b.Property<double?>("OtherSpotsProbability")
+                        .HasColumnType("double precision")
+                        .HasColumnName("other_spots_probability");
+
+                    b.Property<Guid>("PhotoId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("photo_id");
+
+                    b.Property<Guid?>("ReviewOf")
+                        .HasColumnType("uuid")
+                        .HasColumnName("review_of");
+
+                    b.Property<string>("Reviewer")
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("reviewer");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("source");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_assessments");
+
+                    b.HasIndex("ReviewOf")
+                        .HasDatabaseName("ix_assessments_review_of");
+
+                    b.HasIndex("PhotoId", "AssessedAt")
+                        .HasDatabaseName("ix_assessments_photo_id_assessed_at");
+
+                    b.ToTable("assessments", (string)null);
+                });
+
             modelBuilder.Entity("SmartGrao.Domain.Cultivations.Cultivation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1154,6 +1293,32 @@ namespace SmartGrao.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_sampling_points_sequence_per_plan");
 
                     b.ToTable("sampling_points", (string)null);
+                });
+
+            modelBuilder.Entity("SmartGrao.Domain.Analysis.AnalysisJob", b =>
+                {
+                    b.HasOne("SmartGrao.Domain.Photos.Photo", null)
+                        .WithMany()
+                        .HasForeignKey("PhotoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_analysis_jobs_photos_photo_id");
+                });
+
+            modelBuilder.Entity("SmartGrao.Domain.Analysis.Assessment", b =>
+                {
+                    b.HasOne("SmartGrao.Domain.Photos.Photo", null)
+                        .WithMany()
+                        .HasForeignKey("PhotoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_assessments_photos_photo_id");
+
+                    b.HasOne("SmartGrao.Domain.Analysis.Assessment", null)
+                        .WithMany()
+                        .HasForeignKey("ReviewOf")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_assessments_assessments_review_of");
                 });
 
             modelBuilder.Entity("SmartGrao.Domain.Cultivations.Cultivation", b =>

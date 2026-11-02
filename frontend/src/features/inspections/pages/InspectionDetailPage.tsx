@@ -30,7 +30,12 @@ function InspectionWorkspace({ inspectionId }: { inspectionId: string }) {
   const navigate = useNavigate();
   const w = useInspectionWorkspace(inspectionId);
   const inspection = w.inspection;
-  const photosQuery = useGetPhotos({ inspectionId }, { query: { enabled: Boolean(inspectionId) } });
+  const photosQuery = useGetPhotos({ inspectionId }, {
+    query: {
+      enabled: Boolean(inspectionId),
+      refetchInterval: query => (query.state.data ?? []).some(photo => photo.analysisStatus === 'Pending' || photo.analysisStatus === 'Running') ? 4000 : false,
+    },
+  });
   const photos = photosQuery.data ?? [];
   const fieldQuery = useGetFieldById(inspection?.fieldId ?? '', {
     query: { enabled: inspection !== undefined },

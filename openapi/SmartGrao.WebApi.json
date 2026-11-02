@@ -5,6 +5,148 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/photos/{id}/analysis": {
+      "post": {
+        "tags": [
+          "Analysis"
+        ],
+        "operationId": "RequeueAnalysis",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisJobViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analysis-jobs": {
+      "get": {
+        "tags": [
+          "Analysis"
+        ],
+        "operationId": "GetAnalysisJobs",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/AnalysisJobStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AnalysisJobViewModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/assessments/{id}/heatmap": {
+      "get": {
+        "tags": [
+          "Analysis"
+        ],
+        "operationId": "GetAssessmentHeatmap",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { },
+              "image/png": { }
+            }
+          }
+        }
+      }
+    },
+    "/api/assessments/{id}/review": {
+      "post": {
+        "tags": [
+          "Analysis"
+        ],
+        "operationId": "ReviewAssessment",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewAssessmentViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewAssessmentViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewAssessmentViewModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssessmentViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/cultivations": {
       "get": {
         "tags": [
@@ -2555,6 +2697,52 @@
           }
         }
       },
+      "AnalysisJobStatus": {
+        "enum": [
+          "Pending",
+          "Running",
+          "Done",
+          "Failed"
+        ]
+      },
+      "AnalysisJobViewModel": {
+        "required": [
+          "id",
+          "photoId",
+          "status",
+          "attempts",
+          "nextAttemptAt",
+          "lastError"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "photoId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AnalysisJobStatus"
+          },
+          "attempts": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nextAttemptAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastError": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
       "AnomalyZoneViewModel": {
         "required": [
           "geometry",
@@ -2577,6 +2765,107 @@
           },
           "droppedSincePrevious": {
             "type": "boolean"
+          }
+        }
+      },
+      "AssessmentSource": {
+        "enum": [
+          "Model",
+          "Human"
+        ]
+      },
+      "AssessmentViewModel": {
+        "required": [
+          "id",
+          "photoId",
+          "source",
+          "label",
+          "confidence",
+          "cercosporioseProbability",
+          "healthyProbability",
+          "otherSpotsProbability",
+          "modelVersion",
+          "hasHeatmap",
+          "reviewOf",
+          "reviewer",
+          "notes",
+          "assessedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "photoId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "source": {
+            "$ref": "#/components/schemas/AssessmentSource"
+          },
+          "label": {
+            "$ref": "#/components/schemas/LeafLabel"
+          },
+          "confidence": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "cercosporioseProbability": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "healthyProbability": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "otherSpotsProbability": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "modelVersion": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "hasHeatmap": {
+            "type": "boolean"
+          },
+          "reviewOf": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "reviewer": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "assessedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
@@ -3521,6 +3810,13 @@
           }
         }
       },
+      "LeafLabel": {
+        "enum": [
+          "Cercosporiose",
+          "Healthy",
+          "OtherSpots"
+        ]
+      },
       "MonitoringTargetViewModel": {
         "required": [
           "id",
@@ -3796,6 +4092,25 @@
           "sizeBytes": {
             "type": "integer",
             "format": "int64"
+          },
+          "analysisStatus": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AnalysisJobStatus"
+              }
+            ]
+          },
+          "assessments": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/AssessmentViewModel"
+            }
           }
         }
       },
@@ -4118,6 +4433,28 @@
           "scheduledFor": {
             "type": "string",
             "format": "date"
+          }
+        }
+      },
+      "ReviewAssessmentViewModel": {
+        "required": [
+          "label",
+          "reviewer",
+          "notes"
+        ],
+        "type": "object",
+        "properties": {
+          "label": {
+            "$ref": "#/components/schemas/LeafLabel"
+          },
+          "reviewer": {
+            "type": "string"
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },
@@ -4561,6 +4898,9 @@
     }
   },
   "tags": [
+    {
+      "name": "Analysis"
+    },
     {
       "name": "Cultivations"
     },

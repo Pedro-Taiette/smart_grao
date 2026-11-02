@@ -1,5 +1,6 @@
 ﻿using SmartGrao.Domain.Cultivations;
 using Microsoft.EntityFrameworkCore;
+using SmartGrao.Domain.Analysis;
 using SmartGrao.Domain.Farms;
 using SmartGrao.Domain.Fields;
 using SmartGrao.Domain.Inspections;
@@ -65,6 +66,10 @@ public interface ISmartGraoDbContext
     DbSet<SatellitePass> SatellitePasses { get; }
 
     DbSet<Photo> Photos { get; }
+
+    DbSet<Assessment> Assessments { get; }
+
+    DbSet<AnalysisJob> AnalysisJobs { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

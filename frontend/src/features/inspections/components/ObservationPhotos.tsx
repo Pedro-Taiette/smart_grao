@@ -10,20 +10,33 @@ import { getGetPhotosQueryKey, uploadObservationPhoto } from '@/api/generated/ph
 import { apiBaseUrl } from '@/api/httpClient';
 import { plantOrganLabel } from '@/features/protocols/protocolLabels';
 import { useNotifier } from '@/shared/notifications/useNotifier';
+import { PhotoAnalysisDialog } from '@/features/analysis/components/PhotoAnalysisDialog';
+import { isSimulated, latestModel, latestReview, leafLabelName, percent, verdictColor } from '@/features/analysis/analysisLabels';
 
 export function photoUrl(id: string) {
   return `${apiBaseUrl}/api/photos/${id}/content`;
 }
 
-export function PhotoThumbnail({ photo }: { photo: PhotoViewModel }) {
+function AnalysisLine({ photo }: { photo: PhotoViewModel }) {
+  const model = latestModel(photo.assessments);
+  const human = latestReview(photo.assessments, model);
+  if (human) return <Typography variant="caption" color="success.main" sx={{ display: 'block' }}>Revisada: {leafLabelName[human.label]}</Typography>;
+  if (model) return <Chip size="small" color={verdictColor[model.label]} variant="outlined" sx={{ height: 'auto', '& .MuiChip-label': { whiteSpace: 'normal', py: 0.25 } }}
+    label={`${leafLabelName[model.label]} ${percent(model.confidence)}${isSimulated(model) ? ' · simulado' : ''}`} />;
+  if (photo.analysisStatus === 'Failed') return <Typography variant="caption" color="error">Análise falhou</Typography>;
+  return <Typography variant="caption" color="text.secondary">Analisando…</Typography>;
+}
+
+export function PhotoThumbnail({ photo, onOpen }: { photo: PhotoViewModel; onOpen: () => void }) {
   return (
-    <Box component="a" href={photoUrl(photo.id)} target="_blank" rel="noreferrer"
-      sx={{ display: 'block', width: 112, textDecoration: 'none', color: 'inherit' }}>
+    <Box component="button" type="button" onClick={onOpen}
+      sx={{ display: 'block', width: 128, p: 0, border: 0, bgcolor: 'transparent', textAlign: 'left', cursor: 'pointer', color: 'inherit' }}>
       <Box component="img" src={photoUrl(photo.id)} alt={plantOrganLabel[photo.organ]}
-        sx={{ width: 112, height: 84, objectFit: 'cover', borderRadius: 1, display: 'block', bgcolor: 'grey.200' }} />
+        sx={{ width: 128, height: 96, objectFit: 'cover', borderRadius: 1, display: 'block', bgcolor: 'grey.200' }} />
       <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.25 }}>
         {plantOrganLabel[photo.organ]}{photo.isSimulated ? ' · simulada' : ''}
       </Typography>
+      <AnalysisLine photo={photo} />
     </Box>
   );
 }
@@ -47,6 +60,8 @@ export function ObservationPhotos({ inspectionId, observation, protocol, photos,
   const organ = chosenOrgan && organs.includes(chosenOrgan) ? chosenOrgan : organs[0] ?? PlantOrgan.Leaf;
   const [failed, setFailed] = useState<Pending[]>([]);
   const [sending, setSending] = useState(false);
+  const [opened, setOpened] = useState<string | null>(null);
+  const openedPhoto = photos.find(photo => photo.id === opened);
   const expected = requested.reduce((sum, item) => sum + item.photosRequested, 0);
 
   async function send(pending: Pending[]) {
@@ -84,7 +99,7 @@ export function ObservationPhotos({ inspectionId, observation, protocol, photos,
       </Typography>
       {photos.length > 0 && (
         <Stack direction="row" useFlexGap spacing={1.5} sx={{ flexWrap: 'wrap' }}>
-          {photos.map(photo => <PhotoThumbnail key={photo.id} photo={photo} />)}
+          {photos.map(photo => <PhotoThumbnail key={photo.id} photo={photo} onOpen={() => setOpened(photo.id)} />)}
         </Stack>
       )}
       {canAdd && (
@@ -106,6 +121,7 @@ export function ObservationPhotos({ inspectionId, observation, protocol, photos,
           </>}
         </Stack>
       )}
+      {openedPhoto && <PhotoAnalysisDialog photo={openedPhoto} onClose={() => setOpened(null)} />}
     </Stack>
   );
 }

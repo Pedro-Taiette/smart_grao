@@ -50,6 +50,16 @@ public static class DependencyInjection
         services.AddHostedService<WeatherRefreshWorker>();
         services.AddSingleton<IPhotoStorage>(new FileSystemPhotoStorage(
             configuration["Storage:PhotoRoot"] ?? Path.Combine(AppContext.BaseDirectory, "data", "photos")));
+        if (string.Equals(configuration["Vision:Analyzer"], "Service", StringComparison.OrdinalIgnoreCase))
+            services.AddHttpClient<IVisionAnalyzer, ServiceVisionAnalyzer>(client =>
+            {
+                client.BaseAddress = new Uri(configuration["Analytics:BaseUrl"] ?? "http://localhost:8000/");
+                client.Timeout = TimeSpan.FromMinutes(2);
+            });
+        else
+            services.AddSingleton<IVisionAnalyzer, SimulatedVisionAnalyzer>();
+        if (configuration.GetValue("Vision:WorkerEnabled", true))
+            services.AddHostedService<AnalysisWorker>();
         services.AddHttpClient<IAnalyticsClient, AnalyticsClient>(client =>
         {
             client.BaseAddress = new Uri(configuration["Analytics:BaseUrl"] ?? "http://localhost:8000/");

@@ -3,6 +3,7 @@ using SmartGrao.Domain.Cultivations;
 using Microsoft.EntityFrameworkCore;
 using SmartGrao.Application.Abstractions;
 using SmartGrao.Domain.Abstractions;
+using SmartGrao.Domain.Analysis;
 using SmartGrao.Domain.Farms;
 using SmartGrao.Domain.Fields;
 using SmartGrao.Domain.Inspections;
@@ -46,6 +47,10 @@ public sealed class SmartGraoDbContext(
     public DbSet<SatellitePass> SatellitePasses => Set<SatellitePass>();
 
     public DbSet<Photo> Photos => Set<Photo>();
+
+    public DbSet<Assessment> Assessments => Set<Assessment>();
+
+    public DbSet<AnalysisJob> AnalysisJobs => Set<AnalysisJob>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

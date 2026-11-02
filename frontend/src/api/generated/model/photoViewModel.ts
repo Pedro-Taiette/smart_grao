@@ -4,6 +4,8 @@
  * SmartGrao.WebApi | v1
  * OpenAPI spec version: 1.0.0
  */
+import type { AnalysisJobStatus } from './analysisJobStatus';
+import type { AssessmentViewModel } from './assessmentViewModel';
 import type { GeoJsonPoint } from './geoJsonPoint';
 import type { PhotoSource } from './photoSource';
 import type { PlantOrgan } from './plantOrgan';
@@ -29,4 +31,7 @@ export interface PhotoViewModel {
   takenAt: string;
   contentType: string;
   sizeBytes: number;
+  analysisStatus?: null | AnalysisJobStatus;
+  /** @nullable */
+  assessments?: AssessmentViewModel[] | null;
 }
