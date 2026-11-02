@@ -69,6 +69,7 @@ docs/        decisões de arquitetura, regras de domínio e referência da API
 
 ## Documentação
 
+- [Roteiro da demonstração](docs/roteiro-demonstracao.md) — a defesa passo a passo, com os dados de demonstração
 - [Roadmap — cercosporiose no milho](docs/roadmap-cercosporiose.md) — fases 4 a 9 do semestre:
   risco climático, satélite, vistoria dirigida e IA de imagem, com o calendário até a entrega
 - [Pesquisa — cercosporiose](docs/pesquisa-cercosporiose.md) — amostragem, índice de risco, espécie,

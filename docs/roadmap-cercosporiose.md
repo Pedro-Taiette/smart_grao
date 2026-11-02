@@ -69,6 +69,15 @@ das telas. Ele começa junto com a fase 4.
 - **Trilha A — produto** (.NET + React): fases 4 a 9 em sequência.
 - **Trilha B — modelo** (Python): curadoria de dados e treino desde já; entra no produto na fase 8.
 
+## Situação
+
+Em 2026-11-02, as fases 4 a 9 e a estação sentinela simulada estão implementadas, cada uma com o seu
+documento: [4](fase-4-recorte.md), [5](fase-5-risco-climatico.md), [6](fase-6-satelite.md),
+[7](fase-7-vistoria-dirigida.md), [8](fase-8-ia-imagem.md), [9](fase-9-aferimento.md). As telas foram
+simplificadas para milho e cercosporiose: catálogo, editor de protocolos e malha genérica saíram da
+navegação (o código e o banco ficam). O [roteiro da demonstração](roteiro-demonstracao.md) junta tudo
+na ordem da defesa. O calendário abaixo fica como registro do plano.
+
 ## Calendário até a entrega
 
 A ordem das fases se mantém. As duas trilhas correm juntas: a B tem de entregar o modelo em ONNX até

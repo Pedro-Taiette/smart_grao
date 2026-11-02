@@ -103,6 +103,29 @@ seguir a sequência seja um caminho contínuo pelo talhão.
 
 ---
 
+### Cercosporiose (fases 4 a 9)
+
+Detalhe e erros em cada documento de fase.
+
+| Método | Rota | Uso | Fase |
+|---|---|---|---|
+| PUT | `/api/cultivations/{id}/risk-factors` | Fatores de risco do cultivo | [4](fase-4-recorte.md) |
+| GET | `/api/cultivations/{id}/cercospora-risk` | Risco dia a dia, estádio e sugestão de vistoria | [5](fase-5-risco-climatico.md) |
+| POST | `/api/cultivations/{id}/weather/refresh` | Busca o clima que falta | [5](fase-5-risco-climatico.md) |
+| GET | `/api/cercospora-alerts?farmId=` | Risco de hoje dos cultivos de milho da fazenda | [5](fase-5-risco-climatico.md) |
+| GET | `/api/cultivations/{id}/satellite` | Passagens do Sentinel-2 e áreas que destoam | [6](fase-6-satelite.md) |
+| POST | `/api/cultivations/{id}/satellite/refresh?full=` | Busca as passagens que faltam | [6](fase-6-satelite.md) |
+| POST | `/api/cultivations/{id}/directed-plan` | 10 paradas dirigidas | [7](fase-7-vistoria-dirigida.md) |
+| POST | `/api/photos` · `/api/photos/device` | Foto de parada ou de dispositivo (multipart) | [7](fase-7-vistoria-dirigida.md) |
+| GET | `/api/photos?inspectionId=&cultivationId=` | Fotos com análise | [7](fase-7-vistoria-dirigida.md), [8](fase-8-ia-imagem.md) |
+| GET | `/api/photos/{id}/content` | O arquivo da foto | [7](fase-7-vistoria-dirigida.md) |
+| POST | `/api/photos/{id}/analysis` | Reenfileira a análise | [8](fase-8-ia-imagem.md) |
+| GET | `/api/analysis-jobs?status=` | A fila de análises | [8](fase-8-ia-imagem.md) |
+| GET | `/api/assessments/{id}/heatmap` | Mapa de calor | [8](fase-8-ia-imagem.md) |
+| POST | `/api/assessments/{id}/review` | Revisão humana | [9](fase-9-aferimento.md) |
+| GET | `/api/calibration` | Painel de aferimento | [9](fase-9-aferimento.md) |
+| GET | `/api/calibration/reviewed-photos.csv` | Exportação das fotos revisadas | [9](fase-9-aferimento.md) |
+
 ## Geometria
 
 Entra e sai como GeoJSON `Polygon` (RFC 7946), com posições em **`[longitude, latitude]`** — a ordem

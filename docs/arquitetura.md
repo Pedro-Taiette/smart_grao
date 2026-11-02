@@ -12,6 +12,31 @@ SmartGrao.Domain          entidades, agregados, objetos de valor, regras
 A dependência aponta sempre para dentro: `WebApi → Infrastructure → Application → Domain`.
 O `Domain` não conhece EF Core, ASP.NET nem PostgreSQL.
 
+## Peças
+
+```
+frontend (React)  ──HTTP──►  API .NET  ──SQL──►  PostgreSQL + PostGIS (Neon)
+                                │   ▲
+                                │   └── workers: clima a cada 6 h, fila de análises a cada 5 s
+                                │
+                                ├──HTTP──► Open-Meteo (clima)
+                                └──HTTP──► serviço Python (analytics/service, porta 8000)
+                                              ├── /satellite/passes ──► Earth Search (Sentinel-2)
+                                              └── /vision/classify  ──► models/<versão>/model.onnx
+```
+
+- **O domínio fica no .NET.** Risco, passagens, fotos, fila, avaliações e histórico vivem no backend
+  e no banco. O serviço Python é **sem estado**: recebe uma tarefa e devolve o resultado, sem banco.
+- **Clima no .NET** — é JSON simples, e o índice é regra de domínio (`CercosporaRiskIndex`).
+- **Satélite e visão no Python** — raster (`rasterio`, `numpy`) e redes neurais (ONNX Runtime) não
+  têm equivalente maduro em .NET.
+- **Fila no Postgres** (`analysis_jobs`, `FOR UPDATE SKIP LOCKED`) em vez de um broker: o volume não
+  justifica outra peça, e a fila participa das transações do domínio.
+- **Fotos atrás de `IPhotoStorage`** — disco no desenvolvimento; armazenamento de objetos troca só a
+  implementação.
+- **Treino fora do sistema** — `analytics/vision` treina na máquina com GPU e exporta o ONNX; o
+  sistema só carrega o arquivo. Ver o [README da trilha B](../analytics/README.md).
+
 ---
 
 ## Decisões
