@@ -1,0 +1,41 @@
+{
+  "found": {
+    "plantvillage": 3852,
+    "cds": 1571,
+    "seasonal": 2497,
+    "craze": 2355,
+    "digipathos": 8792
+  },
+  "exact_duplicates": 668,
+  "conflicting_labels": 8,
+  "near_duplicate_pairs": 479,
+  "groups_merged": 20,
+  "cross_dataset_excluded": 0,
+  "kept": 10849,
+  "excluded_by_reason": {
+    "limite": 7286,
+    "duplicata exata": 676,
+    "craze: sem rotulo que caiba nas 3 classes (Other/Unidentified)": 256
+  },
+  "kept_by_dataset_label": {
+    "cds|cercosporiose": 523,
+    "cds|outras_manchas": 1048,
+    "craze|cercosporiose": 1068,
+    "craze|outras_manchas": 782,
+    "craze|saudavel": 225,
+    "digipathos|outras_manchas": 1460,
+    "plantvillage|cercosporiose": 513,
+    "plantvillage|outras_manchas": 2177,
+    "plantvillage|saudavel": 1162,
+    "seasonal|cercosporiose": 867,
+    "seasonal|outras_manchas": 127,
+    "seasonal|saudavel": 897
+  },
+  "groups_by_dataset": {
+    "cds": 44,
+    "craze": 347,
+    "digipathos": 5,
+    "plantvillage": 80,
+    "seasonal": 52
+  }
+}

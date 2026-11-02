@@ -1,0 +1,53 @@
+{
+  "version": "0.1.0",
+  "arch": "efficientnet_b0",
+  "classes": [
+    "cercosporiose",
+    "saudavel",
+    "outras_manchas"
+  ],
+  "display_names": {
+    "cercosporiose": "cercosporiose (Cercospora spp.)",
+    "saudavel": "saudavel",
+    "outras_manchas": "outras manchas"
+  },
+  "input": {
+    "name": "image",
+    "shape": [
+      null,
+      3,
+      224,
+      224
+    ],
+    "dtype": "float32",
+    "layout": "NCHW",
+    "color": "RGB"
+  },
+  "output": {
+    "name": "logits",
+    "apply": "softmax"
+  },
+  "preprocessing": {
+    "resize": [
+      224,
+      224
+    ],
+    "resize_mode": "imagem inteira para o quadrado, sem recorte; PIL Image.resize BILINEAR (com antialias)",
+    "exif_orientation": "aplicar a rotacao do EXIF antes (ImageOps.exif_transpose)",
+    "scale": "pixel / 255",
+    "mean": [
+      0.485,
+      0.456,
+      0.406
+    ],
+    "std": [
+      0.229,
+      0.224,
+      0.225
+    ]
+  },
+  "opset": 17,
+  "exported_at": "2026-11-02T23:21:32+00:00",
+  "source_run": "b0_grouped",
+  "source_epoch": 15
+}

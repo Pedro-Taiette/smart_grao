@@ -1,0 +1,27 @@
+{
+  "arch": "efficientnet_b0",
+  "img_size": 224,
+  "classes": [
+    "cercosporiose",
+    "saudavel",
+    "outras_manchas"
+  ],
+  "split_file": "grouped.csv",
+  "args": {
+    "split": "data\\splits\\grouped.csv",
+    "run_name": "b0_grouped",
+    "arch": "efficientnet_b0",
+    "img_size": "224",
+    "epochs": "25",
+    "batch_size": "48",
+    "lr": "0.0003",
+    "weight_decay": "0.01",
+    "label_smoothing": "0.05",
+    "patience": "5",
+    "balance": "sampler",
+    "balance_mode": "label_dataset_sqrt",
+    "max_steps_per_epoch": "0",
+    "workers": "6",
+    "seed": "42"
+  }
+}

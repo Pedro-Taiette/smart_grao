@@ -1,0 +1,66 @@
+{
+  "cds": {
+    "status": "ok",
+    "updated_at": "2026-11-02T22:34:36+00:00",
+    "source": "https://osf.io/s6ru5/ (Dataset_Original)",
+    "files_listed": 1571,
+    "files_ok": 1571,
+    "errors": []
+  },
+  "craze": {
+    "status": "ok",
+    "updated_at": "2026-11-02T22:21:00+00:00",
+    "source": "https://www.kaggle.com/datasets/hamishcrazeai/maize-in-field-dataset",
+    "path": "C:\\Dev\\smart_grao\\analytics\\data\\raw\\craze\\kaggle",
+    "images": 2355
+  },
+  "digipathos": {
+    "status": "ok",
+    "updated_at": "2026-11-02T22:13:13+00:00",
+    "source": "https://www.redape.dados.embrapa.br/dataset.xhtml?persistentId=doi:10.48432/XA1OVL",
+    "extracted": {
+      "Ferrugem_Branca/original": 14,
+      "Ferrugem_Branca/cropped": 889,
+      "Ferrugem_Polissora/original": 15,
+      "Ferrugem_Polissora/cropped": 3048,
+      "Mancha_Bipolaris/original": 44,
+      "Mancha_Bipolaris/cropped": 3770,
+      "Mancha_Branca/original": 31,
+      "Mancha_Branca/cropped": 779,
+      "Mancha_Turcicum/original": 46,
+      "Mancha_Turcicum/cropped": 156
+    }
+  },
+  "plantvillage": {
+    "status": "ok",
+    "updated_at": "2026-11-02T22:06:33+00:00",
+    "source": "https://github.com/spMohanty/PlantVillage-Dataset.git",
+    "images": 3852,
+    "per_folder": {
+      "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot": 513,
+      "Corn_(maize)___Common_rust_": 1192,
+      "Corn_(maize)___healthy": 1162,
+      "Corn_(maize)___Northern_Leaf_Blight": 985
+    }
+  },
+  "seasonal": {
+    "status": "ok",
+    "updated_at": "2026-11-02T22:25:33+00:00",
+    "source": "https://data.mendeley.com/datasets/vy629dngm8/1",
+    "images": 2497,
+    "skipped_other_classes": 279,
+    "skipped_derived": 167,
+    "skipped_derived_examples": [
+      "Common_rust/recheck.png",
+      "Common_rust/rsz_4img_20230429_174905.png",
+      "Gray_leaf_spot/resized_0.png",
+      "Gray_leaf_spot/resized_1.png",
+      "Gray_leaf_spot/resized_10.png",
+      "Gray_leaf_spot/resized_11.png",
+      "Gray_leaf_spot/resized_12.png",
+      "Gray_leaf_spot/resized_13.png",
+      "Gray_leaf_spot/resized_15.png",
+      "Gray_leaf_spot/resized_16.png"
+    ]
+  }
+}

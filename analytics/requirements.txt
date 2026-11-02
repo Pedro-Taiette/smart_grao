@@ -1,0 +1,16 @@
+# PyTorch com CUDA 12.8 (RTX 3050). Instalar com:
+#   pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu128
+# Sem GPU, trocar as duas linhas por torch==2.11.0 e torchvision==0.26.0 (CPU, do PyPI).
+torch==2.11.0+cu128
+torchvision==0.26.0+cu128
+timm==1.0.30
+huggingface_hub==2.4.0
+onnx==1.23.2
+onnxscript==0.7.2
+onnxruntime==1.31.1
+numpy==2.5.4
+pandas==3.1.0
+scikit-learn==1.9.1
+pillow==13.0.0
+matplotlib==3.11.2
+kagglehub==1.0.3
