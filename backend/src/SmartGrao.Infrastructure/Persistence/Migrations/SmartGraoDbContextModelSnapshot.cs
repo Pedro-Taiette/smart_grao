@@ -497,6 +497,107 @@ namespace SmartGrao.Infrastructure.Persistence.Migrations
                     b.ToTable("people", (string)null);
                 });
 
+            modelBuilder.Entity("SmartGrao.Domain.Photos.Photo", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<double?>("AccuracyMeters")
+                        .HasColumnType("double precision")
+                        .HasColumnName("accuracy_meters");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("content_type");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("CultivationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("cultivation_id");
+
+                    b.Property<Guid>("FieldId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("field_id");
+
+                    b.Property<string>("GrowthStage")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("growth_stage");
+
+                    b.Property<Guid?>("InspectionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("inspection_id");
+
+                    b.Property<bool>("IsSimulated")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_simulated");
+
+                    b.Property<Point>("Location")
+                        .HasColumnType("geography(Point,4326)")
+                        .HasColumnName("location");
+
+                    b.Property<Guid?>("ObservationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("observation_id");
+
+                    b.Property<string>("Organ")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("organ");
+
+                    b.Property<long>("SizeBytes")
+                        .HasColumnType("bigint")
+                        .HasColumnName("size_bytes");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("source");
+
+                    b.Property<string>("StorageKey")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("storage_key");
+
+                    b.Property<DateTimeOffset>("TakenAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("taken_at");
+
+                    b.Property<Guid?>("TargetId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("target_id");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_photos");
+
+                    b.HasIndex("FieldId")
+                        .HasDatabaseName("ix_photos_field_id");
+
+                    b.HasIndex("InspectionId")
+                        .HasDatabaseName("ix_photos_inspection_id");
+
+                    b.HasIndex("ObservationId")
+                        .HasDatabaseName("ix_photos_observation_id");
+
+                    b.HasIndex("CultivationId", "TakenAt")
+                        .HasDatabaseName("ix_photos_cultivation_id_taken_at");
+
+                    b.ToTable("photos", (string)null);
+                });
+
             modelBuilder.Entity("SmartGrao.Domain.Protocols.MonitoringTarget", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1004,6 +1105,10 @@ namespace SmartGrao.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
+                    b.Property<DateOnly?>("ZoneDate")
+                        .HasColumnType("date")
+                        .HasColumnName("zone_date");
+
                     b.HasKey("Id")
                         .HasName("pk_sampling_plans");
 
@@ -1220,6 +1325,35 @@ namespace SmartGrao.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_people_farms_farm_id");
+                });
+
+            modelBuilder.Entity("SmartGrao.Domain.Photos.Photo", b =>
+                {
+                    b.HasOne("SmartGrao.Domain.Cultivations.Cultivation", null)
+                        .WithMany()
+                        .HasForeignKey("CultivationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_photos_cultivations_cultivation_id");
+
+                    b.HasOne("SmartGrao.Domain.Fields.Field", null)
+                        .WithMany()
+                        .HasForeignKey("FieldId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_photos_fields_field_id");
+
+                    b.HasOne("SmartGrao.Domain.Inspections.Inspection", null)
+                        .WithMany()
+                        .HasForeignKey("InspectionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_photos_inspections_inspection_id");
+
+                    b.HasOne("SmartGrao.Domain.Inspections.Observation", null)
+                        .WithMany()
+                        .HasForeignKey("ObservationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_photos_observations_observation_id");
                 });
 
             modelBuilder.Entity("SmartGrao.Domain.Protocols.ProtocolItem", b =>

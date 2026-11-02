@@ -38,7 +38,8 @@ public sealed class GetSamplingPlansByFieldQueryHandler(ISmartGraoDbContext dbCo
                 plan.SubdivisionRecommended,
                 plan.IsOutdated,
                 plan.FieldAreaHectares,
-                plan.CreatedAt))
+                plan.CreatedAt,
+                plan.ZoneDate))
             .ToListAsync(cancellationToken);
 
         return plans;

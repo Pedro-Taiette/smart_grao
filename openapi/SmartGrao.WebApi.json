@@ -1469,6 +1469,308 @@
         }
       }
     },
+    "/api/photos": {
+      "post": {
+        "tags": [
+          "Photos"
+        ],
+        "operationId": "UploadObservationPhoto",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "inspectionId": {
+                        "type": "string",
+                        "format": "uuid"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "observationId": {
+                        "type": "string",
+                        "format": "uuid"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "targetId": {
+                        "type": "string",
+                        "format": "uuid"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "organ": {
+                        "$ref": "#/components/schemas/PlantOrgan"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "takenAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "file": {
+                        "$ref": "#/components/schemas/IFormFile"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhotoViewModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Photos"
+        ],
+        "operationId": "GetPhotos",
+        "parameters": [
+          {
+            "name": "inspectionId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "cultivationId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PhotoViewModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/photos/device": {
+      "post": {
+        "tags": [
+          "Photos"
+        ],
+        "operationId": "UploadDevicePhoto",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "cultivationId": {
+                        "type": "string",
+                        "format": "uuid"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "source": {
+                        "$ref": "#/components/schemas/PhotoSource"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "isSimulated": {
+                        "type": "boolean"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "organ": {
+                        "$ref": "#/components/schemas/PlantOrgan"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "takenAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "latitude": {
+                        "type": "number",
+                        "format": "double"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "longitude": {
+                        "type": "number",
+                        "format": "double"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "file": {
+                        "$ref": "#/components/schemas/IFormFile"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhotoViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/photos/{id}/content": {
+      "get": {
+        "tags": [
+          "Photos"
+        ],
+        "operationId": "GetPhotoContent",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { },
+              "image/jpeg": { },
+              "image/png": { },
+              "image/webp": { }
+            }
+          }
+        }
+      }
+    },
+    "/api/cultivations/{id}/directed-plan": {
+      "post": {
+        "tags": [
+          "Photos"
+        ],
+        "operationId": "CreateDirectedPlan",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SamplingPlanViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/protocols": {
       "get": {
         "tags": [
@@ -2986,6 +3288,10 @@
           "Susceptible"
         ]
       },
+      "IFormFile": {
+        "type": "string",
+        "format": "binary"
+      },
       "IndexStatisticsViewModel": {
         "required": [
           "mean",
@@ -3388,6 +3694,111 @@
           }
         }
       },
+      "PhotoSource": {
+        "enum": [
+          "Phone",
+          "Station",
+          "Drone"
+        ]
+      },
+      "PhotoViewModel": {
+        "required": [
+          "id",
+          "fieldId",
+          "cultivationId",
+          "inspectionId",
+          "observationId",
+          "targetId",
+          "organ",
+          "growthStage",
+          "location",
+          "accuracyMeters",
+          "source",
+          "isSimulated",
+          "takenAt",
+          "contentType",
+          "sizeBytes"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fieldId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "cultivationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "inspectionId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "observationId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "targetId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "organ": {
+            "$ref": "#/components/schemas/PlantOrgan"
+          },
+          "growthStage": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "location": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/GeoJsonPoint"
+              }
+            ]
+          },
+          "accuracyMeters": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "source": {
+            "$ref": "#/components/schemas/PhotoSource"
+          },
+          "isSimulated": {
+            "type": "boolean"
+          },
+          "takenAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "contentType": {
+            "type": "string"
+          },
+          "sizeBytes": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
       "PlantOrgan": {
         "enum": [
           "Undefined",
@@ -3402,8 +3813,7 @@
           "Tassel",
           "Silk",
           "Seedling",
-          "WholePlant",
-          null
+          "WholePlant"
         ]
       },
       "ProblemDetails": {
@@ -3722,7 +4132,8 @@
       "SamplingMode": {
         "enum": [
           "Monitoring",
-          "Mapping"
+          "Mapping",
+          "Directed"
         ]
       },
       "SamplingPlanSummaryViewModel": {
@@ -3739,7 +4150,8 @@
           "subdivisionRecommended",
           "isOutdated",
           "fieldAreaHectares",
-          "createdAt"
+          "createdAt",
+          "zoneDate"
         ],
         "type": "object",
         "properties": {
@@ -3796,6 +4208,13 @@
           "createdAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "zoneDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
           }
         }
       },
@@ -4162,6 +4581,9 @@
     },
     {
       "name": "People"
+    },
+    {
+      "name": "Photos"
     },
     {
       "name": "Protocols"

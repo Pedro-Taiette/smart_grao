@@ -22,4 +22,6 @@ export interface SamplingPlanSummaryViewModel {
   isOutdated: boolean;
   fieldAreaHectares: number;
   createdAt: string;
+  /** @nullable */
+  zoneDate: string | null;
 }

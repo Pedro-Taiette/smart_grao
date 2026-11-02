@@ -7,6 +7,7 @@ using SmartGrao.Domain.Farms;
 using SmartGrao.Domain.Fields;
 using SmartGrao.Domain.Inspections;
 using SmartGrao.Domain.People;
+using SmartGrao.Domain.Photos;
 using SmartGrao.Domain.Protocols;
 using SmartGrao.Domain.Risk;
 using SmartGrao.Domain.Sampling;
@@ -43,6 +44,8 @@ public sealed class SmartGraoDbContext(
     public DbSet<WeatherHour> WeatherHours => Set<WeatherHour>();
 
     public DbSet<SatellitePass> SatellitePasses => Set<SatellitePass>();
+
+    public DbSet<Photo> Photos => Set<Photo>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

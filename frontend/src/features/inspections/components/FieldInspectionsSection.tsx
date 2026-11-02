@@ -4,6 +4,9 @@ import AddIcon from '@mui/icons-material/Add';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGetInspections } from '@/api/generated/inspections/inspections';
 import { useGetProtocols } from '@/api/generated/protocols/protocols';
+import { useCreateDirectedPlan } from '@/api/generated/photos/photos';
+import { Crop } from '@/api/generated/model/crop';
+import { useNotifier } from '@/shared/notifications/useNotifier';
 // O histórico de malhas é uma rota do talhão, e por isso o hook sai do módulo de talhões.
 import { useGetSamplingPlansByField } from '@/api/generated/fields/fields';
 import { ProtocolStatus } from '@/api/generated/model/protocolStatus';
@@ -34,6 +37,8 @@ export function FieldInspectionsSection({ farmId, fieldId, cultivation }: {
     if (!open && params.has('agendar')) setParams({ aba: 'vistorias' }, { replace: true });
   };
   const actions = useInspectionActions();
+  const notifier = useNotifier();
+  const directedPlan = useCreateDirectedPlan();
 
   const inspectionsQuery = useGetInspections(
     { cultivationId: cultivation?.id ?? '' },
@@ -45,6 +50,21 @@ export function FieldInspectionsSection({ farmId, fieldId, cultivation }: {
     { crop: cultivation?.crop ?? 'Corn', status: ProtocolStatus.Published },
     { query: { enabled: Boolean(cultivation) } },
   );
+
+  async function createDirectedPlan() {
+    if (!cultivation) return null;
+    try {
+      const created = await directedPlan.mutateAsync({ id: cultivation.id });
+      await plansQuery.refetch();
+      notifier.notifySuccess(created.plan.zoneDate
+        ? 'Paradas geradas nas áreas que o satélite marcou.'
+        : 'Sem área recente do satélite: as paradas cobrem o talhão inteiro.');
+      return created.plan.id;
+    } catch (failure) {
+      notifier.notifyError(failure);
+      return null;
+    }
+  }
 
   const inspections = inspectionsQuery.data ?? [];
   const plans = (plansQuery.data ?? []).filter(plan => plan.cultivationId === cultivation?.id);
@@ -101,6 +121,7 @@ export function FieldInspectionsSection({ farmId, fieldId, cultivation }: {
           plans={plans}
           protocols={protocolsQuery.data ?? []}
           onClose={() => setScheduling(false)}
+          onCreateDirectedPlan={cultivation.crop === Crop.Corn ? createDirectedPlan : undefined}
           onSave={async values => {
             const created = await actions.scheduleInspection({ ...values, cultivationId: cultivation.id });
             if (created) navigate(`/vistorias/${created.id}`);

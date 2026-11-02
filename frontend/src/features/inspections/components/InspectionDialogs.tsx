@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,7 +12,7 @@ import {
   cancelSchema, personSchema, rescheduleSchema, scheduleSchema, today,
   type CancelValues, type PersonValues, type RescheduleValues, type ScheduleValues,
 } from '../inspectionSchema';
-import { personRoleLabel, personRoleOptions } from '../inspectionLabels';
+import { formatDay, personRoleLabel, personRoleOptions } from '../inspectionLabels';
 
 interface CommonProps { isSaving: boolean; onClose: () => void }
 
@@ -56,6 +57,7 @@ export function ScheduleInspectionDialog(props: CommonProps & {
   plans: SamplingPlanSummaryViewModel[];
   protocols: ProtocolSummaryViewModel[];
   onSave: (values: ScheduleValues) => Promise<boolean>;
+  onCreateDirectedPlan?: () => Promise<string | null>;
 }) {
   const form = useForm<ScheduleValues>({
     resolver: zodResolver(scheduleSchema),
@@ -68,6 +70,14 @@ export function ScheduleInspectionDialog(props: CommonProps & {
   });
 
   const missing = props.people.length === 0 || props.plans.length === 0 || props.protocols.length === 0;
+  const [creatingPlan, setCreatingPlan] = useState(false);
+  async function createDirectedPlan() {
+    if (!props.onCreateDirectedPlan) return;
+    setCreatingPlan(true);
+    const id = await props.onCreateDirectedPlan();
+    setCreatingPlan(false);
+    if (id) form.setValue('samplingPlanId', id, { shouldValidate: true });
+  }
 
   return <Dialog open onClose={props.isSaving ? undefined : props.onClose} maxWidth="sm" fullWidth>
     <form noValidate onSubmit={form.handleSubmit(async values => { if (await props.onSave(values)) props.onClose(); })}>
@@ -84,8 +94,13 @@ export function ScheduleInspectionDialog(props: CommonProps & {
         <FormSelectField name="samplingPlanId" control={form.control} label="Qual caminhada"
           options={props.plans.map(plan => ({
             value: plan.id,
-            label: `${modeLabel[plan.mode]} · ${plan.pointCount} paradas${plan.isOutdated ? ' (malha defasada)' : ''}`,
+            label: `${modeLabel[plan.mode]} · ${plan.pointCount} paradas${plan.mode === 'Directed'
+              ? (plan.zoneDate ? ` nas áreas do satélite de ${formatDay(plan.zoneDate)}` : ' pelo talhão inteiro') : ''}${plan.isOutdated ? ' (malha defasada)' : ''}`,
           }))} />
+        {props.onCreateDirectedPlan && <Button sx={{ alignSelf: 'flex-start' }} disabled={creatingPlan || props.isSaving}
+          onClick={() => void createDirectedPlan()}>
+          {creatingPlan ? 'Gerando paradas…' : 'Gerar 10 paradas onde o satélite viu a lavoura destoar'}
+        </Button>}
         <FormSelectField name="protocolId" control={form.control} label="O que coletar"
           options={props.protocols.map(protocol => ({
             value: protocol.id,

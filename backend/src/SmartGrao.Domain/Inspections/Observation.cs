@@ -174,7 +174,7 @@ public sealed class Observation : Entity<ObservationId>
             Id = ObservationId.New(),
             InspectionId = inspectionId,
             SamplingPointId = pointId,
-            RecordedAt = recordedAt,
+            RecordedAt = recordedAt.ToUniversalTime(),
             Location = location.ToPoint(),
             AccuracyMeters = accuracyMeters,
             GrowthStage = string.IsNullOrWhiteSpace(growthStage) ? null : growthStage.Trim(),

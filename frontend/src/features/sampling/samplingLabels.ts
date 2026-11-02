@@ -15,6 +15,7 @@ import type { SamplingMode } from '@/api/generated/model/samplingMode';
 export const modeQuestion: Record<SamplingMode, string> = {
   Monitoring: 'Preciso aplicar?',
   Mapping: 'Onde estão as manchas?',
+  Directed: 'Tem cercosporiose?',
 };
 
 /** O que a escolha significa na pratica, em uma frase, sem jargao. */
@@ -23,12 +24,15 @@ export const modeExplanation: Record<SamplingMode, string> = {
     'Poucas paradas, bem espalhadas pelo talhão, para saber se a praga passou do limite que justifica aplicar. Segue a recomendação da Embrapa para o tamanho da sua área.',
   Mapping:
     'Muitas paradas, para enxergar em qual parte do talhão a praga está concentrada — e aplicar só ali.',
+  Directed:
+    'Dez paradas onde o satélite viu a lavoura destoar, ou espalhadas pelo talhão quando não há área marcada.',
 };
 
 /** Rotulo curto, para lista e historico. */
 export const modeLabel: Record<SamplingMode, string> = {
   Monitoring: 'Preciso aplicar?',
   Mapping: 'Onde estão as manchas?',
+  Directed: 'Vistoria dirigida de cercosporiose',
 };
 
 /**

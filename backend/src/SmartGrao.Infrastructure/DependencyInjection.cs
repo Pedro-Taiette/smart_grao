@@ -5,6 +5,7 @@ using SmartGrao.Application.Abstractions;
 using SmartGrao.Infrastructure.Analytics;
 using SmartGrao.Infrastructure.Events;
 using SmartGrao.Infrastructure.Persistence;
+using SmartGrao.Infrastructure.Storage;
 using SmartGrao.Infrastructure.Weather;
 
 namespace SmartGrao.Infrastructure;
@@ -47,6 +48,8 @@ public static class DependencyInjection
 
         services.AddHttpClient<IWeatherProvider, OpenMeteoWeatherProvider>(client => client.Timeout = TimeSpan.FromSeconds(30));
         services.AddHostedService<WeatherRefreshWorker>();
+        services.AddSingleton<IPhotoStorage>(new FileSystemPhotoStorage(
+            configuration["Storage:PhotoRoot"] ?? Path.Combine(AppContext.BaseDirectory, "data", "photos")));
         services.AddHttpClient<IAnalyticsClient, AnalyticsClient>(client =>
         {
             client.BaseAddress = new Uri(configuration["Analytics:BaseUrl"] ?? "http://localhost:8000/");
