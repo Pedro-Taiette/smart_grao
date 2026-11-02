@@ -160,6 +160,7 @@ public static class SmartGraoErrors
     {
         public static Error InvalidWeather => Error.Validation("risk.invalid_weather", "A weather reading is outside the plausible range.");
         public static Error NotCorn => Error.Validation("risk.not_corn", "Cercospora risk is only computed for corn cultivations.");
+        public static Error AnalyticsUnavailable => Error.ExternalService("risk.analytics_unavailable", "The analytics service did not answer. Try again in a few minutes.");
         public static Error WeatherUnavailable => Error.ExternalService("risk.weather_unavailable", "The weather service did not answer. Try again in a few minutes.");
     }
 

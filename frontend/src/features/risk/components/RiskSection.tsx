@@ -14,6 +14,7 @@ import { QueryBoundary } from '@/shared/components/QueryBoundary';
 import { useNotifier } from '@/shared/notifications/useNotifier';
 import { describeWeather, riskChipSx, riskLevelLabel, stageWarning } from '../riskLabels';
 import { RiskTimeline } from './RiskTimeline';
+import { SatellitePanel } from './SatellitePanel';
 
 function label(c: CultivationViewModel) {
   return `${c.cultivar} · plantio em ${cycleDate(c.plantedOn)}${c.endedOn ? '' : ' (em andamento)'}`;
@@ -124,6 +125,8 @@ function CultivationRisk({ cultivation }: { cultivation: CultivationViewModel })
               <RiskTimeline days={risk.days} windowDays={risk.windowDays} />
             </Paper>
           )}
+
+          <SatellitePanel cultivation={cultivation} />
 
           <Typography variant="caption" color="text.secondary">
             Índice de favorabilidade do clima, ainda não calibrado para o Brasil: diz quando as condições favorecem

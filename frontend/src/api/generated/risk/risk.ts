@@ -35,6 +35,14 @@ import type {
   GetCercosporaAlertsParams
 } from '../model/getCercosporaAlertsParams';
 
+import type {
+  RefreshSatellitePassesParams
+} from '../model/refreshSatellitePassesParams';
+
+import type {
+  SatelliteViewModel
+} from '../model/satelliteViewModel';
+
 import { httpClient } from '../../httpClient';
 
 
@@ -201,6 +209,153 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getRefreshWeatherMutationOptions(options), queryClient);
+    }
+    export const getSatellitePasses = (
+    id: string,
+ options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+) => {
+
+
+      return httpClient<SatelliteViewModel>(
+      {url: `/api/cultivations/${id}/satellite`, method: 'GET', signal
+    },
+      options);
+    }
+
+
+
+
+export const getGetSatellitePassesQueryKey = (id: string,) => {
+    return [
+    `/api/cultivations/${id}/satellite`
+    ] as const;
+    }
+
+
+export const getGetSatellitePassesQueryOptions = <TData = Awaited<ReturnType<typeof getSatellitePasses>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSatellitePasses>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSatellitePassesQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSatellitePasses>>> = ({ signal }) => getSatellitePasses(id, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSatellitePasses>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSatellitePassesQueryResult = NonNullable<Awaited<ReturnType<typeof getSatellitePasses>>>
+export type GetSatellitePassesQueryError = unknown
+
+
+export function useGetSatellitePasses<TData = Awaited<ReturnType<typeof getSatellitePasses>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSatellitePasses>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSatellitePasses>>,
+          TError,
+          Awaited<ReturnType<typeof getSatellitePasses>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof httpClient>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSatellitePasses<TData = Awaited<ReturnType<typeof getSatellitePasses>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSatellitePasses>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSatellitePasses>>,
+          TError,
+          Awaited<ReturnType<typeof getSatellitePasses>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof httpClient>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSatellitePasses<TData = Awaited<ReturnType<typeof getSatellitePasses>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSatellitePasses>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useGetSatellitePasses<TData = Awaited<ReturnType<typeof getSatellitePasses>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSatellitePasses>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSatellitePassesQueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const refreshSatellitePasses = (
+    id: string,
+    params?: RefreshSatellitePassesParams,
+ options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+) => {
+
+
+      return httpClient<SatelliteViewModel>(
+      {url: `/api/cultivations/${id}/satellite/refresh`, method: 'POST',
+        params, signal
+    },
+      options);
+    }
+
+
+
+
+export const getRefreshSatellitePassesMutationKey = () => ['refreshSatellitePasses'] as const;
+
+export const getRefreshSatellitePassesMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof refreshSatellitePasses>>, TError,RefreshSatellitePassesMutationVariables, TContext>, request?: SecondParameter<typeof httpClient>}
+): UseMutationOptions<Awaited<ReturnType<typeof refreshSatellitePasses>>, TError,RefreshSatellitePassesMutationVariables, TContext> => {
+
+const mutationKey = getRefreshSatellitePassesMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof refreshSatellitePasses>>, RefreshSatellitePassesMutationVariables> = (props) => {
+          const {id,params} = props ?? {};
+
+          return  refreshSatellitePasses(id,params,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RefreshSatellitePassesMutationResult = NonNullable<Awaited<ReturnType<typeof refreshSatellitePasses>>>
+
+    export type RefreshSatellitePassesMutationError = unknown
+    export type RefreshSatellitePassesMutationVariables = {id: string;params?: RefreshSatellitePassesParams}
+
+    export const useRefreshSatellitePasses = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof refreshSatellitePasses>>, TError,RefreshSatellitePassesMutationVariables, TContext>, request?: SecondParameter<typeof httpClient>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof refreshSatellitePasses>>,
+        TError,
+        RefreshSatellitePassesMutationVariables,
+        TContext
+      > => {
+      return useMutation(getRefreshSatellitePassesMutationOptions(options), queryClient);
     }
     export const getCercosporaAlerts = (
     params?: GetCercosporaAlertsParams,

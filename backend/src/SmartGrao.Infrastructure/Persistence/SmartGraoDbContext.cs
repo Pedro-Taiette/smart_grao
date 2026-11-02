@@ -42,6 +42,8 @@ public sealed class SmartGraoDbContext(
 
     public DbSet<WeatherHour> WeatherHours => Set<WeatherHour>();
 
+    public DbSet<SatellitePass> SatellitePasses => Set<SatellitePass>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         ArgumentNullException.ThrowIfNull(modelBuilder);

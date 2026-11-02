@@ -58,9 +58,15 @@ public sealed record GeoJsonPolygon(string Type, IReadOnlyList<IReadOnlyList<IRe
     public static GeoJsonPolygon From(Boundary boundary)
     {
         ArgumentNullException.ThrowIfNull(boundary);
+        return FromPolygon(boundary.Polygon);
+    }
+
+    public static GeoJsonPolygon FromPolygon(NetTopologySuite.Geometries.Polygon polygon)
+    {
+        ArgumentNullException.ThrowIfNull(polygon);
 
         // O anel sai fechado (a ultima posicao repete a primeira), como a RFC exige.
-        var ring = boundary.Polygon.ExteriorRing.Coordinates
+        var ring = polygon.ExteriorRing.Coordinates
             .Select(c => (IReadOnlyList<double>)new[] { c.X, c.Y })
             .ToArray();
 

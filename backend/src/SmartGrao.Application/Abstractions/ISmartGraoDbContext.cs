@@ -61,5 +61,7 @@ public interface ISmartGraoDbContext
 
     DbSet<WeatherHour> WeatherHours { get; }
 
+    DbSet<SatellitePass> SatellitePasses { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -19,6 +19,18 @@ public sealed class RiskController : ControllerBase
         Guid id, [FromServices] RefreshWeatherCommandHandler handler, CancellationToken cancellationToken)
         => Ok(await handler.HandleAsync(id, cancellationToken));
 
+    [HttpGet("api/cultivations/{id:guid}/satellite", Name = "GetSatellitePasses")]
+    [ProducesResponseType(typeof(SatelliteViewModel), StatusCodes.Status200OK)]
+    public async Task<ActionResult<SatelliteViewModel>> Satellite(
+        Guid id, [FromServices] GetSatelliteQueryHandler handler, CancellationToken cancellationToken)
+        => Ok(await handler.HandleAsync(id, cancellationToken));
+
+    [HttpPost("api/cultivations/{id:guid}/satellite/refresh", Name = "RefreshSatellitePasses")]
+    [ProducesResponseType(typeof(SatelliteViewModel), StatusCodes.Status200OK)]
+    public async Task<ActionResult<SatelliteViewModel>> RefreshSatellite(
+        Guid id, [FromQuery] bool? full, [FromServices] RefreshSatelliteCommandHandler handler, CancellationToken cancellationToken)
+        => Ok(await handler.HandleAsync(id, full ?? false, cancellationToken));
+
     [HttpGet("api/cercospora-alerts", Name = "GetCercosporaAlerts")]
     [ProducesResponseType(typeof(IReadOnlyList<CercosporaAlertViewModel>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<CercosporaAlertViewModel>>> Alerts(

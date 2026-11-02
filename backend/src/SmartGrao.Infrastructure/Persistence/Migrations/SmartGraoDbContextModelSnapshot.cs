@@ -865,6 +865,54 @@ namespace SmartGrao.Infrastructure.Persistence.Migrations
                     b.ToTable("protocol_items", (string)null);
                 });
 
+            modelBuilder.Entity("SmartGrao.Domain.Risk.SatellitePass", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date")
+                        .HasColumnName("date");
+
+                    b.Property<Guid>("FieldId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("field_id");
+
+                    b.Property<string>("SceneId")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("scene_id");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("status");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<double>("ValidFraction")
+                        .HasColumnType("double precision")
+                        .HasColumnName("valid_fraction");
+
+                    b.HasKey("Id")
+                        .HasName("pk_satellite_passes");
+
+                    b.HasIndex("FieldId", "Date")
+                        .IsUnique()
+                        .HasDatabaseName("ix_satellite_passes_field_date");
+
+                    b.ToTable("satellite_passes", (string)null);
+                });
+
             modelBuilder.Entity("SmartGrao.Domain.Risk.WeatherHour", b =>
                 {
                     b.Property<Guid>("FieldId")
@@ -1217,6 +1265,121 @@ namespace SmartGrao.Infrastructure.Persistence.Migrations
                         });
 
                     b.Navigation("ReferenceLevel");
+                });
+
+            modelBuilder.Entity("SmartGrao.Domain.Risk.SatellitePass", b =>
+                {
+                    b.HasOne("SmartGrao.Domain.Fields.Field", null)
+                        .WithMany()
+                        .HasForeignKey("FieldId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_satellite_passes_fields_field_id");
+
+                    b.OwnsOne("SmartGrao.Domain.Risk.IndexStatistics", "Ndre", b1 =>
+                        {
+                            b1.Property<Guid>("SatellitePassId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("id");
+
+                            b1.Property<double>("Mean")
+                                .HasColumnType("double precision")
+                                .HasColumnName("ndre_mean");
+
+                            b1.Property<double>("Median")
+                                .HasColumnType("double precision")
+                                .HasColumnName("ndre_median");
+
+                            b1.Property<double>("P10")
+                                .HasColumnType("double precision")
+                                .HasColumnName("ndre_p10");
+
+                            b1.Property<double>("P90")
+                                .HasColumnType("double precision")
+                                .HasColumnName("ndre_p90");
+
+                            b1.HasKey("SatellitePassId");
+
+                            b1.ToTable("satellite_passes");
+
+                            b1.WithOwner()
+                                .HasForeignKey("SatellitePassId")
+                                .HasConstraintName("fk_satellite_passes_satellite_passes_id");
+                        });
+
+                    b.OwnsOne("SmartGrao.Domain.Risk.IndexStatistics", "Ndvi", b1 =>
+                        {
+                            b1.Property<Guid>("SatellitePassId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("id");
+
+                            b1.Property<double>("Mean")
+                                .HasColumnType("double precision")
+                                .HasColumnName("ndvi_mean");
+
+                            b1.Property<double>("Median")
+                                .HasColumnType("double precision")
+                                .HasColumnName("ndvi_median");
+
+                            b1.Property<double>("P10")
+                                .HasColumnType("double precision")
+                                .HasColumnName("ndvi_p10");
+
+                            b1.Property<double>("P90")
+                                .HasColumnType("double precision")
+                                .HasColumnName("ndvi_p90");
+
+                            b1.HasKey("SatellitePassId");
+
+                            b1.ToTable("satellite_passes");
+
+                            b1.WithOwner()
+                                .HasForeignKey("SatellitePassId")
+                                .HasConstraintName("fk_satellite_passes_satellite_passes_id");
+                        });
+
+                    b.OwnsMany("SmartGrao.Domain.Risk.AnomalyZone", "Zones", b1 =>
+                        {
+                            b1.Property<Guid>("satellite_pass_id")
+                                .HasColumnType("uuid")
+                                .HasColumnName("satellite_pass_id");
+
+                            b1.Property<int>("Index")
+                                .HasColumnType("integer")
+                                .HasColumnName("index");
+
+                            b1.Property<double>("AreaHectares")
+                                .HasColumnType("double precision")
+                                .HasColumnName("area_hectares");
+
+                            b1.Property<bool>("DroppedSincePrevious")
+                                .HasColumnType("boolean")
+                                .HasColumnName("dropped_since_previous");
+
+                            b1.Property<Polygon>("Geometry")
+                                .IsRequired()
+                                .HasColumnType("geography(Polygon,4326)")
+                                .HasColumnName("geometry");
+
+                            b1.Property<double>("MeanDrop")
+                                .HasColumnType("double precision")
+                                .HasColumnName("mean_drop");
+
+                            b1.HasKey("satellite_pass_id", "Index")
+                                .HasName("pk_anomaly_zones");
+
+                            b1.ToTable("anomaly_zones", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("satellite_pass_id")
+                                .HasConstraintName("fk_anomaly_zones_satellite_passes_satellite_pass_id");
+                        });
+
+                    b.Navigation("Ndre");
+
+                    b.Navigation("Ndvi");
+
+                    b.Navigation("Zones");
                 });
 
             modelBuilder.Entity("SmartGrao.Domain.Risk.WeatherHour", b =>

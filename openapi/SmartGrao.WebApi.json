@@ -1874,6 +1874,75 @@
         }
       }
     },
+    "/api/cultivations/{id}/satellite": {
+      "get": {
+        "tags": [
+          "Risk"
+        ],
+        "operationId": "GetSatellitePasses",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SatelliteViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cultivations/{id}/satellite/refresh": {
+      "post": {
+        "tags": [
+          "Risk"
+        ],
+        "operationId": "RefreshSatellitePasses",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "full",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SatelliteViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/cercospora-alerts": {
       "get": {
         "tags": [
@@ -2181,6 +2250,31 @@
                 "$ref": "#/components/schemas/ReferenceLevelViewModel"
               }
             ]
+          }
+        }
+      },
+      "AnomalyZoneViewModel": {
+        "required": [
+          "geometry",
+          "areaHectares",
+          "meanDrop",
+          "droppedSincePrevious"
+        ],
+        "type": "object",
+        "properties": {
+          "geometry": {
+            "$ref": "#/components/schemas/GeoJsonPolygon"
+          },
+          "areaHectares": {
+            "type": "number",
+            "format": "double"
+          },
+          "meanDrop": {
+            "type": "number",
+            "format": "double"
+          },
+          "droppedSincePrevious": {
+            "type": "boolean"
           }
         }
       },
@@ -2891,6 +2985,33 @@
           "ModeratelySusceptible",
           "Susceptible"
         ]
+      },
+      "IndexStatisticsViewModel": {
+        "required": [
+          "mean",
+          "median",
+          "p10",
+          "p90"
+        ],
+        "type": "object",
+        "properties": {
+          "mean": {
+            "type": "number",
+            "format": "double"
+          },
+          "median": {
+            "type": "number",
+            "format": "double"
+          },
+          "p10": {
+            "type": "number",
+            "format": "double"
+          },
+          "p90": {
+            "type": "number",
+            "format": "double"
+          }
+        }
       },
       "InspectionStatus": {
         "enum": [
@@ -3714,6 +3835,96 @@
           },
           "location": {
             "$ref": "#/components/schemas/GeoJsonPoint"
+          }
+        }
+      },
+      "SatellitePassStatus": {
+        "enum": [
+          "NoReading",
+          "Ok"
+        ]
+      },
+      "SatellitePassViewModel": {
+        "required": [
+          "date",
+          "status",
+          "validFraction",
+          "ndvi",
+          "ndre",
+          "zones"
+        ],
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SatellitePassStatus"
+          },
+          "validFraction": {
+            "type": "number",
+            "format": "double"
+          },
+          "ndvi": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/IndexStatisticsViewModel"
+              }
+            ]
+          },
+          "ndre": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/IndexStatisticsViewModel"
+              }
+            ]
+          },
+          "zones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AnomalyZoneViewModel"
+            }
+          }
+        }
+      },
+      "SatelliteViewModel": {
+        "required": [
+          "cultivationId",
+          "fieldId",
+          "from",
+          "to",
+          "passes"
+        ],
+        "type": "object",
+        "properties": {
+          "cultivationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fieldId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "to": {
+            "type": "string",
+            "format": "date"
+          },
+          "passes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SatellitePassViewModel"
+            }
           }
         }
       },

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SmartGrao.Application.Abstractions;
+using SmartGrao.Infrastructure.Analytics;
 using SmartGrao.Infrastructure.Events;
 using SmartGrao.Infrastructure.Persistence;
 using SmartGrao.Infrastructure.Weather;
@@ -46,6 +47,11 @@ public static class DependencyInjection
 
         services.AddHttpClient<IWeatherProvider, OpenMeteoWeatherProvider>(client => client.Timeout = TimeSpan.FromSeconds(30));
         services.AddHostedService<WeatherRefreshWorker>();
+        services.AddHttpClient<IAnalyticsClient, AnalyticsClient>(client =>
+        {
+            client.BaseAddress = new Uri(configuration["Analytics:BaseUrl"] ?? "http://localhost:8000/");
+            client.Timeout = TimeSpan.FromMinutes(10);
+        });
 
         return services;
     }
