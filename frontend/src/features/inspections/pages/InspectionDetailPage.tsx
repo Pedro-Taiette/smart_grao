@@ -18,6 +18,8 @@ import {
 import { useInspectionWorkspace } from '../hooks/useInspectionWorkspace';
 import { usePeople } from '../hooks/usePeople';
 import { useGetFieldById } from '@/api/generated/fields/fields';
+import { useGetSamplingPlanById } from '@/api/generated/sampling-plans/sampling-plans';
+import { StopsMap } from '../components/StopsMap';
 
 export function InspectionDetailPage() {
   const { inspectionId = '' } = useParams();
@@ -41,6 +43,8 @@ function InspectionWorkspace({ inspectionId }: { inspectionId: string }) {
     query: { enabled: inspection !== undefined },
   });
   const { people } = usePeople(fieldQuery.data?.farmId ?? '', true);
+  const planQuery = useGetSamplingPlanById(inspection?.samplingPlanId ?? '', { query: { enabled: inspection !== undefined } });
+  const visited = new Set((inspection?.observations ?? []).map(o => o.pointSequence).filter((n): n is number => n !== null));
 
   // Esta é a tela que chega por link no celular, sem passar pela navegação: alinhar o contexto aqui
   // é o que faz o resto do sistema abrir na propriedade certa depois.
@@ -105,6 +109,10 @@ function InspectionWorkspace({ inspectionId }: { inspectionId: string }) {
               {!w.isFinished && <Button color="error" disabled={w.isSaving}
                 onClick={() => w.openDialog({ kind: 'cancel' })}>Não aconteceu</Button>}
             </Stack>
+
+            {fieldQuery.data && planQuery.data && (
+              <StopsMap field={fieldQuery.data} points={planQuery.data.points} visited={visited} />
+            )}
 
             <Divider />
             <Typography variant="h6">Paradas registradas</Typography>

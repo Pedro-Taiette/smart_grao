@@ -9,8 +9,6 @@ export const personSchema = z.object({
 });
 
 export const scheduleSchema = z.object({
-  samplingPlanId: z.uuid('Escolha a marcação de pontos que será caminhada.'),
-  protocolId: z.uuid('Escolha o protocolo da vistoria.'),
   responsibleId: z.uuid('Escolha quem vai a campo.'),
   scheduledFor: date,
 });

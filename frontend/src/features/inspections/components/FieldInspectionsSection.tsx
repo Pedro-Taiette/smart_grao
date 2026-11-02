@@ -5,10 +5,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGetInspections } from '@/api/generated/inspections/inspections';
 import { useGetProtocols } from '@/api/generated/protocols/protocols';
 import { useCreateDirectedPlan } from '@/api/generated/photos/photos';
-import { Crop } from '@/api/generated/model/crop';
 import { useNotifier } from '@/shared/notifications/useNotifier';
-// O histórico de malhas é uma rota do talhão, e por isso o hook sai do módulo de talhões.
-import { useGetSamplingPlansByField } from '@/api/generated/fields/fields';
 import { ProtocolStatus } from '@/api/generated/model/protocolStatus';
 import type { CultivationViewModel } from '@/api/generated/model/cultivationViewModel';
 import { EmptyState } from '@/shared/components/EmptyState';
@@ -24,9 +21,8 @@ import { usePeople } from '../hooks/usePeople';
  * Mostrar a lista inteira e o ponto: a mesma malha caminhada muitas vezes, cada visita com o seu
  * proprio registro. E o que o criterio da fase 3 pede.
  */
-export function FieldInspectionsSection({ farmId, fieldId, cultivation }: {
+export function FieldInspectionsSection({ farmId, cultivation }: {
   farmId: string;
-  fieldId: string;
   cultivation: CultivationViewModel | null;
 }) {
   const navigate = useNavigate();
@@ -45,29 +41,32 @@ export function FieldInspectionsSection({ farmId, fieldId, cultivation }: {
     { query: { enabled: Boolean(cultivation) } },
   );
   const { people } = usePeople(farmId, true);
-  const plansQuery = useGetSamplingPlansByField(fieldId, { query: { enabled: Boolean(fieldId) } });
   const protocolsQuery = useGetProtocols(
     { crop: cultivation?.crop ?? 'Corn', status: ProtocolStatus.Published },
     { query: { enabled: Boolean(cultivation) } },
   );
 
-  async function createDirectedPlan() {
-    if (!cultivation) return null;
+  const protocol = (protocolsQuery.data ?? []).find(p => p.code === 'cercosporiose_deteccao') ?? protocolsQuery.data?.[0];
+
+  async function schedule(responsibleId: string, scheduledFor: string) {
+    if (!cultivation || !protocol) {
+      notifier.notifyError(new Error('Nenhum protocolo de cercosporiose publicado.'));
+      return false;
+    }
     try {
-      const created = await directedPlan.mutateAsync({ id: cultivation.id });
-      await plansQuery.refetch();
-      notifier.notifySuccess(created.plan.zoneDate
-        ? 'Paradas geradas nas áreas que o satélite marcou.'
-        : 'Sem área recente do satélite: as paradas cobrem o talhão inteiro.');
-      return created.plan.id;
+      const plan = await directedPlan.mutateAsync({ id: cultivation.id });
+      const created = await actions.scheduleInspection({
+        cultivationId: cultivation.id, samplingPlanId: plan.plan.id, protocolId: protocol.id, responsibleId, scheduledFor,
+      });
+      if (created) navigate(`/vistorias/${created.id}`);
+      return created !== null;
     } catch (failure) {
       notifier.notifyError(failure);
-      return null;
+      return false;
     }
   }
 
   const inspections = inspectionsQuery.data ?? [];
-  const plans = (plansQuery.data ?? []).filter(plan => plan.cultivationId === cultivation?.id);
 
   if (!cultivation) {
     return (
@@ -116,17 +115,10 @@ export function FieldInspectionsSection({ farmId, fieldId, cultivation }: {
 
       {isScheduling && (
         <ScheduleInspectionDialog
-          isSaving={actions.isSaving}
+          isSaving={actions.isSaving || directedPlan.isPending}
           people={people}
-          plans={plans}
-          protocols={protocolsQuery.data ?? []}
           onClose={() => setScheduling(false)}
-          onCreateDirectedPlan={cultivation.crop === Crop.Corn ? createDirectedPlan : undefined}
-          onSave={async values => {
-            const created = await actions.scheduleInspection({ ...values, cultivationId: cultivation.id });
-            if (created) navigate(`/vistorias/${created.id}`);
-            return created !== null;
-          }}
+          onSave={values => schedule(values.responsibleId, values.scheduledFor)}
         />
       )}
     </Stack>

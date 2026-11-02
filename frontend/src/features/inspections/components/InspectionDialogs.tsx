@@ -1,18 +1,15 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { PersonViewModel } from '@/api/generated/model/personViewModel';
-import type { ProtocolSummaryViewModel } from '@/api/generated/model/protocolSummaryViewModel';
-import type { SamplingPlanSummaryViewModel } from '@/api/generated/model/samplingPlanSummaryViewModel';
 import { FormSelectField } from '@/shared/components/FormSelectField';
 import { FormTextField } from '@/shared/components/FormTextField';
-import { modeLabel } from '@/features/sampling/samplingLabels';
 import {
   cancelSchema, personSchema, rescheduleSchema, scheduleSchema, today,
   type CancelValues, type PersonValues, type RescheduleValues, type ScheduleValues,
 } from '../inspectionSchema';
-import { formatDay, personRoleLabel, personRoleOptions } from '../inspectionLabels';
+import { personRoleLabel, personRoleOptions } from '../inspectionLabels';
 
 interface CommonProps { isSaving: boolean; onClose: () => void }
 
@@ -54,57 +51,29 @@ export function PersonDialog(props: CommonProps & {
  */
 export function ScheduleInspectionDialog(props: CommonProps & {
   people: PersonViewModel[];
-  plans: SamplingPlanSummaryViewModel[];
-  protocols: ProtocolSummaryViewModel[];
   onSave: (values: ScheduleValues) => Promise<boolean>;
-  onCreateDirectedPlan?: () => Promise<string | null>;
 }) {
   const form = useForm<ScheduleValues>({
     resolver: zodResolver(scheduleSchema),
-    defaultValues: {
-      samplingPlanId: props.plans[0]?.id ?? '',
-      protocolId: props.protocols[0]?.id ?? '',
-      responsibleId: props.people[0]?.id ?? '',
-      scheduledFor: today(),
-    },
+    defaultValues: { responsibleId: props.people[0]?.id ?? '', scheduledFor: today() },
   });
-
-  const missing = props.people.length === 0 || props.plans.length === 0 || props.protocols.length === 0;
-  const [creatingPlan, setCreatingPlan] = useState(false);
-  async function createDirectedPlan() {
-    if (!props.onCreateDirectedPlan) return;
-    setCreatingPlan(true);
-    const id = await props.onCreateDirectedPlan();
-    setCreatingPlan(false);
-    if (id) form.setValue('samplingPlanId', id, { shouldValidate: true });
-  }
+  const firstPerson = props.people[0]?.id;
+  useEffect(() => {
+    if (firstPerson && !form.getValues('responsibleId')) form.setValue('responsibleId', firstPerson);
+  }, [firstPerson, form]);
 
   return <Dialog open onClose={props.isSaving ? undefined : props.onClose} maxWidth="sm" fullWidth>
     <form noValidate onSubmit={form.handleSubmit(async values => { if (await props.onSave(values)) props.onClose(); })}>
-      <DialogTitle>Agendar vistoria</DialogTitle>
+      <DialogTitle>Agendar vistoria de cercosporiose</DialogTitle>
       <DialogContent><Stack spacing={2} sx={{ pt: 1 }}>
-        {missing && <Alert severity="warning">
-          Para agendar são necessários: alguém na equipe, uma marcação de pontos deste cultivo e um
-          protocolo publicado para a cultura.
-        </Alert>}
+        <Alert severity="info">
+          São 10 paradas onde o satélite viu a lavoura destoar nas últimas três semanas — ou espalhadas pelo talhão,
+          se não houver área marcada. Em cada parada, olhe 10 plantas, das folhas de baixo até a da espiga.
+        </Alert>
+        {props.people.length === 0 && <Alert severity="warning">Cadastre alguém na equipe para ir a campo.</Alert>}
         <FormSelectField name="responsibleId" control={form.control} label="Quem vai a campo"
           options={props.people.map(person => ({
             value: person.id, label: `${person.name} · ${personRoleLabel[person.role]}`,
-          }))} />
-        <FormSelectField name="samplingPlanId" control={form.control} label="Qual caminhada"
-          options={props.plans.map(plan => ({
-            value: plan.id,
-            label: `${modeLabel[plan.mode]} · ${plan.pointCount} paradas${plan.mode === 'Directed'
-              ? (plan.zoneDate ? ` nas áreas do satélite de ${formatDay(plan.zoneDate)}` : ' pelo talhão inteiro') : ''}${plan.isOutdated ? ' (malha defasada)' : ''}`,
-          }))} />
-        {props.onCreateDirectedPlan && <Button sx={{ alignSelf: 'flex-start' }} disabled={creatingPlan || props.isSaving}
-          onClick={() => void createDirectedPlan()}>
-          {creatingPlan ? 'Gerando paradas…' : 'Gerar 10 paradas onde o satélite viu a lavoura destoar'}
-        </Button>}
-        <FormSelectField name="protocolId" control={form.control} label="O que coletar"
-          options={props.protocols.map(protocol => ({
-            value: protocol.id,
-            label: `${protocol.name} v${protocol.version} · ${protocol.targetCount} alvos`,
           }))} />
         <FormTextField name="scheduledFor" control={form.control} label="Data" type="date"
           slotProps={{ inputLabel: { shrink: true } }} />

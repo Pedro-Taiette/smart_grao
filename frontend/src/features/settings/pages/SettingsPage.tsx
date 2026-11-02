@@ -1,8 +1,6 @@
 import { Box, Card, CardActionArea, Stack, Typography } from '@mui/material';
 import AgricultureIcon from '@mui/icons-material/Agriculture';
 import GroupsIcon from '@mui/icons-material/Groups';
-import PestControlIcon from '@mui/icons-material/PestControl';
-import ChecklistIcon from '@mui/icons-material/Checklist';
 import { useNavigate } from 'react-router-dom';
 import { PageContainer, PageHeader } from '@/shared/components/AppLayout';
 
@@ -25,18 +23,6 @@ const entries = [
     label: 'Equipe',
     description: 'Quem pode ser responsável por uma vistoria nesta fazenda.',
     icon: <GroupsIcon fontSize="large" color="primary" />,
-  },
-  {
-    to: '/ajustes/protocolos',
-    label: 'Protocolos',
-    description: 'A receita da vistoria: o que observar em cada parada e em que unidade medir.',
-    icon: <ChecklistIcon fontSize="large" color="primary" />,
-  },
-  {
-    to: '/ajustes/catalogo',
-    label: 'Pragas e doenças',
-    description: 'O catálogo que acompanha o produto. Vale para qualquer lavoura de milho do país.',
-    icon: <PestControlIcon fontSize="large" color="primary" />,
   },
 ] as const;
 

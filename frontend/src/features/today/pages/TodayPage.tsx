@@ -72,7 +72,7 @@ export function TodayPage() {
             <Box>
               <Typography variant="h6">Tudo pronto para a primeira vistoria</Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Abra o talhão, marque os pontos de coleta e agende a visita.
+                Abra o talhão, veja o risco de cercosporiose e agende a vistoria.
               </Typography>
               <Button variant="contained" onClick={() => navigate('/talhoes')}>
                 Escolher o talhão

@@ -11,3 +11,19 @@ body,
   width: 100%;
   font-family: inherit;
 }
+
+.stop-marker {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: #d32f2f;
+  color: #fff;
+  font: 700 12px/20px sans-serif;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.stop-marker.visited {
+  background: #2e7d32;
+}
