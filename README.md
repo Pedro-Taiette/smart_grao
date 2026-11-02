@@ -80,6 +80,8 @@ docs/        decisões de arquitetura, regras de domínio e referência da API
 - [Fase 6 — Satélite](docs/fase-6-satelite.md) — Sentinel-2, NDRE e áreas que destoam no talhão
 - [Fase 7 — Vistoria dirigida e fotos](docs/fase-7-vistoria-dirigida.md) — 10 paradas nas áreas do
   satélite, fotos da folha com id do celular
+- [Fase 8 — IA de imagem](docs/fase-8-ia-imagem.md) — fila de análises, modelo ONNX e mapa de calor
+- [Fase 9 — Aferimento](docs/fase-9-aferimento.md) — revisão humana, métricas e antecedência
 - [Fase 1 — Safras e cultivos](docs/fase-1-cultivos.md) — modelo, migration, API e roteiro de verificação.
 - [Arquitetura](docs/arquitetura.md) — camadas, decisões e o porquê de cada uma
 - [Domínio](docs/dominio.md) — regras do talhão e do plano de amostragem, geodésia e sobreposição

@@ -25,6 +25,17 @@ public sealed class AnalysisController : ControllerBase
     public async Task<IActionResult> Heatmap(Guid id, [FromServices] GetHeatmapQueryHandler handler, CancellationToken cancellationToken)
         => File(await handler.HandleAsync(id, cancellationToken), "image/png");
 
+    [HttpGet("api/calibration", Name = "GetCalibration")]
+    [ProducesResponseType(typeof(CalibrationViewModel), StatusCodes.Status200OK)]
+    public async Task<ActionResult<CalibrationViewModel>> Calibration(
+        [FromServices] GetCalibrationQueryHandler handler, CancellationToken cancellationToken)
+        => Ok(await handler.HandleAsync(cancellationToken));
+
+    [HttpGet("api/calibration/reviewed-photos.csv", Name = "ExportReviewedPhotos")]
+    [Produces("text/csv")]
+    public async Task<IActionResult> Export([FromServices] ExportReviewedPhotosQueryHandler handler, CancellationToken cancellationToken)
+        => File(System.Text.Encoding.UTF8.GetBytes(await handler.HandleAsync(cancellationToken)), "text/csv", "fotos-revisadas.csv");
+
     [HttpPost("api/assessments/{id:guid}/review", Name = "ReviewAssessment")]
     [ProducesResponseType(typeof(AssessmentViewModel), StatusCodes.Status200OK)]
     public async Task<ActionResult<AssessmentViewModel>> Review(

@@ -39,3 +39,11 @@ async def vision_classify(file: UploadFile = File(...), heatmap: bool = True):
         return vision.classify(content, heatmap)
     except FileNotFoundError as error:
         raise HTTPException(status_code=503, detail=str(error))
+
+
+@app.get("/vision/model")
+def vision_model():
+    try:
+        return vision.model_card()
+    except FileNotFoundError as error:
+        raise HTTPException(status_code=503, detail=str(error))

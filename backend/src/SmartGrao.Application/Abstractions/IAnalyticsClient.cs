@@ -1,4 +1,5 @@
 using SmartGrao.Application.Common;
+using SmartGrao.Application.Features.Analysis;
 
 namespace SmartGrao.Application.Abstractions;
 
@@ -14,4 +15,6 @@ public sealed record SatellitePassResult(
 public interface IAnalyticsClient
 {
     Task<IReadOnlyList<SatellitePassResult>> GetSatellitePassesAsync(GeoJsonPolygon polygon, DateOnly start, DateOnly end, CancellationToken cancellationToken);
+
+    Task<ModelCardViewModel> GetModelCardAsync(CancellationToken cancellationToken);
 }

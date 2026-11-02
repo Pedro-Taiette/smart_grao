@@ -32,6 +32,10 @@ import type {
 } from '../model/assessmentViewModel';
 
 import type {
+  CalibrationViewModel
+} from '../model/calibrationViewModel';
+
+import type {
   GetAnalysisJobsParams
 } from '../model/getAnalysisJobsParams';
 
@@ -283,6 +287,178 @@ export function useGetAssessmentHeatmap<TData = Awaited<ReturnType<typeof getAss
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getGetAssessmentHeatmapQueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const getCalibration = (
+
+ options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+) => {
+
+
+      return httpClient<CalibrationViewModel>(
+      {url: `/api/calibration`, method: 'GET', signal
+    },
+      options);
+    }
+
+
+
+
+export const getGetCalibrationQueryKey = () => {
+    return [
+    `/api/calibration`
+    ] as const;
+    }
+
+
+export const getGetCalibrationQueryOptions = <TData = Awaited<ReturnType<typeof getCalibration>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCalibration>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCalibrationQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCalibration>>> = ({ signal }) => getCalibration(requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCalibration>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetCalibrationQueryResult = NonNullable<Awaited<ReturnType<typeof getCalibration>>>
+export type GetCalibrationQueryError = unknown
+
+
+export function useGetCalibration<TData = Awaited<ReturnType<typeof getCalibration>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCalibration>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCalibration>>,
+          TError,
+          Awaited<ReturnType<typeof getCalibration>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof httpClient>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCalibration<TData = Awaited<ReturnType<typeof getCalibration>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCalibration>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCalibration>>,
+          TError,
+          Awaited<ReturnType<typeof getCalibration>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof httpClient>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCalibration<TData = Awaited<ReturnType<typeof getCalibration>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCalibration>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useGetCalibration<TData = Awaited<ReturnType<typeof getCalibration>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCalibration>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetCalibrationQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const exportReviewedPhotos = (
+
+ options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+) => {
+
+
+      return httpClient<unknown>(
+      {url: `/api/calibration/reviewed-photos.csv`, method: 'GET', signal
+    },
+      options);
+    }
+
+
+
+
+export const getExportReviewedPhotosQueryKey = () => {
+    return [
+    `/api/calibration/reviewed-photos.csv`
+    ] as const;
+    }
+
+
+export const getExportReviewedPhotosQueryOptions = <TData = Awaited<ReturnType<typeof exportReviewedPhotos>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof exportReviewedPhotos>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getExportReviewedPhotosQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof exportReviewedPhotos>>> = ({ signal }) => exportReviewedPhotos(requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof exportReviewedPhotos>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ExportReviewedPhotosQueryResult = NonNullable<Awaited<ReturnType<typeof exportReviewedPhotos>>>
+export type ExportReviewedPhotosQueryError = unknown
+
+
+export function useExportReviewedPhotos<TData = Awaited<ReturnType<typeof exportReviewedPhotos>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof exportReviewedPhotos>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof exportReviewedPhotos>>,
+          TError,
+          Awaited<ReturnType<typeof exportReviewedPhotos>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof httpClient>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useExportReviewedPhotos<TData = Awaited<ReturnType<typeof exportReviewedPhotos>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof exportReviewedPhotos>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof exportReviewedPhotos>>,
+          TError,
+          Awaited<ReturnType<typeof exportReviewedPhotos>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof httpClient>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useExportReviewedPhotos<TData = Awaited<ReturnType<typeof exportReviewedPhotos>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof exportReviewedPhotos>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useExportReviewedPhotos<TData = Awaited<ReturnType<typeof exportReviewedPhotos>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof exportReviewedPhotos>>, TError, TData>>, request?: SecondParameter<typeof httpClient>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getExportReviewedPhotosQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

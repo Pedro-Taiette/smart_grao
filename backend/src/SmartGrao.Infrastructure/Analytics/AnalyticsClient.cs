@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using SmartGrao.Application.Abstractions;
 using SmartGrao.Application.Common;
+using SmartGrao.Application.Features.Analysis;
 
 namespace SmartGrao.Infrastructure.Analytics;
 
@@ -18,6 +19,14 @@ internal sealed class AnalyticsClient(HttpClient http) : IAnalyticsClient
         var body = await response.Content.ReadFromJsonAsync<Response>(Json, cancellationToken)
             ?? throw new HttpRequestException("Analytics returned an empty body.");
         return body.Passes;
+    }
+
+    public async Task<ModelCardViewModel> GetModelCardAsync(CancellationToken cancellationToken)
+    {
+        using var response = await http.GetAsync("vision/model", cancellationToken);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<ModelCardViewModel>(Json, cancellationToken)
+            ?? throw new HttpRequestException("Analytics returned an empty model card.");
     }
 
     private sealed record Response(IReadOnlyList<SatellitePassResult> Passes);

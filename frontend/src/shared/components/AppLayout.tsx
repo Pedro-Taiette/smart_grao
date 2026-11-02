@@ -6,6 +6,7 @@ import GrassIcon from '@mui/icons-material/Grass';
 import TodayIcon from '@mui/icons-material/Today';
 import MapIcon from '@mui/icons-material/Map';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
+import InsightsIcon from '@mui/icons-material/Insights';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { FarmSelector } from './FarmSelector';
@@ -22,6 +23,7 @@ const destinations = [
   { to: '/', label: 'Hoje', icon: <TodayIcon /> },
   { to: '/talhoes', label: 'Talhões', icon: <MapIcon /> },
   { to: '/vistorias', label: 'Vistorias', icon: <FactCheckIcon /> },
+  { to: '/aferimento', label: 'Aferimento', icon: <InsightsIcon /> },
 ] as const;
 
 const settings = { to: '/ajustes', label: 'Ajustes', icon: <SettingsIcon /> } as const;
