@@ -6,6 +6,7 @@ import { QueryBoundary } from '@/shared/components/QueryBoundary';
 import { formatHectares } from '@/shared/format';
 import { InspectionRow } from '../components/InspectionRow';
 import { PendingSetup } from '../components/PendingSetup';
+import { RiskAlerts } from '@/features/risk/components/RiskAlerts';
 import { useTodayWorkspace } from '../hooks/useTodayWorkspace';
 
 /**
@@ -45,6 +46,8 @@ export function TodayPage() {
       >
         <Stack spacing={4}>
           <PendingSetup gaps={workspace.gaps} />
+
+          {workspace.farm && <RiskAlerts farmId={workspace.farm.id} />}
 
           <Group
             title="Em campo agora"

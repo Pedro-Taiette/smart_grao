@@ -1812,6 +1812,101 @@
         }
       }
     },
+    "/api/cultivations/{id}/cercospora-risk": {
+      "get": {
+        "tags": [
+          "Risk"
+        ],
+        "operationId": "GetCercosporaRisk",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CercosporaRiskViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cultivations/{id}/weather/refresh": {
+      "post": {
+        "tags": [
+          "Risk"
+        ],
+        "operationId": "RefreshWeather",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CercosporaRiskViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cercospora-alerts": {
+      "get": {
+        "tags": [
+          "Risk"
+        ],
+        "operationId": "GetCercosporaAlerts",
+        "parameters": [
+          {
+            "name": "farmId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CercosporaAlertViewModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/sampling-plans/{id}": {
       "get": {
         "tags": [
@@ -2107,6 +2202,54 @@
           }
         }
       },
+      "CercosporaAlertViewModel": {
+        "required": [
+          "cultivationId",
+          "fieldId",
+          "fieldName",
+          "cultivar",
+          "current",
+          "stage",
+          "suggestsInspection",
+          "riskFactors"
+        ],
+        "type": "object",
+        "properties": {
+          "cultivationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fieldId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fieldName": {
+            "type": "string"
+          },
+          "cultivar": {
+            "type": "string"
+          },
+          "current": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/DailyRiskViewModel"
+              }
+            ]
+          },
+          "stage": {
+            "$ref": "#/components/schemas/StageStatusViewModel"
+          },
+          "suggestsInspection": {
+            "type": "boolean"
+          },
+          "riskFactors": {
+            "$ref": "#/components/schemas/CercosporaRiskFactorsViewModel"
+          }
+        }
+      },
       "CercosporaRiskFactorsViewModel": {
         "required": [
           "hybridReaction",
@@ -2123,6 +2266,71 @@
           },
           "tillage": {
             "$ref": "#/components/schemas/TillageSystem"
+          }
+        }
+      },
+      "CercosporaRiskViewModel": {
+        "required": [
+          "cultivationId",
+          "fieldId",
+          "today",
+          "current",
+          "stage",
+          "suggestsInspection",
+          "riskFactors",
+          "weatherRetrievedAt",
+          "windowDays",
+          "days"
+        ],
+        "type": "object",
+        "properties": {
+          "cultivationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fieldId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "today": {
+            "type": "string",
+            "format": "date"
+          },
+          "current": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/DailyRiskViewModel"
+              }
+            ]
+          },
+          "stage": {
+            "$ref": "#/components/schemas/StageStatusViewModel"
+          },
+          "suggestsInspection": {
+            "type": "boolean"
+          },
+          "riskFactors": {
+            "$ref": "#/components/schemas/CercosporaRiskFactorsViewModel"
+          },
+          "weatherRetrievedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "windowDays": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DailyRiskViewModel"
+            }
           }
         }
       },
@@ -2377,6 +2585,59 @@
             "items": {
               "$ref": "#/components/schemas/GrowthStageViewModel"
             }
+          }
+        }
+      },
+      "DailyRiskViewModel": {
+        "required": [
+          "date",
+          "level",
+          "climateLevel",
+          "humidNights",
+          "favorableDays",
+          "daysWithData",
+          "isForecast"
+        ],
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "level": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RiskLevel"
+              }
+            ]
+          },
+          "climateLevel": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RiskLevel"
+              }
+            ]
+          },
+          "humidNights": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "favorableDays": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "daysWithData": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isForecast": {
+            "type": "boolean"
           }
         }
       },
@@ -3329,6 +3590,14 @@
           }
         }
       },
+      "RiskLevel": {
+        "enum": [
+          "Low",
+          "Moderate",
+          "High",
+          null
+        ]
+      },
       "SamplingMode": {
         "enum": [
           "Monitoring",
@@ -3531,6 +3800,44 @@
           }
         }
       },
+      "StageStatusViewModel": {
+        "required": [
+          "window",
+          "stage",
+          "observedOn",
+          "isStale"
+        ],
+        "type": "object",
+        "properties": {
+          "window": {
+            "$ref": "#/components/schemas/StageWindow"
+          },
+          "stage": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "observedOn": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "isStale": {
+            "type": "boolean"
+          }
+        }
+      },
+      "StageWindow": {
+        "enum": [
+          "Unknown",
+          "Before",
+          "Within",
+          "After"
+        ]
+      },
       "TargetCountViewModel": {
         "required": [
           "id",
@@ -3647,6 +3954,9 @@
     },
     {
       "name": "Protocols"
+    },
+    {
+      "name": "Risk"
     },
     {
       "name": "SamplingPlans"

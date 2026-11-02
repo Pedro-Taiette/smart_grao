@@ -75,6 +75,8 @@ docs/        decisões de arquitetura, regras de domínio e referência da API
   Sentinel-2 e conjuntos de imagens, com fontes
 - [Fase 4 — Recorte milho + cercosporiose](docs/fase-4-recorte.md) — fatores de risco, protocolo
   semeado e telas só de milho
+- [Fase 5 — Risco climático](docs/fase-5-risco-climatico.md) — índice de favorabilidade, clima do
+  Open-Meteo e vistoria sugerida
 - [Fase 1 — Safras e cultivos](docs/fase-1-cultivos.md) — modelo, migration, API e roteiro de verificação.
 - [Arquitetura](docs/arquitetura.md) — camadas, decisões e o porquê de cada uma
 - [Domínio](docs/dominio.md) — regras do talhão e do plano de amostragem, geodésia e sobreposição

@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SmartGrao.Application.Abstractions;
 using SmartGrao.Infrastructure.Events;
 using SmartGrao.Infrastructure.Persistence;
+using SmartGrao.Infrastructure.Weather;
 
 namespace SmartGrao.Infrastructure;
 
@@ -42,6 +43,9 @@ public static class DependencyInjection
 
         services.AddScoped<ISmartGraoDbContext>(sp => sp.GetRequiredService<SmartGraoDbContext>());
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
+
+        services.AddHttpClient<IWeatherProvider, OpenMeteoWeatherProvider>(client => client.Timeout = TimeSpan.FromSeconds(30));
+        services.AddHostedService<WeatherRefreshWorker>();
 
         return services;
     }

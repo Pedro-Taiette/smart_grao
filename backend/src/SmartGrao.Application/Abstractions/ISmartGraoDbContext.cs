@@ -1,9 +1,10 @@
-using SmartGrao.Domain.Cultivations;
+﻿using SmartGrao.Domain.Cultivations;
 using Microsoft.EntityFrameworkCore;
 using SmartGrao.Domain.Farms;
 using SmartGrao.Domain.Fields;
 using SmartGrao.Domain.Inspections;
 using SmartGrao.Domain.People;
+using SmartGrao.Domain.Risk;
 using SmartGrao.Domain.Protocols;
 using SmartGrao.Domain.Sampling;
 
@@ -57,6 +58,8 @@ public interface ISmartGraoDbContext
     /// atravessam a fronteira do agregado.
     /// </summary>
     DbSet<SamplingPlan> SamplingPlans { get; }
+
+    DbSet<WeatherHour> WeatherHours { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

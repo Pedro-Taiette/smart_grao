@@ -865,6 +865,44 @@ namespace SmartGrao.Infrastructure.Persistence.Migrations
                     b.ToTable("protocol_items", (string)null);
                 });
 
+            modelBuilder.Entity("SmartGrao.Domain.Risk.WeatherHour", b =>
+                {
+                    b.Property<Guid>("FieldId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("field_id");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date")
+                        .HasColumnName("date");
+
+                    b.Property<int>("Hour")
+                        .HasColumnType("integer")
+                        .HasColumnName("hour");
+
+                    b.Property<double>("RelativeHumidity")
+                        .HasColumnType("double precision")
+                        .HasColumnName("relative_humidity");
+
+                    b.Property<DateTimeOffset>("RetrievedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("retrieved_at");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("source");
+
+                    b.Property<double>("TemperatureC")
+                        .HasColumnType("double precision")
+                        .HasColumnName("temperature_c");
+
+                    b.HasKey("FieldId", "Date", "Hour")
+                        .HasName("pk_weather_hours");
+
+                    b.ToTable("weather_hours", (string)null);
+                });
+
             modelBuilder.Entity("SmartGrao.Domain.Sampling.SamplingPlan", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1179,6 +1217,16 @@ namespace SmartGrao.Infrastructure.Persistence.Migrations
                         });
 
                     b.Navigation("ReferenceLevel");
+                });
+
+            modelBuilder.Entity("SmartGrao.Domain.Risk.WeatherHour", b =>
+                {
+                    b.HasOne("SmartGrao.Domain.Fields.Field", null)
+                        .WithMany()
+                        .HasForeignKey("FieldId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_weather_hours_fields_field_id");
                 });
 
             modelBuilder.Entity("SmartGrao.Domain.Sampling.SamplingPlan", b =>

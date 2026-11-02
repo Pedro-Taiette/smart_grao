@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Alert, Button, Stack } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGetInspections } from '@/api/generated/inspections/inspections';
 import { useGetProtocols } from '@/api/generated/protocols/protocols';
 // O histórico de malhas é uma rota do talhão, e por isso o hook sai do módulo de talhões.
@@ -27,7 +27,12 @@ export function FieldInspectionsSection({ farmId, fieldId, cultivation }: {
   cultivation: CultivationViewModel | null;
 }) {
   const navigate = useNavigate();
-  const [isScheduling, setScheduling] = useState(false);
+  const [params, setParams] = useSearchParams();
+  const [isScheduling, setSchedulingState] = useState(params.has('agendar'));
+  const setScheduling = (open: boolean) => {
+    setSchedulingState(open);
+    if (!open && params.has('agendar')) setParams({ aba: 'vistorias' }, { replace: true });
+  };
   const actions = useInspectionActions();
 
   const inspectionsQuery = useGetInspections(

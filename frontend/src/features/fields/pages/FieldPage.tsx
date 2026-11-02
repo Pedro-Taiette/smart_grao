@@ -5,6 +5,7 @@ import { useGetFieldById } from '@/api/generated/fields/fields';
 import { useFarmContext, useSyncFarmFromRecord } from '@/features/farms/useFarmContext';
 import { useFarmCultivations } from '@/features/cultivations/hooks/useFarmCultivations';
 import { CultivationSection } from '@/features/cultivations/components/CultivationSection';
+import { RiskSection } from '@/features/risk/components/RiskSection';
 import { cycleDate } from '@/features/cultivations/cultivationSchema';
 import { SamplingSection } from '@/features/sampling/components/SamplingSection';
 import { FieldInspectionsSection } from '@/features/inspections/components/FieldInspectionsSection';
@@ -27,6 +28,7 @@ import { cropLabels } from '../cropLabels';
  */
 const tabs = [
   { id: 'cultivo', label: 'Cultivo' },
+  { id: 'risco', label: 'Risco de cercosporiose' },
   { id: 'pontos', label: 'Pontos de coleta' },
   { id: 'vistorias', label: 'Vistorias' },
 ] as const;
@@ -96,6 +98,7 @@ export function FieldPage() {
             </Tabs>
 
             {tab === 'cultivo' && <CultivationSection farmId={field.farmId} fieldId={fieldId} />}
+            {tab === 'risco' && <RiskSection farmId={field.farmId} fieldId={fieldId} />}
             {tab === 'pontos' && <SamplingSection field={field} cultivation={open} />}
             {tab === 'vistorias' && (
               <FieldInspectionsSection farmId={farmId} fieldId={fieldId} cultivation={open} />

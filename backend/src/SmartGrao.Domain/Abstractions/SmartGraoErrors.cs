@@ -156,6 +156,13 @@ public static class SmartGraoErrors
         public static Error RiskFactorsNotApplicable => Error.Validation("cultivation.risk_factors_not_applicable", "Cercospora risk factors only apply to corn cultivations.");
     }
 
+    public static class Risk
+    {
+        public static Error InvalidWeather => Error.Validation("risk.invalid_weather", "A weather reading is outside the plausible range.");
+        public static Error NotCorn => Error.Validation("risk.not_corn", "Cercospora risk is only computed for corn cultivations.");
+        public static Error WeatherUnavailable => Error.ExternalService("risk.weather_unavailable", "The weather service did not answer. Try again in a few minutes.");
+    }
+
     public static class Protocol
     {
         public static Error TargetNotFound => Error.NotFound("protocol.target_not_found", "Monitoring target not found.");
