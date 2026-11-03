@@ -1,0 +1,41 @@
+{
+  "rows": 8774,
+  "groups": 181,
+  "by_split": {
+    "train": 6294,
+    "test": 1571,
+    "val": 909
+  },
+  "by_split_dataset_label": {
+    "test|cds": {
+      "cercosporiose": 523,
+      "outras_manchas": 1048,
+      "saudavel": 0
+    },
+    "train|digipathos": {
+      "cercosporiose": 0,
+      "outras_manchas": 1460,
+      "saudavel": 0
+    },
+    "train|plantvillage": {
+      "cercosporiose": 442,
+      "outras_manchas": 1850,
+      "saudavel": 1013
+    },
+    "train|seasonal": {
+      "cercosporiose": 744,
+      "outras_manchas": 126,
+      "saudavel": 659
+    },
+    "val|plantvillage": {
+      "cercosporiose": 71,
+      "outras_manchas": 327,
+      "saudavel": 149
+    },
+    "val|seasonal": {
+      "cercosporiose": 123,
+      "outras_manchas": 1,
+      "saudavel": 238
+    }
+  }
+}

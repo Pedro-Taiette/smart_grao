@@ -21,6 +21,10 @@ CLASS_TO_INDEX = {name: index for index, name in enumerate(CLASSES)}
 # Nomes curtos dos conjuntos; sao tambem as pastas em data/raw
 DATASETS: tuple[str, ...] = ("plantvillage", "cds", "seasonal", "craze", "digipathos")
 
+# Avaliados para a 0.2.0 e rejeitados para treino (ver TREINO.md): so baixam se nomeados e nao
+# entram no manifesto
+EXTRA_DATASETS: tuple[str, ...] = ("bdmaize", "figmaize", "plantdoc")
+
 # Dominio de captura de cada conjunto. Acuracia em "lab" nao e acuracia em campo.
 DATASET_DOMAIN = {
     "plantvillage": "lab",
