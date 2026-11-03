@@ -1,5 +1,3 @@
-import { useGetProtocols } from '@/api/generated/protocols/protocols';
-import { ProtocolStatus } from '@/api/generated/model/protocolStatus';
 import { InspectionStatus } from '@/api/generated/model/inspectionStatus';
 import type { InspectionSummaryViewModel } from '@/api/generated/model/inspectionSummaryViewModel';
 import { useFarmContext } from '@/features/farms/useFarmContext';
@@ -24,14 +22,8 @@ export function useTodayWorkspace() {
   const inspections = useFarmInspections(farmId);
   const team = usePeople(farmId, true);
 
-  // O protocolo precisa existir publicado na cultura do que esta plantado. Sem cultivo aberto a
-  // pergunta nao se coloca, e o milho e so o palpite inicial para nao deixar a consulta sem filtro.
-  const openCycles = cultivations.cultivations.filter((cycle) => cycle.endedOn === null);
-  const protocols = useGetProtocols(
-    { crop: openCycles[0]?.crop ?? 'Corn', status: ProtocolStatus.Published },
-    { query: { enabled: Boolean(farmId) } },
-  );
 
+  const openCycles = cultivations.cultivations.filter((cycle) => cycle.endedOn === null);
   const activeFields = fields.fields.filter((field) => field.active);
   const scheduled = (inspection: InspectionSummaryViewModel) =>
     inspection.status === InspectionStatus.Scheduled;
@@ -78,7 +70,7 @@ export function useTodayWorkspace() {
       gaps.push({
         id: 'field',
         title: 'Desenhe o primeiro talhão',
-        description: 'O contorno no mapa define a área e, depois, onde ficam os pontos de coleta.',
+        description: 'O contorno no mapa é onde o clima e o satélite são lidos.',
         actionLabel: 'Desenhar',
         to: '/talhoes',
       });
@@ -102,15 +94,6 @@ export function useTodayWorkspace() {
       });
     }
 
-    if (farm && openCycles.length > 0 && !protocols.isPending && (protocols.data ?? []).length === 0) {
-      gaps.push({
-        id: 'protocol',
-        title: 'Nenhum protocolo publicado para esta cultura',
-        description: 'O protocolo é a receita da vistoria: o que observar em cada parada e em que unidade.',
-        actionLabel: 'Ver protocolos',
-        to: '/ajustes/protocolos',
-      });
-    }
   }
 
   return {

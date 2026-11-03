@@ -5,6 +5,185 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/photos/{id}/analysis": {
+      "post": {
+        "tags": [
+          "Analysis"
+        ],
+        "operationId": "RequeueAnalysis",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisJobViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analysis-jobs": {
+      "get": {
+        "tags": [
+          "Analysis"
+        ],
+        "operationId": "GetAnalysisJobs",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/AnalysisJobStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AnalysisJobViewModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/assessments/{id}/heatmap": {
+      "get": {
+        "tags": [
+          "Analysis"
+        ],
+        "operationId": "GetAssessmentHeatmap",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { },
+              "image/png": { }
+            }
+          }
+        }
+      }
+    },
+    "/api/calibration": {
+      "get": {
+        "tags": [
+          "Analysis"
+        ],
+        "operationId": "GetCalibration",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalibrationViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/calibration/reviewed-photos.csv": {
+      "get": {
+        "tags": [
+          "Analysis"
+        ],
+        "operationId": "ExportReviewedPhotos",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { },
+              "text/csv": { }
+            }
+          }
+        }
+      }
+    },
+    "/api/assessments/{id}/review": {
+      "post": {
+        "tags": [
+          "Analysis"
+        ],
+        "operationId": "ReviewAssessment",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewAssessmentViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewAssessmentViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewAssessmentViewModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssessmentViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/cultivations": {
       "get": {
         "tags": [
@@ -147,6 +326,57 @@
             "application/*+json": {
               "schema": {
                 "$ref": "#/components/schemas/CloseCultivationViewModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CultivationViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cultivations/{id}/risk-factors": {
+      "put": {
+        "tags": [
+          "Cultivations"
+        ],
+        "operationId": "UpdateCultivationRiskFactors",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CercosporaRiskFactorsViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CercosporaRiskFactorsViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CercosporaRiskFactorsViewModel"
               }
             }
           },
@@ -1418,6 +1648,308 @@
         }
       }
     },
+    "/api/photos": {
+      "post": {
+        "tags": [
+          "Photos"
+        ],
+        "operationId": "UploadObservationPhoto",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "inspectionId": {
+                        "type": "string",
+                        "format": "uuid"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "observationId": {
+                        "type": "string",
+                        "format": "uuid"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "targetId": {
+                        "type": "string",
+                        "format": "uuid"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "organ": {
+                        "$ref": "#/components/schemas/PlantOrgan"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "takenAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "file": {
+                        "$ref": "#/components/schemas/IFormFile"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhotoViewModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Photos"
+        ],
+        "operationId": "GetPhotos",
+        "parameters": [
+          {
+            "name": "inspectionId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "cultivationId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PhotoViewModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/photos/device": {
+      "post": {
+        "tags": [
+          "Photos"
+        ],
+        "operationId": "UploadDevicePhoto",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "cultivationId": {
+                        "type": "string",
+                        "format": "uuid"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "source": {
+                        "$ref": "#/components/schemas/PhotoSource"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "isSimulated": {
+                        "type": "boolean"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "organ": {
+                        "$ref": "#/components/schemas/PlantOrgan"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "takenAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "latitude": {
+                        "type": "number",
+                        "format": "double"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "longitude": {
+                        "type": "number",
+                        "format": "double"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "file": {
+                        "$ref": "#/components/schemas/IFormFile"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhotoViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/photos/{id}/content": {
+      "get": {
+        "tags": [
+          "Photos"
+        ],
+        "operationId": "GetPhotoContent",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { },
+              "image/jpeg": { },
+              "image/png": { },
+              "image/webp": { }
+            }
+          }
+        }
+      }
+    },
+    "/api/cultivations/{id}/directed-plan": {
+      "post": {
+        "tags": [
+          "Photos"
+        ],
+        "operationId": "CreateDirectedPlan",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SamplingPlanViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/protocols": {
       "get": {
         "tags": [
@@ -1761,6 +2293,170 @@
         }
       }
     },
+    "/api/cultivations/{id}/cercospora-risk": {
+      "get": {
+        "tags": [
+          "Risk"
+        ],
+        "operationId": "GetCercosporaRisk",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CercosporaRiskViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cultivations/{id}/weather/refresh": {
+      "post": {
+        "tags": [
+          "Risk"
+        ],
+        "operationId": "RefreshWeather",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CercosporaRiskViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cultivations/{id}/satellite": {
+      "get": {
+        "tags": [
+          "Risk"
+        ],
+        "operationId": "GetSatellitePasses",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SatelliteViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cultivations/{id}/satellite/refresh": {
+      "post": {
+        "tags": [
+          "Risk"
+        ],
+        "operationId": "RefreshSatellitePasses",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "full",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SatelliteViewModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cercospora-alerts": {
+      "get": {
+        "tags": [
+          "Risk"
+        ],
+        "operationId": "GetCercosporaAlerts",
+        "parameters": [
+          {
+            "name": "farmId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CercosporaAlertViewModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/sampling-plans/{id}": {
       "get": {
         "tags": [
@@ -2038,12 +2734,220 @@
           }
         }
       },
+      "AnalysisJobStatus": {
+        "enum": [
+          "Pending",
+          "Running",
+          "Done",
+          "Failed"
+        ]
+      },
+      "AnalysisJobViewModel": {
+        "required": [
+          "id",
+          "photoId",
+          "status",
+          "attempts",
+          "nextAttemptAt",
+          "lastError"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "photoId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AnalysisJobStatus"
+          },
+          "attempts": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nextAttemptAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastError": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "AnomalyZoneViewModel": {
+        "required": [
+          "geometry",
+          "areaHectares",
+          "meanDrop",
+          "droppedSincePrevious"
+        ],
+        "type": "object",
+        "properties": {
+          "geometry": {
+            "$ref": "#/components/schemas/GeoJsonPolygon"
+          },
+          "areaHectares": {
+            "type": "number",
+            "format": "double"
+          },
+          "meanDrop": {
+            "type": "number",
+            "format": "double"
+          },
+          "droppedSincePrevious": {
+            "type": "boolean"
+          }
+        }
+      },
+      "AssessmentSource": {
+        "enum": [
+          "Model",
+          "Human"
+        ]
+      },
+      "AssessmentViewModel": {
+        "required": [
+          "id",
+          "photoId",
+          "source",
+          "label",
+          "confidence",
+          "cercosporioseProbability",
+          "healthyProbability",
+          "otherSpotsProbability",
+          "modelVersion",
+          "hasHeatmap",
+          "reviewOf",
+          "reviewer",
+          "notes",
+          "assessedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "photoId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "source": {
+            "$ref": "#/components/schemas/AssessmentSource"
+          },
+          "label": {
+            "$ref": "#/components/schemas/LeafLabel"
+          },
+          "confidence": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "cercosporioseProbability": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "healthyProbability": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "otherSpotsProbability": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "modelVersion": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "hasHeatmap": {
+            "type": "boolean"
+          },
+          "reviewOf": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "reviewer": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "assessedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
       "AutomationCapability": {
         "enum": [
           "ManualRecord",
           "UnderValidation",
           "AutomationEnabled"
         ]
+      },
+      "CalibrationViewModel": {
+        "required": [
+          "model",
+          "modelUnavailableReason",
+          "reviews",
+          "leadTimes"
+        ],
+        "type": "object",
+        "properties": {
+          "model": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ModelCardViewModel"
+              }
+            ]
+          },
+          "modelUnavailableReason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "reviews": {
+            "$ref": "#/components/schemas/ReviewMetricsViewModel"
+          },
+          "leadTimes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LeadTimeViewModel"
+            }
+          }
+        }
       },
       "CancelInspectionViewModel": {
         "required": [
@@ -2053,6 +2957,138 @@
         "properties": {
           "reason": {
             "type": "string"
+          }
+        }
+      },
+      "CercosporaAlertViewModel": {
+        "required": [
+          "cultivationId",
+          "fieldId",
+          "fieldName",
+          "cultivar",
+          "current",
+          "stage",
+          "suggestsInspection",
+          "riskFactors"
+        ],
+        "type": "object",
+        "properties": {
+          "cultivationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fieldId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fieldName": {
+            "type": "string"
+          },
+          "cultivar": {
+            "type": "string"
+          },
+          "current": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/DailyRiskViewModel"
+              }
+            ]
+          },
+          "stage": {
+            "$ref": "#/components/schemas/StageStatusViewModel"
+          },
+          "suggestsInspection": {
+            "type": "boolean"
+          },
+          "riskFactors": {
+            "$ref": "#/components/schemas/CercosporaRiskFactorsViewModel"
+          }
+        }
+      },
+      "CercosporaRiskFactorsViewModel": {
+        "required": [
+          "hybridReaction",
+          "cropSequence",
+          "tillage"
+        ],
+        "type": "object",
+        "properties": {
+          "hybridReaction": {
+            "$ref": "#/components/schemas/HybridReaction"
+          },
+          "cropSequence": {
+            "$ref": "#/components/schemas/CropSequence"
+          },
+          "tillage": {
+            "$ref": "#/components/schemas/TillageSystem"
+          }
+        }
+      },
+      "CercosporaRiskViewModel": {
+        "required": [
+          "cultivationId",
+          "fieldId",
+          "today",
+          "current",
+          "stage",
+          "suggestsInspection",
+          "riskFactors",
+          "weatherRetrievedAt",
+          "windowDays",
+          "days"
+        ],
+        "type": "object",
+        "properties": {
+          "cultivationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fieldId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "today": {
+            "type": "string",
+            "format": "date"
+          },
+          "current": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/DailyRiskViewModel"
+              }
+            ]
+          },
+          "stage": {
+            "$ref": "#/components/schemas/StageStatusViewModel"
+          },
+          "suggestsInspection": {
+            "type": "boolean"
+          },
+          "riskFactors": {
+            "$ref": "#/components/schemas/CercosporaRiskFactorsViewModel"
+          },
+          "weatherRetrievedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "windowDays": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DailyRiskViewModel"
+            }
           }
         }
       },
@@ -2119,6 +3155,16 @@
           "plantedOn": {
             "type": "string",
             "format": "date"
+          },
+          "riskFactors": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/CercosporaRiskFactorsViewModel"
+              }
+            ]
           }
         }
       },
@@ -2239,6 +3285,13 @@
           "Other"
         ]
       },
+      "CropSequence": {
+        "enum": [
+          "Unknown",
+          "CornAfterCorn",
+          "Rotation"
+        ]
+      },
       "CultivationViewModel": {
         "required": [
           "id",
@@ -2248,6 +3301,7 @@
           "cultivar",
           "plantedOn",
           "endedOn",
+          "riskFactors",
           "stages"
         ],
         "type": "object",
@@ -2281,11 +3335,67 @@
             ],
             "format": "date"
           },
+          "riskFactors": {
+            "$ref": "#/components/schemas/CercosporaRiskFactorsViewModel"
+          },
           "stages": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/GrowthStageViewModel"
             }
+          }
+        }
+      },
+      "DailyRiskViewModel": {
+        "required": [
+          "date",
+          "level",
+          "climateLevel",
+          "humidNights",
+          "favorableDays",
+          "daysWithData",
+          "isForecast"
+        ],
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "level": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RiskLevel"
+              }
+            ]
+          },
+          "climateLevel": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RiskLevel"
+              }
+            ]
+          },
+          "humidNights": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "favorableDays": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "daysWithData": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isForecast": {
+            "type": "boolean"
           }
         }
       },
@@ -2531,6 +3641,46 @@
           }
         }
       },
+      "HybridReaction": {
+        "enum": [
+          "Unknown",
+          "Resistant",
+          "ModeratelyResistant",
+          "ModeratelySusceptible",
+          "Susceptible"
+        ]
+      },
+      "IFormFile": {
+        "type": "string",
+        "format": "binary"
+      },
+      "IndexStatisticsViewModel": {
+        "required": [
+          "mean",
+          "median",
+          "p10",
+          "p90"
+        ],
+        "type": "object",
+        "properties": {
+          "mean": {
+            "type": "number",
+            "format": "double"
+          },
+          "median": {
+            "type": "number",
+            "format": "double"
+          },
+          "p10": {
+            "type": "number",
+            "format": "double"
+          },
+          "p90": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
       "InspectionStatus": {
         "enum": [
           "Scheduled",
@@ -2733,6 +3883,198 @@
           }
         }
       },
+      "LeadTimeViewModel": {
+        "required": [
+          "cultivationId",
+          "fieldId",
+          "fieldName",
+          "confirmedOn",
+          "firstHighRisk",
+          "climateLeadDays",
+          "firstZone",
+          "satelliteLeadDays"
+        ],
+        "type": "object",
+        "properties": {
+          "cultivationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fieldId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fieldName": {
+            "type": "string"
+          },
+          "confirmedOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "firstHighRisk": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "climateLeadDays": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "firstZone": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "satelliteLeadDays": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          }
+        }
+      },
+      "LeafLabel": {
+        "enum": [
+          "Cercosporiose",
+          "Healthy",
+          "OtherSpots"
+        ]
+      },
+      "ModelCardViewModel": {
+        "required": [
+          "modelVersion",
+          "split",
+          "test",
+          "confusionLabels",
+          "confusionMatrix",
+          "byDomain",
+          "byDataset",
+          "outOfDomain"
+        ],
+        "type": "object",
+        "properties": {
+          "modelVersion": {
+            "type": "string"
+          },
+          "split": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "test": {
+            "$ref": "#/components/schemas/ModelSummaryViewModel"
+          },
+          "confusionLabels": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "confusionMatrix": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          },
+          "byDomain": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ModelSummaryViewModel"
+            }
+          },
+          "byDataset": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ModelSummaryViewModel"
+            }
+          },
+          "outOfDomain": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/OutOfDomainViewModel"
+              }
+            ]
+          }
+        }
+      },
+      "ModelSummaryViewModel": {
+        "required": [
+          "name",
+          "n",
+          "accuracy",
+          "macroF1",
+          "recallCercosporiose",
+          "precisionCercosporiose",
+          "ece"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "n": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "accuracy": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "macroF1": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "recallCercosporiose": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "precisionCercosporiose": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "ece": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          }
+        }
+      },
       "MonitoringTargetViewModel": {
         "required": [
           "id",
@@ -2867,6 +4209,29 @@
           }
         }
       },
+      "OutOfDomainViewModel": {
+        "required": [
+          "holdout",
+          "test",
+          "validationMacroF1"
+        ],
+        "type": "object",
+        "properties": {
+          "holdout": {
+            "type": "string"
+          },
+          "test": {
+            "$ref": "#/components/schemas/ModelSummaryViewModel"
+          },
+          "validationMacroF1": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          }
+        }
+      },
       "PersonRole": {
         "enum": [
           "Undefined",
@@ -2906,11 +4271,136 @@
           }
         }
       },
+      "PhotoSource": {
+        "enum": [
+          "Phone",
+          "Station",
+          "Drone"
+        ]
+      },
+      "PhotoViewModel": {
+        "required": [
+          "id",
+          "fieldId",
+          "cultivationId",
+          "inspectionId",
+          "observationId",
+          "targetId",
+          "organ",
+          "growthStage",
+          "location",
+          "accuracyMeters",
+          "source",
+          "isSimulated",
+          "takenAt",
+          "contentType",
+          "sizeBytes"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fieldId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "cultivationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "inspectionId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "observationId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "targetId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "organ": {
+            "$ref": "#/components/schemas/PlantOrgan"
+          },
+          "growthStage": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "location": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/GeoJsonPoint"
+              }
+            ]
+          },
+          "accuracyMeters": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "source": {
+            "$ref": "#/components/schemas/PhotoSource"
+          },
+          "isSimulated": {
+            "type": "boolean"
+          },
+          "takenAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "contentType": {
+            "type": "string"
+          },
+          "sizeBytes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "analysisStatus": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/AnalysisJobStatus"
+              }
+            ]
+          },
+          "assessments": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/AssessmentViewModel"
+            }
+          }
+        }
+      },
       "PlantOrgan": {
         "enum": [
           "Undefined",
           "Whorl",
           "Leaf",
+          "LowerLeaves",
           "EarLeaf",
           "StalkBase",
           "Stalk",
@@ -2919,8 +4409,7 @@
           "Tassel",
           "Silk",
           "Seedling",
-          "WholePlant",
-          null
+          "WholePlant"
         ]
       },
       "ProblemDetails": {
@@ -3228,10 +4717,110 @@
           }
         }
       },
+      "ReviewAssessmentViewModel": {
+        "required": [
+          "label",
+          "reviewer",
+          "notes"
+        ],
+        "type": "object",
+        "properties": {
+          "label": {
+            "$ref": "#/components/schemas/LeafLabel"
+          },
+          "reviewer": {
+            "type": "string"
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "ReviewMetricsViewModel": {
+        "required": [
+          "photos",
+          "analyzed",
+          "reviewed",
+          "simulatedExcluded",
+          "recallCercosporiose",
+          "precisionCercosporiose",
+          "agreement",
+          "confusionLabels",
+          "confusionMatrix"
+        ],
+        "type": "object",
+        "properties": {
+          "photos": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "analyzed": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "reviewed": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "simulatedExcluded": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "recallCercosporiose": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "precisionCercosporiose": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "agreement": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "confusionLabels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LeafLabel"
+            }
+          },
+          "confusionMatrix": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        }
+      },
+      "RiskLevel": {
+        "enum": [
+          "Low",
+          "Moderate",
+          "High",
+          null
+        ]
+      },
       "SamplingMode": {
         "enum": [
           "Monitoring",
-          "Mapping"
+          "Mapping",
+          "Directed"
         ]
       },
       "SamplingPlanSummaryViewModel": {
@@ -3248,7 +4837,8 @@
           "subdivisionRecommended",
           "isOutdated",
           "fieldAreaHectares",
-          "createdAt"
+          "createdAt",
+          "zoneDate"
         ],
         "type": "object",
         "properties": {
@@ -3305,6 +4895,13 @@
           "createdAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "zoneDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
           }
         }
       },
@@ -3344,6 +4941,96 @@
           },
           "location": {
             "$ref": "#/components/schemas/GeoJsonPoint"
+          }
+        }
+      },
+      "SatellitePassStatus": {
+        "enum": [
+          "NoReading",
+          "Ok"
+        ]
+      },
+      "SatellitePassViewModel": {
+        "required": [
+          "date",
+          "status",
+          "validFraction",
+          "ndvi",
+          "ndre",
+          "zones"
+        ],
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SatellitePassStatus"
+          },
+          "validFraction": {
+            "type": "number",
+            "format": "double"
+          },
+          "ndvi": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/IndexStatisticsViewModel"
+              }
+            ]
+          },
+          "ndre": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/IndexStatisticsViewModel"
+              }
+            ]
+          },
+          "zones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AnomalyZoneViewModel"
+            }
+          }
+        }
+      },
+      "SatelliteViewModel": {
+        "required": [
+          "cultivationId",
+          "fieldId",
+          "from",
+          "to",
+          "passes"
+        ],
+        "type": "object",
+        "properties": {
+          "cultivationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fieldId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "to": {
+            "type": "string",
+            "format": "date"
+          },
+          "passes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SatellitePassViewModel"
+            }
           }
         }
       },
@@ -3430,6 +5117,44 @@
           }
         }
       },
+      "StageStatusViewModel": {
+        "required": [
+          "window",
+          "stage",
+          "observedOn",
+          "isStale"
+        ],
+        "type": "object",
+        "properties": {
+          "window": {
+            "$ref": "#/components/schemas/StageWindow"
+          },
+          "stage": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "observedOn": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "isStale": {
+            "type": "boolean"
+          }
+        }
+      },
+      "StageWindow": {
+        "enum": [
+          "Unknown",
+          "Before",
+          "Within",
+          "After"
+        ]
+      },
       "TargetCountViewModel": {
         "required": [
           "id",
@@ -3483,6 +5208,13 @@
           "FoliarDisease"
         ]
       },
+      "TillageSystem": {
+        "enum": [
+          "Unknown",
+          "NoTill",
+          "Conventional"
+        ]
+      },
       "UpdateFieldViewModel": {
         "required": [
           "name",
@@ -3517,6 +5249,9 @@
   },
   "tags": [
     {
+      "name": "Analysis"
+    },
+    {
       "name": "Cultivations"
     },
     {
@@ -3538,7 +5273,13 @@
       "name": "People"
     },
     {
+      "name": "Photos"
+    },
+    {
       "name": "Protocols"
+    },
+    {
+      "name": "Risk"
     },
     {
       "name": "SamplingPlans"

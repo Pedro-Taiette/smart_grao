@@ -27,6 +27,8 @@ const messages: Record<string, string> = {
   'cultivation.has_history': 'Este talhão tem histórico de cultivos ou amostragem. Use Desativar para preservá-lo.',
   'cultivation.wrong_field': 'O cultivo selecionado não pertence a este talhão.',
   'cultivation.unsupported_monitoring': 'O monitoramento MIP-Soja é exclusivo para soja. Para milho, utilize o mapeamento por espaçamento.',
+  'cultivation.unknown_risk_factor': 'Escolha uma das opções de risco, ou "Não sei".',
+  'cultivation.risk_factors_not_applicable': 'O risco de cercosporiose só vale para cultivos de milho.',
   'cultivation.concurrent_change': 'O cultivo foi alterado durante esta operação. Atualize os dados e tente novamente.',
   'cultivation.farm_has_seasons': 'Esta fazenda tem safras registradas e não pode ser excluída.',
   // Geometria

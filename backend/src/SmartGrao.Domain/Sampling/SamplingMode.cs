@@ -23,4 +23,10 @@ public enum SamplingMode
     /// interior e justamente o sinal que justifica a aplicacao em faixa.
     /// </summary>
     Mapping,
+
+    /// <summary>
+    /// Vistoria dirigida de cercosporiose: cerca de dez paradas dentro das areas que destoam no
+    /// satelite, ou no talhao inteiro quando nao ha area. Ver docs/fase-7-vistoria-dirigida.md.
+    /// </summary>
+    Directed,
 }

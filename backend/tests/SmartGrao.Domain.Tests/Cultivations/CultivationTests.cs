@@ -1,4 +1,4 @@
-using SmartGrao.Domain.Abstractions;
+﻿using SmartGrao.Domain.Abstractions;
 using SmartGrao.Domain.Cultivations;
 using SmartGrao.Domain.Farms;
 using SmartGrao.Domain.Fields;
@@ -181,5 +181,66 @@ public sealed class CultivationTests
         Assert.Throws<DomainException>(() => cycle.RecordStage(Planting, new string('x', 33), null));
         Assert.Throws<DomainException>(() => cycle.RecordStage(Planting, "V1", new string('x', 1001)));
         Assert.Empty(cycle.Stages);
+    }
+
+    [Fact]
+    public void RiskFactorsDefaultToUnknown()
+    {
+        var cultivation = Create();
+
+        Assert.Equal(CercosporaRiskFactors.Unknown, cultivation.RiskFactors);
+        Assert.False(cultivation.RiskFactors.IsKnown);
+    }
+
+    [Fact]
+    public void RiskFactorsAreRecordedAtCreation()
+    {
+        var factors = CercosporaRiskFactors.Create(HybridReaction.Susceptible, CropSequence.CornAfterCorn, TillageSystem.NoTill);
+
+        var cultivation = Cultivation.Create(FieldId.New(), SeasonId.New(), Crop.Corn, "A", Planting, factors);
+
+        Assert.Equal(HybridReaction.Susceptible, cultivation.RiskFactors.HybridReaction);
+        Assert.Equal(CropSequence.CornAfterCorn, cultivation.RiskFactors.CropSequence);
+        Assert.Equal(TillageSystem.NoTill, cultivation.RiskFactors.Tillage);
+    }
+
+    [Fact]
+    public void RiskFactorsCanBeCorrectedAfterClosure()
+    {
+        var cultivation = Create();
+        cultivation.Close(Planting.AddDays(120));
+
+        cultivation.UpdateRiskFactors(CercosporaRiskFactors.Create(HybridReaction.Resistant, CropSequence.Rotation, TillageSystem.Conventional));
+
+        Assert.Equal(HybridReaction.Resistant, cultivation.RiskFactors.HybridReaction);
+    }
+
+    [Fact]
+    public void KnownRiskFactorsAreRejectedOutsideCorn()
+    {
+        var factors = CercosporaRiskFactors.Create(HybridReaction.Susceptible, CropSequence.Unknown, TillageSystem.Unknown);
+
+        var exception = Assert.Throws<DomainException>(() =>
+            Cultivation.Create(FieldId.New(), SeasonId.New(), Crop.Soybean, "A", Planting, factors));
+        Assert.Equal(SmartGraoErrors.Cultivation.RiskFactorsNotApplicable.Code, exception.Error.Code);
+    }
+
+    [Fact]
+    public void UnknownRiskFactorsAreAcceptedOutsideCorn()
+    {
+        var cultivation = Cultivation.Create(FieldId.New(), SeasonId.New(), Crop.Soybean, "A", Planting, CercosporaRiskFactors.Unknown);
+
+        Assert.False(cultivation.RiskFactors.IsKnown);
+    }
+
+    [Theory]
+    [InlineData(99, 0, 0)]
+    [InlineData(0, 99, 0)]
+    [InlineData(0, 0, 99)]
+    public void RiskFactorOutsideCatalogueIsRejected(int reaction, int sequence, int tillage)
+    {
+        var exception = Assert.Throws<DomainException>(() =>
+            CercosporaRiskFactors.Create((HybridReaction)reaction, (CropSequence)sequence, (TillageSystem)tillage));
+        Assert.Equal(SmartGraoErrors.Cultivation.UnknownRiskFactor.Code, exception.Error.Code);
     }
 }

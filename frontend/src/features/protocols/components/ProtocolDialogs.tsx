@@ -1,8 +1,6 @@
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack } from '@mui/material';
 import type { Crop } from '@/api/generated/model/crop';
-import { Crop as CropEnum } from '@/api/generated/model/crop';
 import type { MonitoringTargetViewModel } from '@/api/generated/model/monitoringTargetViewModel';
-import { cropLabels, cropOptions } from '@/features/fields/cropLabels';
 import { FormSelectField } from '@/shared/components/FormSelectField';
 import { FormTextField } from '@/shared/components/FormTextField';
 import {
@@ -34,8 +32,6 @@ export function ProtocolDialog(props: CommonProps & {
           Publique quando estiver pronto — a partir daí ele não muda mais, e alterar exige abrir a
           próxima versão.
         </Alert>
-        <FormSelectField name="crop" control={form.control} label="Cultura"
-          options={cropOptions.filter(c => c !== CropEnum.Undefined).map(c => ({ value: c, label: cropLabels[c] }))} />
         <FormTextField name="name" control={form.control} label="Nome do protocolo"
           helperText="Ex.: Milho — vistoria padrão" autoFocus />
         <FormTextField name="code" control={form.control} label="Código"

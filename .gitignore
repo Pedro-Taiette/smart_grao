@@ -16,3 +16,6 @@ appsettings.Local.json
 backend/src/SmartGrao.WebApi/appsettings.Development.json
 *.env
 .env.local
+
+## Fotos gravadas em disco no desenvolvimento
+backend/src/SmartGrao.WebApi/data/

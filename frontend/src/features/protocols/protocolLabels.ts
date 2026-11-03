@@ -121,6 +121,7 @@ export const plantOrganLabel: Record<PlantOrgan, string> = {
   [PlantOrgan.Undefined]: 'Não definido',
   [PlantOrgan.Whorl]: 'Cartucho',
   [PlantOrgan.Leaf]: 'Folha',
+  [PlantOrgan.LowerLeaves]: 'Folhas de baixo',
   [PlantOrgan.EarLeaf]: 'Folha da espiga',
   [PlantOrgan.StalkBase]: 'Base do colmo',
   [PlantOrgan.Stalk]: 'Colmo',
@@ -135,6 +136,7 @@ export const plantOrganLabel: Record<PlantOrgan, string> = {
 export const plantOrganOptions = [
   PlantOrgan.Whorl,
   PlantOrgan.Leaf,
+  PlantOrgan.LowerLeaves,
   PlantOrgan.EarLeaf,
   PlantOrgan.StalkBase,
   PlantOrgan.Stalk,

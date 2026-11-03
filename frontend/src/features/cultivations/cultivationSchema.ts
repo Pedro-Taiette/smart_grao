@@ -1,13 +1,22 @@
 import { z } from 'zod';
 import { Crop } from '@/api/generated/model/crop';
+import { CropSequence } from '@/api/generated/model/cropSequence';
+import { HybridReaction } from '@/api/generated/model/hybridReaction';
+import { TillageSystem } from '@/api/generated/model/tillageSystem';
 
 const date = z.iso.date('Informe uma data válida.');
 export const seasonSchema = z.object({ name: z.string().trim().min(1, 'Informe a safra.').max(80) });
+export const riskFactorsSchema = z.object({
+  hybridReaction: z.enum(HybridReaction),
+  cropSequence: z.enum(CropSequence),
+  tillage: z.enum(TillageSystem),
+});
 export const cultivationSchema = z.object({
   seasonId: z.uuid('Selecione uma safra.'),
   crop: z.enum(Crop).refine((value): boolean => value !== Crop.Undefined, 'Selecione uma cultura.'),
   cultivar: z.string().trim().min(1, 'Informe a cultivar ou híbrido.').max(120),
   plantedOn: date,
+  riskFactors: riskFactorsSchema,
 });
 export const stageSchema = z.object({
   observedOn: date,
@@ -19,6 +28,7 @@ export type SeasonValues = z.infer<typeof seasonSchema>;
 export type CultivationValues = z.infer<typeof cultivationSchema>;
 export type StageValues = z.infer<typeof stageSchema>;
 export type ClosureValues = z.infer<typeof closureSchema>;
+export type RiskFactorsValues = z.infer<typeof riskFactorsSchema>;
 
 export function today() {
   const now = new Date();

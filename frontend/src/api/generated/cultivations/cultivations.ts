@@ -24,6 +24,10 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  CercosporaRiskFactorsViewModel
+} from '../model/cercosporaRiskFactorsViewModel';
+
+import type {
   CloseCultivationViewModel
 } from '../model/closeCultivationViewModel';
 
@@ -360,6 +364,68 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getCloseCultivationMutationOptions(options), queryClient);
+    }
+    export const updateCultivationRiskFactors = (
+    id: string,
+    cercosporaRiskFactorsViewModel: CercosporaRiskFactorsViewModel,
+ options?: SecondParameter<typeof httpClient>,signal?: AbortSignal
+) => {
+
+
+      return httpClient<CultivationViewModel>(
+      {url: `/api/cultivations/${id}/risk-factors`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: cercosporaRiskFactorsViewModel, signal
+    },
+      options);
+    }
+
+
+
+
+export const getUpdateCultivationRiskFactorsMutationKey = () => ['updateCultivationRiskFactors'] as const;
+
+export const getUpdateCultivationRiskFactorsMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCultivationRiskFactors>>, TError,UpdateCultivationRiskFactorsMutationVariables, TContext>, request?: SecondParameter<typeof httpClient>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateCultivationRiskFactors>>, TError,UpdateCultivationRiskFactorsMutationVariables, TContext> => {
+
+const mutationKey = getUpdateCultivationRiskFactorsMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateCultivationRiskFactors>>, UpdateCultivationRiskFactorsMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateCultivationRiskFactors(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateCultivationRiskFactorsMutationResult = NonNullable<Awaited<ReturnType<typeof updateCultivationRiskFactors>>>
+    export type UpdateCultivationRiskFactorsMutationBody = CercosporaRiskFactorsViewModel
+    export type UpdateCultivationRiskFactorsMutationError = unknown
+    export type UpdateCultivationRiskFactorsMutationVariables = {id: string;data: CercosporaRiskFactorsViewModel}
+
+    export const useUpdateCultivationRiskFactors = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCultivationRiskFactors>>, TError,UpdateCultivationRiskFactorsMutationVariables, TContext>, request?: SecondParameter<typeof httpClient>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateCultivationRiskFactors>>,
+        TError,
+        UpdateCultivationRiskFactorsMutationVariables,
+        TContext
+      > => {
+      return useMutation(getUpdateCultivationRiskFactorsMutationOptions(options), queryClient);
     }
     export const recordGrowthStage = (
     id: string,

@@ -72,6 +72,9 @@ public sealed class SamplingPlan : AggregateRoot<SamplingPlanId>
     /// </summary>
     public bool IsOutdated { get; private set; }
 
+    /// <summary>Data da passagem de satelite cujas areas orientaram o plano dirigido.</summary>
+    public DateOnly? ZoneDate { get; private set; }
+
     public IReadOnlyList<SamplingPoint> Points => _points.AsReadOnly();
 
     public int PointCount => _points.Count;
@@ -105,6 +108,70 @@ public sealed class SamplingPlan : AggregateRoot<SamplingPlanId>
 
         return From(fieldId, cultivationId, SamplingMode.Mapping, boundary,
             SamplingGridResolver.ForMapping(boundary, spacing));
+    }
+
+    /// <summary>Paradas da vistoria dirigida: 10 paradas de 10 plantas (South Dakota State, iGrow cap. 45).</summary>
+    public const int DirectedStops = 10;
+
+    /// <summary>
+    /// Plano dirigido: as paradas se dividem entre as areas pela area de cada uma (ao menos uma por
+    /// area), e numa area pequena demais para a malha a parada vai para dentro dela.
+    /// </summary>
+    public static SamplingPlan Directed(
+        FieldId fieldId, Boundary field, IReadOnlyList<Boundary> zones, DateOnly? zoneDate, CultivationId cultivationId)
+    {
+        ArgumentNullException.ThrowIfNull(field);
+        ArgumentNullException.ThrowIfNull(zones);
+
+        var targets = zones.Count == 0 ? [field] : zones.OrderByDescending(x => x.AreaHectares).Take(DirectedStops).ToList();
+        var total = targets.Sum(x => (double)x.AreaHectares);
+        var points = new List<GeoCoordinate>();
+        var remaining = DirectedStops;
+        for (var index = 0; index < targets.Count; index++)
+        {
+            var zone = targets[index];
+            var share = index == targets.Count - 1
+                ? remaining
+                : Math.Clamp((int)Math.Round(DirectedStops * (double)zone.AreaHectares / total), 1, remaining - (targets.Count - index - 1));
+            remaining -= share;
+            points.AddRange(Spread(zone, share));
+        }
+
+        var plan = new SamplingPlan
+        {
+            Id = SamplingPlanId.New(),
+            FieldId = fieldId,
+            CultivationId = cultivationId,
+            Mode = SamplingMode.Directed,
+            SpacingMeters = Math.Sqrt(total * 10_000 / DirectedStops),
+            EdgeBufferMeters = 0,
+            TargetPointCount = DirectedStops,
+            FieldAreaHectares = field.AreaHectares,
+            ZoneDate = zones.Count == 0 ? null : zoneDate,
+        };
+        var sequence = 1;
+        foreach (var coordinate in points)
+            plan._points.Add(SamplingPoint.Create(plan.Id, sequence++, coordinate));
+        plan.RaiseDomainEvent(new SamplingPlanGeneratedEvent(plan.Id, fieldId, SamplingMode.Directed, plan.PointCount));
+        return plan;
+    }
+
+    private static IEnumerable<GeoCoordinate> Spread(Boundary zone, int count)
+    {
+        if (count <= 0) return [];
+        var meters = Math.Clamp(Math.Sqrt((double)zone.AreaHectares * 10_000 / count), SamplingSpacing.MinimumMeters, SamplingSpacing.MaximumMeters);
+        var grid = SamplingGridGenerator.Generate(zone, SamplingSpacing.Of(meters));
+        // A malha quadrada raramente da o numero exato; aperta ate sobrar, e depois escolhe espalhado.
+        while (grid.Count < count && meters > SamplingSpacing.MinimumMeters)
+        {
+            meters = Math.Max(meters * 0.85, SamplingSpacing.MinimumMeters);
+            grid = SamplingGridGenerator.Generate(zone, SamplingSpacing.Of(meters));
+        }
+        if (grid.Count == 0)
+            return [GeoCoordinate.FromCoordinate(zone.Polygon.InteriorPoint.Coordinate)];
+        if (grid.Count <= count) return grid;
+        var step = (double)grid.Count / count;
+        return Enumerable.Range(0, count).Select(i => grid[(int)(i * step)]);
     }
 
     /// <summary>

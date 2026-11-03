@@ -53,7 +53,8 @@ public sealed record SamplingPlanSummaryViewModel(
     bool SubdivisionRecommended,
     bool IsOutdated,
     decimal FieldAreaHectares,
-    DateTimeOffset CreatedAt)
+    DateTimeOffset CreatedAt,
+    DateOnly? ZoneDate)
 {
     public static SamplingPlanSummaryViewModel From(SamplingPlan plan)
     {
@@ -72,7 +73,8 @@ public sealed record SamplingPlanSummaryViewModel(
             plan.SubdivisionRecommended,
             plan.IsOutdated,
             plan.FieldAreaHectares,
-            plan.CreatedAt);
+            plan.CreatedAt,
+            plan.ZoneDate);
     }
 }
 

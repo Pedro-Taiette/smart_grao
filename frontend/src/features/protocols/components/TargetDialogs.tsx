@@ -2,10 +2,8 @@ import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack
 import type { AutomationCapability } from '@/api/generated/model/automationCapability';
 import type { Crop } from '@/api/generated/model/crop';
 import type { MonitoringTargetViewModel } from '@/api/generated/model/monitoringTargetViewModel';
-import { cropLabels, cropOptions } from '@/features/fields/cropLabels';
 import { FormSelectField } from '@/shared/components/FormSelectField';
 import { FormTextField } from '@/shared/components/FormTextField';
-import { Crop as CropEnum } from '@/api/generated/model/crop';
 import {
   automationExplanation, automationLabel, automationOptions, targetKindLabel, targetKindOptions,
 } from '../protocolLabels';
@@ -33,8 +31,6 @@ export function TargetDialog(props: CommonProps & {
           O alvo vale para qualquer lavoura desta cultura — não é de uma fazenda. Ele entra como
           registro manual: a equipe acompanha, sem análise automática.
         </Alert>
-        <FormSelectField name="crop" control={form.control} label="Cultura"
-          options={cropOptions.filter(c => c !== CropEnum.Undefined).map(c => ({ value: c, label: cropLabels[c] }))} />
         <FormSelectField name="kind" control={form.control} label="Tipo"
           options={targetKindOptions.map(k => ({ value: k, label: targetKindLabel[k] }))} />
         <FormTextField name="commonName" control={form.control} label="Nome comum" helperText="Ex.: Cercosporiose" autoFocus />

@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { Button, Chip, MenuItem, Paper, Stack, TextField, Typography } from '@mui/material';
+import { Button, Chip, Paper, Stack, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
-import { Crop } from '@/api/generated/model/crop';
-import { cropLabels, cropOptions } from '@/features/fields/cropLabels';
 import { PageContainer, PageHeader } from '@/shared/components/AppLayout';
 import { EmptyState } from '@/shared/components/EmptyState';
 import { QueryBoundary } from '@/shared/components/QueryBoundary';
@@ -20,7 +18,7 @@ import { useProtocols } from '../hooks/useProtocols';
  */
 export function ProtocolsPage() {
   const navigate = useNavigate();
-  const { families, crop, setCrop, isLoading, error, refetch } = useProtocols();
+  const { families, crop, isLoading, error, refetch } = useProtocols();
   const actions = useProtocolActions();
   const [isCreating, setCreating] = useState(false);
 
@@ -36,17 +34,10 @@ export function ProtocolsPage() {
         }
       />
 
-      <TextField select size="small" label="Cultura" sx={{ mb: 3, minWidth: 180 }}
-        value={crop} onChange={(event) => setCrop(event.target.value as Crop)}>
-        {cropOptions.filter((c) => c !== Crop.Undefined).map((c) => (
-          <MenuItem key={c} value={c}>{cropLabels[c]}</MenuItem>
-        ))}
-      </TextField>
-
       <QueryBoundary isLoading={isLoading} error={error} onRetry={refetch}>
         {families.length === 0 ? (
           <EmptyState
-            title="Nenhum protocolo para esta cultura"
+            title="Nenhum protocolo de milho"
             description="O protocolo define o que a equipe coleta na vistoria. Crie o primeiro e inclua os alvos do catálogo."
             action={<Button variant="contained" startIcon={<AddIcon />} onClick={() => setCreating(true)}>Criar protocolo</Button>}
           />

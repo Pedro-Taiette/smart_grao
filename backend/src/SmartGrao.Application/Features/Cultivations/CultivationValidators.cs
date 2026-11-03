@@ -20,6 +20,17 @@ public sealed class CreateCultivationValidator : AbstractValidator<CreateCultiva
         RuleFor(x => x.Crop).IsInEnum().NotEqual(SmartGrao.Domain.Fields.Crop.Undefined);
         RuleFor(x => x.Cultivar).NotEmpty().MaximumLength(120);
         RuleFor(x => x.PlantedOn).NotEmpty();
+        RuleFor(x => x.RiskFactors!).SetValidator(new CercosporaRiskFactorsValidator()).When(x => x.RiskFactors is not null);
+    }
+}
+
+public sealed class CercosporaRiskFactorsValidator : AbstractValidator<CercosporaRiskFactorsViewModel>
+{
+    public CercosporaRiskFactorsValidator()
+    {
+        RuleFor(x => x.HybridReaction).IsInEnum();
+        RuleFor(x => x.CropSequence).IsInEnum();
+        RuleFor(x => x.Tillage).IsInEnum();
     }
 }
 

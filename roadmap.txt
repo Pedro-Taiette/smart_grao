@@ -1,3 +1,6 @@
+[2026-11-02] As fases 4 a 7 abaixo foram substituídas, neste semestre, pelas fases 4 a 9 de
+docs/roadmap-cercosporiose.md. As fases 1 a 3 continuam valendo e estão concluídas.
+
 Podemos manter pragas e doenças foliares no escopo do produto. Minha sugestão é preparar toda a plataforma para esses
   dois grupos, mas liberar a capacidade da IA por alvo validado. Assim, vocês conseguem registrar e acompanhar
   diferentes problemas do milho desde o início, enquanto ampliam a automação gradualmente.

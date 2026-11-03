@@ -2,8 +2,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SmartGrao.Application.Abstractions;
+using SmartGrao.Infrastructure.Analytics;
 using SmartGrao.Infrastructure.Events;
 using SmartGrao.Infrastructure.Persistence;
+using SmartGrao.Infrastructure.Storage;
+using SmartGrao.Infrastructure.Weather;
 
 namespace SmartGrao.Infrastructure;
 
@@ -42,6 +45,26 @@ public static class DependencyInjection
 
         services.AddScoped<ISmartGraoDbContext>(sp => sp.GetRequiredService<SmartGraoDbContext>());
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
+
+        services.AddHttpClient<IWeatherProvider, OpenMeteoWeatherProvider>(client => client.Timeout = TimeSpan.FromSeconds(30));
+        services.AddHostedService<WeatherRefreshWorker>();
+        services.AddSingleton<IPhotoStorage>(new FileSystemPhotoStorage(
+            configuration["Storage:PhotoRoot"] ?? Path.Combine(AppContext.BaseDirectory, "data", "photos")));
+        if (string.Equals(configuration["Vision:Analyzer"], "Service", StringComparison.OrdinalIgnoreCase))
+            services.AddHttpClient<IVisionAnalyzer, ServiceVisionAnalyzer>(client =>
+            {
+                client.BaseAddress = new Uri(configuration["Analytics:BaseUrl"] ?? "http://localhost:8000/");
+                client.Timeout = TimeSpan.FromMinutes(2);
+            });
+        else
+            services.AddSingleton<IVisionAnalyzer, SimulatedVisionAnalyzer>();
+        if (configuration.GetValue("Vision:WorkerEnabled", true))
+            services.AddHostedService<AnalysisWorker>();
+        services.AddHttpClient<IAnalyticsClient, AnalyticsClient>(client =>
+        {
+            client.BaseAddress = new Uri(configuration["Analytics:BaseUrl"] ?? "http://localhost:8000/");
+            client.Timeout = TimeSpan.FromMinutes(10);
+        });
 
         return services;
     }

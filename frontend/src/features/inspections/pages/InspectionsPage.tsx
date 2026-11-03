@@ -67,7 +67,7 @@ export function InspectionsPage() {
           {visible.length === 0 ? (
             <EmptyState
               title={status ? 'Nenhuma vistoria nesta situação' : 'Nenhuma vistoria ainda'}
-              description="As vistorias são agendadas dentro do talhão, onde estão o cultivo, os pontos de coleta e o protocolo."
+              description="As vistorias são agendadas dentro do talhão, a partir do risco de cercosporiose."
               action={
                 <Button variant="contained" onClick={() => navigate('/talhoes')}>
                   Escolher o talhão

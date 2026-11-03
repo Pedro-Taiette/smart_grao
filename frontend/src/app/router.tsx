@@ -11,6 +11,7 @@ import { TeamPage } from '@/features/inspections/pages/TeamPage';
 import { InspectionsPage } from '@/features/inspections/pages/InspectionsPage';
 import { InspectionDetailPage } from '@/features/inspections/pages/InspectionDetailPage';
 import { SettingsPage } from '@/features/settings/pages/SettingsPage';
+import { CalibrationPage } from '@/features/analysis/pages/CalibrationPage';
 import { AppLayout } from '@/shared/components/AppLayout';
 
 /**
@@ -40,6 +41,7 @@ export const router = createBrowserRouter([
 
       // Dados de referencia e cadastro de implantacao: usados uma vez, no comeco, e raramente
       // depois. Ficam a um clique, fora do caminho do trabalho do dia.
+      { path: 'aferimento', element: <CalibrationPage /> },
       { path: 'ajustes', element: <SettingsPage /> },
       { path: 'ajustes/fazendas', element: <FarmsPage /> },
       { path: 'ajustes/equipe', element: <TeamPage /> },

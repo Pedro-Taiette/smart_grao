@@ -1,0 +1,1984 @@
+{
+  "version": "0.1.0",
+  "split_file": "grouped.csv",
+  "onnx_check": {
+    "checked_on": "64 imagens do teste",
+    "max_abs_prob_diff": 1.3709068298339844e-06,
+    "argmax_agreement": 1.0
+  },
+  "test": {
+    "checkpoint": "best.pt",
+    "split_file": "grouped.csv",
+    "part": "test",
+    "epoch": 15,
+    "datasets_in_part": [
+      "cds",
+      "craze",
+      "plantvillage",
+      "seasonal"
+    ],
+    "n": 1435,
+    "accuracy": 0.9192,
+    "macro_f1": 0.9185,
+    "recall_cercosporiose": 0.9016,
+    "per_class": {
+      "cercosporiose": {
+        "precision": 0.8671,
+        "recall": 0.9016,
+        "f1": 0.884,
+        "support": 427
+      },
+      "saudavel": {
+        "precision": 0.9326,
+        "recall": 0.957,
+        "f1": 0.9446,
+        "support": 419
+      },
+      "outras_manchas": {
+        "precision": 0.9501,
+        "recall": 0.9049,
+        "f1": 0.927,
+        "support": 589
+      }
+    },
+    "confusion_matrix": {
+      "labels": [
+        "cercosporiose",
+        "saudavel",
+        "outras_manchas"
+      ],
+      "rows_true_cols_pred": [
+        [
+          385,
+          18,
+          24
+        ],
+        [
+          14,
+          401,
+          4
+        ],
+        [
+          45,
+          11,
+          533
+        ]
+      ]
+    },
+    "calibration": {
+      "ece": 0.023,
+      "n_bins": 15,
+      "bins": [
+        {
+          "range": [
+            0.333,
+            0.4
+          ],
+          "count": 6,
+          "accuracy": 0.3333,
+          "confidence": 0.3659
+        },
+        {
+          "range": [
+            0.4,
+            0.467
+          ],
+          "count": 16,
+          "accuracy": 0.5625,
+          "confidence": 0.4448
+        },
+        {
+          "range": [
+            0.467,
+            0.533
+          ],
+          "count": 30,
+          "accuracy": 0.5667,
+          "confidence": 0.5074
+        },
+        {
+          "range": [
+            0.533,
+            0.6
+          ],
+          "count": 36,
+          "accuracy": 0.6389,
+          "confidence": 0.5642
+        },
+        {
+          "range": [
+            0.6,
+            0.667
+          ],
+          "count": 33,
+          "accuracy": 0.6364,
+          "confidence": 0.6352
+        },
+        {
+          "range": [
+            0.667,
+            0.733
+          ],
+          "count": 36,
+          "accuracy": 0.5278,
+          "confidence": 0.6974
+        },
+        {
+          "range": [
+            0.733,
+            0.8
+          ],
+          "count": 61,
+          "accuracy": 0.8197,
+          "confidence": 0.7698
+        },
+        {
+          "range": [
+            0.8,
+            0.867
+          ],
+          "count": 76,
+          "accuracy": 0.8289,
+          "confidence": 0.8345
+        },
+        {
+          "range": [
+            0.867,
+            0.933
+          ],
+          "count": 177,
+          "accuracy": 0.9153,
+          "confidence": 0.9061
+        },
+        {
+          "range": [
+            0.933,
+            1.0
+          ],
+          "count": 964,
+          "accuracy": 0.9886,
+          "confidence": 0.9728
+        }
+      ]
+    },
+    "by_dataset": {
+      "cds": {
+        "n": 228,
+        "accuracy": 0.9825,
+        "macro_f1": 0.9807,
+        "recall_cercosporiose": 0.9747,
+        "per_class": {
+          "cercosporiose": {
+            "precision": 0.9747,
+            "recall": 0.9747,
+            "f1": 0.9747,
+            "support": 79
+          },
+          "saudavel": {
+            "precision": null,
+            "recall": null,
+            "f1": null,
+            "support": 0
+          },
+          "outras_manchas": {
+            "precision": 0.9866,
+            "recall": 0.9866,
+            "f1": 0.9866,
+            "support": 149
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "cercosporiose",
+            "saudavel",
+            "outras_manchas"
+          ],
+          "rows_true_cols_pred": [
+            [
+              77,
+              0,
+              2
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              0,
+              147
+            ]
+          ]
+        },
+        "calibration": {
+          "ece": 0.0457,
+          "n_bins": 15,
+          "bins": [
+            {
+              "range": [
+                0.533,
+                0.6
+              ],
+              "count": 2,
+              "accuracy": 0.5,
+              "confidence": 0.5727
+            },
+            {
+              "range": [
+                0.6,
+                0.667
+              ],
+              "count": 2,
+              "accuracy": 1.0,
+              "confidence": 0.6435
+            },
+            {
+              "range": [
+                0.667,
+                0.733
+              ],
+              "count": 3,
+              "accuracy": 0.3333,
+              "confidence": 0.6956
+            },
+            {
+              "range": [
+                0.733,
+                0.8
+              ],
+              "count": 2,
+              "accuracy": 1.0,
+              "confidence": 0.7807
+            },
+            {
+              "range": [
+                0.8,
+                0.867
+              ],
+              "count": 8,
+              "accuracy": 1.0,
+              "confidence": 0.8324
+            },
+            {
+              "range": [
+                0.867,
+                0.933
+              ],
+              "count": 26,
+              "accuracy": 0.9615,
+              "confidence": 0.9068
+            },
+            {
+              "range": [
+                0.933,
+                1.0
+              ],
+              "count": 185,
+              "accuracy": 1.0,
+              "confidence": 0.9715
+            }
+          ]
+        },
+        "domain": "campo"
+      },
+      "craze": {
+        "n": 298,
+        "accuracy": 0.7383,
+        "macro_f1": 0.6707,
+        "recall_cercosporiose": 0.8182,
+        "per_class": {
+          "cercosporiose": {
+            "precision": 0.7826,
+            "recall": 0.8182,
+            "f1": 0.8,
+            "support": 154
+          },
+          "saudavel": {
+            "precision": 0.4359,
+            "recall": 0.5312,
+            "f1": 0.4789,
+            "support": 32
+          },
+          "outras_manchas": {
+            "precision": 0.7857,
+            "recall": 0.6875,
+            "f1": 0.7333,
+            "support": 112
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "cercosporiose",
+            "saudavel",
+            "outras_manchas"
+          ],
+          "rows_true_cols_pred": [
+            [
+              126,
+              11,
+              17
+            ],
+            [
+              11,
+              17,
+              4
+            ],
+            [
+              24,
+              11,
+              77
+            ]
+          ]
+        },
+        "calibration": {
+          "ece": 0.0654,
+          "n_bins": 15,
+          "bins": [
+            {
+              "range": [
+                0.333,
+                0.4
+              ],
+              "count": 6,
+              "accuracy": 0.3333,
+              "confidence": 0.3659
+            },
+            {
+              "range": [
+                0.4,
+                0.467
+              ],
+              "count": 15,
+              "accuracy": 0.5333,
+              "confidence": 0.4445
+            },
+            {
+              "range": [
+                0.467,
+                0.533
+              ],
+              "count": 20,
+              "accuracy": 0.45,
+              "confidence": 0.5027
+            },
+            {
+              "range": [
+                0.533,
+                0.6
+              ],
+              "count": 23,
+              "accuracy": 0.5652,
+              "confidence": 0.5603
+            },
+            {
+              "range": [
+                0.6,
+                0.667
+              ],
+              "count": 19,
+              "accuracy": 0.5789,
+              "confidence": 0.6378
+            },
+            {
+              "range": [
+                0.667,
+                0.733
+              ],
+              "count": 20,
+              "accuracy": 0.45,
+              "confidence": 0.6958
+            },
+            {
+              "range": [
+                0.733,
+                0.8
+              ],
+              "count": 33,
+              "accuracy": 0.8182,
+              "confidence": 0.771
+            },
+            {
+              "range": [
+                0.8,
+                0.867
+              ],
+              "count": 34,
+              "accuracy": 0.6765,
+              "confidence": 0.8311
+            },
+            {
+              "range": [
+                0.867,
+                0.933
+              ],
+              "count": 34,
+              "accuracy": 0.7941,
+              "confidence": 0.902
+            },
+            {
+              "range": [
+                0.933,
+                1.0
+              ],
+              "count": 94,
+              "accuracy": 0.9681,
+              "confidence": 0.9712
+            }
+          ]
+        },
+        "domain": "campo"
+      },
+      "plantvillage": {
+        "n": 547,
+        "accuracy": 0.9561,
+        "macro_f1": 0.9362,
+        "recall_cercosporiose": 0.9437,
+        "per_class": {
+          "cercosporiose": {
+            "precision": 0.7701,
+            "recall": 0.9437,
+            "f1": 0.8481,
+            "support": 71
+          },
+          "saudavel": {
+            "precision": 1.0,
+            "recall": 0.9933,
+            "f1": 0.9966,
+            "support": 149
+          },
+          "outras_manchas": {
+            "precision": 0.9872,
+            "recall": 0.9419,
+            "f1": 0.964,
+            "support": 327
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "cercosporiose",
+            "saudavel",
+            "outras_manchas"
+          ],
+          "rows_true_cols_pred": [
+            [
+              67,
+              0,
+              4
+            ],
+            [
+              1,
+              148,
+              0
+            ],
+            [
+              19,
+              0,
+              308
+            ]
+          ]
+        },
+        "calibration": {
+          "ece": 0.035,
+          "n_bins": 15,
+          "bins": [
+            {
+              "range": [
+                0.4,
+                0.467
+              ],
+              "count": 1,
+              "accuracy": 1.0,
+              "confidence": 0.4504
+            },
+            {
+              "range": [
+                0.467,
+                0.533
+              ],
+              "count": 8,
+              "accuracy": 0.875,
+              "confidence": 0.5184
+            },
+            {
+              "range": [
+                0.533,
+                0.6
+              ],
+              "count": 8,
+              "accuracy": 0.75,
+              "confidence": 0.5704
+            },
+            {
+              "range": [
+                0.6,
+                0.667
+              ],
+              "count": 8,
+              "accuracy": 0.625,
+              "confidence": 0.6271
+            },
+            {
+              "range": [
+                0.667,
+                0.733
+              ],
+              "count": 13,
+              "accuracy": 0.6923,
+              "confidence": 0.7003
+            },
+            {
+              "range": [
+                0.733,
+                0.8
+              ],
+              "count": 17,
+              "accuracy": 0.8235,
+              "confidence": 0.774
+            },
+            {
+              "range": [
+                0.8,
+                0.867
+              ],
+              "count": 27,
+              "accuracy": 0.9259,
+              "confidence": 0.8377
+            },
+            {
+              "range": [
+                0.867,
+                0.933
+              ],
+              "count": 91,
+              "accuracy": 0.9451,
+              "confidence": 0.9083
+            },
+            {
+              "range": [
+                0.933,
+                1.0
+              ],
+              "count": 374,
+              "accuracy": 0.9893,
+              "confidence": 0.9689
+            }
+          ]
+        },
+        "domain": "lab"
+      },
+      "seasonal": {
+        "n": 362,
+        "accuracy": 0.9724,
+        "macro_f1": 0.8688,
+        "recall_cercosporiose": 0.935,
+        "per_class": {
+          "cercosporiose": {
+            "precision": 0.9829,
+            "recall": 0.935,
+            "f1": 0.9583,
+            "support": 123
+          },
+          "saudavel": {
+            "precision": 0.9712,
+            "recall": 0.9916,
+            "f1": 0.9813,
+            "support": 238
+          },
+          "outras_manchas": {
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6667,
+            "support": 1
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "cercosporiose",
+            "saudavel",
+            "outras_manchas"
+          ],
+          "rows_true_cols_pred": [
+            [
+              115,
+              7,
+              1
+            ],
+            [
+              2,
+              236,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        },
+        "calibration": {
+          "ece": 0.0173,
+          "n_bins": 15,
+          "bins": [
+            {
+              "range": [
+                0.467,
+                0.533
+              ],
+              "count": 2,
+              "accuracy": 0.5,
+              "confidence": 0.5111
+            },
+            {
+              "range": [
+                0.533,
+                0.6
+              ],
+              "count": 3,
+              "accuracy": 1.0,
+              "confidence": 0.5721
+            },
+            {
+              "range": [
+                0.6,
+                0.667
+              ],
+              "count": 4,
+              "accuracy": 0.75,
+              "confidence": 0.6344
+            },
+            {
+              "range": [
+                0.733,
+                0.8
+              ],
+              "count": 9,
+              "accuracy": 0.7778,
+              "confidence": 0.7553
+            },
+            {
+              "range": [
+                0.8,
+                0.867
+              ],
+              "count": 7,
+              "accuracy": 1.0,
+              "confidence": 0.841
+            },
+            {
+              "range": [
+                0.867,
+                0.933
+              ],
+              "count": 26,
+              "accuracy": 0.9231,
+              "confidence": 0.9029
+            },
+            {
+              "range": [
+                0.933,
+                1.0
+              ],
+              "count": 311,
+              "accuracy": 0.9871,
+              "confidence": 0.9787
+            }
+          ]
+        },
+        "domain": "campo"
+      }
+    },
+    "by_domain": {
+      "campo": {
+        "n": 888,
+        "accuracy": 0.8964,
+        "macro_f1": 0.8964,
+        "recall_cercosporiose": 0.8933,
+        "per_class": {
+          "cercosporiose": {
+            "precision": 0.8908,
+            "recall": 0.8933,
+            "f1": 0.892,
+            "support": 356
+          },
+          "saudavel": {
+            "precision": 0.8972,
+            "recall": 0.937,
+            "f1": 0.9167,
+            "support": 270
+          },
+          "outras_manchas": {
+            "precision": 0.9036,
+            "recall": 0.8588,
+            "f1": 0.8806,
+            "support": 262
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "cercosporiose",
+            "saudavel",
+            "outras_manchas"
+          ],
+          "rows_true_cols_pred": [
+            [
+              318,
+              18,
+              20
+            ],
+            [
+              13,
+              253,
+              4
+            ],
+            [
+              26,
+              11,
+              225
+            ]
+          ]
+        },
+        "calibration": {
+          "ece": 0.0273,
+          "n_bins": 15,
+          "bins": [
+            {
+              "range": [
+                0.333,
+                0.4
+              ],
+              "count": 6,
+              "accuracy": 0.3333,
+              "confidence": 0.3659
+            },
+            {
+              "range": [
+                0.4,
+                0.467
+              ],
+              "count": 15,
+              "accuracy": 0.5333,
+              "confidence": 0.4445
+            },
+            {
+              "range": [
+                0.467,
+                0.533
+              ],
+              "count": 22,
+              "accuracy": 0.4545,
+              "confidence": 0.5035
+            },
+            {
+              "range": [
+                0.533,
+                0.6
+              ],
+              "count": 28,
+              "accuracy": 0.6071,
+              "confidence": 0.5625
+            },
+            {
+              "range": [
+                0.6,
+                0.667
+              ],
+              "count": 25,
+              "accuracy": 0.64,
+              "confidence": 0.6378
+            },
+            {
+              "range": [
+                0.667,
+                0.733
+              ],
+              "count": 23,
+              "accuracy": 0.4348,
+              "confidence": 0.6958
+            },
+            {
+              "range": [
+                0.733,
+                0.8
+              ],
+              "count": 44,
+              "accuracy": 0.8182,
+              "confidence": 0.7682
+            },
+            {
+              "range": [
+                0.8,
+                0.867
+              ],
+              "count": 49,
+              "accuracy": 0.7755,
+              "confidence": 0.8327
+            },
+            {
+              "range": [
+                0.867,
+                0.933
+              ],
+              "count": 86,
+              "accuracy": 0.8837,
+              "confidence": 0.9037
+            },
+            {
+              "range": [
+                0.933,
+                1.0
+              ],
+              "count": 590,
+              "accuracy": 0.9881,
+              "confidence": 0.9752
+            }
+          ]
+        }
+      },
+      "lab": {
+        "n": 547,
+        "accuracy": 0.9561,
+        "macro_f1": 0.9362,
+        "recall_cercosporiose": 0.9437,
+        "per_class": {
+          "cercosporiose": {
+            "precision": 0.7701,
+            "recall": 0.9437,
+            "f1": 0.8481,
+            "support": 71
+          },
+          "saudavel": {
+            "precision": 1.0,
+            "recall": 0.9933,
+            "f1": 0.9966,
+            "support": 149
+          },
+          "outras_manchas": {
+            "precision": 0.9872,
+            "recall": 0.9419,
+            "f1": 0.964,
+            "support": 327
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "cercosporiose",
+            "saudavel",
+            "outras_manchas"
+          ],
+          "rows_true_cols_pred": [
+            [
+              67,
+              0,
+              4
+            ],
+            [
+              1,
+              148,
+              0
+            ],
+            [
+              19,
+              0,
+              308
+            ]
+          ]
+        },
+        "calibration": {
+          "ece": 0.035,
+          "n_bins": 15,
+          "bins": [
+            {
+              "range": [
+                0.4,
+                0.467
+              ],
+              "count": 1,
+              "accuracy": 1.0,
+              "confidence": 0.4504
+            },
+            {
+              "range": [
+                0.467,
+                0.533
+              ],
+              "count": 8,
+              "accuracy": 0.875,
+              "confidence": 0.5184
+            },
+            {
+              "range": [
+                0.533,
+                0.6
+              ],
+              "count": 8,
+              "accuracy": 0.75,
+              "confidence": 0.5704
+            },
+            {
+              "range": [
+                0.6,
+                0.667
+              ],
+              "count": 8,
+              "accuracy": 0.625,
+              "confidence": 0.6271
+            },
+            {
+              "range": [
+                0.667,
+                0.733
+              ],
+              "count": 13,
+              "accuracy": 0.6923,
+              "confidence": 0.7003
+            },
+            {
+              "range": [
+                0.733,
+                0.8
+              ],
+              "count": 17,
+              "accuracy": 0.8235,
+              "confidence": 0.774
+            },
+            {
+              "range": [
+                0.8,
+                0.867
+              ],
+              "count": 27,
+              "accuracy": 0.9259,
+              "confidence": 0.8377
+            },
+            {
+              "range": [
+                0.867,
+                0.933
+              ],
+              "count": 91,
+              "accuracy": 0.9451,
+              "confidence": 0.9083
+            },
+            {
+              "range": [
+                0.933,
+                1.0
+              ],
+              "count": 374,
+              "accuracy": 0.9893,
+              "confidence": 0.9689
+            }
+          ]
+        }
+      }
+    }
+  },
+  "val": {
+    "checkpoint": "best.pt",
+    "split_file": "grouped.csv",
+    "part": "val",
+    "epoch": 15,
+    "datasets_in_part": [
+      "cds",
+      "craze",
+      "plantvillage",
+      "seasonal"
+    ],
+    "n": 1377,
+    "accuracy": 0.9245,
+    "macro_f1": 0.9231,
+    "recall_cercosporiose": 0.8443,
+    "per_class": {
+      "cercosporiose": {
+        "precision": 0.9227,
+        "recall": 0.8443,
+        "f1": 0.8818,
+        "support": 424
+      },
+      "saudavel": {
+        "precision": 0.9318,
+        "recall": 0.9711,
+        "f1": 0.951,
+        "support": 380
+      },
+      "outras_manchas": {
+        "precision": 0.9207,
+        "recall": 0.9529,
+        "f1": 0.9365,
+        "support": 573
+      }
+    },
+    "confusion_matrix": {
+      "labels": [
+        "cercosporiose",
+        "saudavel",
+        "outras_manchas"
+      ],
+      "rows_true_cols_pred": [
+        [
+          358,
+          22,
+          44
+        ],
+        [
+          8,
+          369,
+          3
+        ],
+        [
+          22,
+          5,
+          546
+        ]
+      ]
+    },
+    "calibration": {
+      "ece": 0.0188,
+      "n_bins": 15,
+      "bins": [
+        {
+          "range": [
+            0.333,
+            0.4
+          ],
+          "count": 1,
+          "accuracy": 0.0,
+          "confidence": 0.3499
+        },
+        {
+          "range": [
+            0.4,
+            0.467
+          ],
+          "count": 7,
+          "accuracy": 0.5714,
+          "confidence": 0.4424
+        },
+        {
+          "range": [
+            0.467,
+            0.533
+          ],
+          "count": 21,
+          "accuracy": 0.4286,
+          "confidence": 0.4984
+        },
+        {
+          "range": [
+            0.533,
+            0.6
+          ],
+          "count": 39,
+          "accuracy": 0.6667,
+          "confidence": 0.5695
+        },
+        {
+          "range": [
+            0.6,
+            0.667
+          ],
+          "count": 40,
+          "accuracy": 0.65,
+          "confidence": 0.6344
+        },
+        {
+          "range": [
+            0.667,
+            0.733
+          ],
+          "count": 41,
+          "accuracy": 0.6829,
+          "confidence": 0.7009
+        },
+        {
+          "range": [
+            0.733,
+            0.8
+          ],
+          "count": 43,
+          "accuracy": 0.7442,
+          "confidence": 0.7665
+        },
+        {
+          "range": [
+            0.8,
+            0.867
+          ],
+          "count": 58,
+          "accuracy": 0.8793,
+          "confidence": 0.8377
+        },
+        {
+          "range": [
+            0.867,
+            0.933
+          ],
+          "count": 202,
+          "accuracy": 0.9356,
+          "confidence": 0.9051
+        },
+        {
+          "range": [
+            0.933,
+            1.0
+          ],
+          "count": 925,
+          "accuracy": 0.9816,
+          "confidence": 0.9724
+        }
+      ]
+    },
+    "by_dataset": {
+      "cds": {
+        "n": 231,
+        "accuracy": 0.9654,
+        "macro_f1": 0.9627,
+        "recall_cercosporiose": 0.9359,
+        "per_class": {
+          "cercosporiose": {
+            "precision": 0.9605,
+            "recall": 0.9359,
+            "f1": 0.9481,
+            "support": 78
+          },
+          "saudavel": {
+            "precision": 0.0,
+            "recall": null,
+            "f1": null,
+            "support": 0
+          },
+          "outras_manchas": {
+            "precision": 0.974,
+            "recall": 0.9804,
+            "f1": 0.9772,
+            "support": 153
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "cercosporiose",
+            "saudavel",
+            "outras_manchas"
+          ],
+          "rows_true_cols_pred": [
+            [
+              73,
+              1,
+              4
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              3,
+              0,
+              150
+            ]
+          ]
+        },
+        "calibration": {
+          "ece": 0.0636,
+          "n_bins": 15,
+          "bins": [
+            {
+              "range": [
+                0.4,
+                0.467
+              ],
+              "count": 2,
+              "accuracy": 0.5,
+              "confidence": 0.4337
+            },
+            {
+              "range": [
+                0.467,
+                0.533
+              ],
+              "count": 4,
+              "accuracy": 0.5,
+              "confidence": 0.5003
+            },
+            {
+              "range": [
+                0.533,
+                0.6
+              ],
+              "count": 6,
+              "accuracy": 0.6667,
+              "confidence": 0.5763
+            },
+            {
+              "range": [
+                0.6,
+                0.667
+              ],
+              "count": 6,
+              "accuracy": 0.8333,
+              "confidence": 0.63
+            },
+            {
+              "range": [
+                0.667,
+                0.733
+              ],
+              "count": 8,
+              "accuracy": 1.0,
+              "confidence": 0.685
+            },
+            {
+              "range": [
+                0.733,
+                0.8
+              ],
+              "count": 7,
+              "accuracy": 1.0,
+              "confidence": 0.7662
+            },
+            {
+              "range": [
+                0.8,
+                0.867
+              ],
+              "count": 11,
+              "accuracy": 0.9091,
+              "confidence": 0.8357
+            },
+            {
+              "range": [
+                0.867,
+                0.933
+              ],
+              "count": 47,
+              "accuracy": 0.9787,
+              "confidence": 0.9032
+            },
+            {
+              "range": [
+                0.933,
+                1.0
+              ],
+              "count": 140,
+              "accuracy": 1.0,
+              "confidence": 0.9694
+            }
+          ]
+        },
+        "domain": "campo"
+      },
+      "craze": {
+        "n": 294,
+        "accuracy": 0.7585,
+        "macro_f1": 0.7296,
+        "recall_cercosporiose": 0.7434,
+        "per_class": {
+          "cercosporiose": {
+            "precision": 0.8248,
+            "recall": 0.7434,
+            "f1": 0.782,
+            "support": 152
+          },
+          "saudavel": {
+            "precision": 0.6176,
+            "recall": 0.6774,
+            "f1": 0.6462,
+            "support": 31
+          },
+          "outras_manchas": {
+            "precision": 0.7236,
+            "recall": 0.8018,
+            "f1": 0.7607,
+            "support": 111
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "cercosporiose",
+            "saudavel",
+            "outras_manchas"
+          ],
+          "rows_true_cols_pred": [
+            [
+              113,
+              8,
+              31
+            ],
+            [
+              7,
+              21,
+              3
+            ],
+            [
+              17,
+              5,
+              89
+            ]
+          ]
+        },
+        "calibration": {
+          "ece": 0.0653,
+          "n_bins": 15,
+          "bins": [
+            {
+              "range": [
+                0.333,
+                0.4
+              ],
+              "count": 1,
+              "accuracy": 0.0,
+              "confidence": 0.3499
+            },
+            {
+              "range": [
+                0.4,
+                0.467
+              ],
+              "count": 5,
+              "accuracy": 0.6,
+              "confidence": 0.4459
+            },
+            {
+              "range": [
+                0.467,
+                0.533
+              ],
+              "count": 14,
+              "accuracy": 0.4286,
+              "confidence": 0.4964
+            },
+            {
+              "range": [
+                0.533,
+                0.6
+              ],
+              "count": 27,
+              "accuracy": 0.5926,
+              "confidence": 0.5677
+            },
+            {
+              "range": [
+                0.6,
+                0.667
+              ],
+              "count": 25,
+              "accuracy": 0.52,
+              "confidence": 0.633
+            },
+            {
+              "range": [
+                0.667,
+                0.733
+              ],
+              "count": 24,
+              "accuracy": 0.5417,
+              "confidence": 0.7032
+            },
+            {
+              "range": [
+                0.733,
+                0.8
+              ],
+              "count": 21,
+              "accuracy": 0.619,
+              "confidence": 0.7639
+            },
+            {
+              "range": [
+                0.8,
+                0.867
+              ],
+              "count": 21,
+              "accuracy": 0.8095,
+              "confidence": 0.8342
+            },
+            {
+              "range": [
+                0.867,
+                0.933
+              ],
+              "count": 45,
+              "accuracy": 0.8222,
+              "confidence": 0.9036
+            },
+            {
+              "range": [
+                0.933,
+                1.0
+              ],
+              "count": 111,
+              "accuracy": 0.9459,
+              "confidence": 0.9687
+            }
+          ]
+        },
+        "domain": "campo"
+      },
+      "plantvillage": {
+        "n": 522,
+        "accuracy": 0.977,
+        "macro_f1": 0.9631,
+        "recall_cercosporiose": 0.8714,
+        "per_class": {
+          "cercosporiose": {
+            "precision": 0.9531,
+            "recall": 0.8714,
+            "f1": 0.9104,
+            "support": 70
+          },
+          "saudavel": {
+            "precision": 1.0,
+            "recall": 0.9932,
+            "f1": 0.9966,
+            "support": 147
+          },
+          "outras_manchas": {
+            "precision": 0.9712,
+            "recall": 0.9934,
+            "f1": 0.9822,
+            "support": 305
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "cercosporiose",
+            "saudavel",
+            "outras_manchas"
+          ],
+          "rows_true_cols_pred": [
+            [
+              61,
+              0,
+              9
+            ],
+            [
+              1,
+              146,
+              0
+            ],
+            [
+              2,
+              0,
+              303
+            ]
+          ]
+        },
+        "calibration": {
+          "ece": 0.0433,
+          "n_bins": 15,
+          "bins": [
+            {
+              "range": [
+                0.467,
+                0.533
+              ],
+              "count": 3,
+              "accuracy": 0.3333,
+              "confidence": 0.5054
+            },
+            {
+              "range": [
+                0.533,
+                0.6
+              ],
+              "count": 6,
+              "accuracy": 1.0,
+              "confidence": 0.571
+            },
+            {
+              "range": [
+                0.6,
+                0.667
+              ],
+              "count": 9,
+              "accuracy": 0.8889,
+              "confidence": 0.6415
+            },
+            {
+              "range": [
+                0.667,
+                0.733
+              ],
+              "count": 8,
+              "accuracy": 0.75,
+              "confidence": 0.7087
+            },
+            {
+              "range": [
+                0.733,
+                0.8
+              ],
+              "count": 9,
+              "accuracy": 0.7778,
+              "confidence": 0.7641
+            },
+            {
+              "range": [
+                0.8,
+                0.867
+              ],
+              "count": 17,
+              "accuracy": 1.0,
+              "confidence": 0.8414
+            },
+            {
+              "range": [
+                0.867,
+                0.933
+              ],
+              "count": 79,
+              "accuracy": 0.9747,
+              "confidence": 0.9054
+            },
+            {
+              "range": [
+                0.933,
+                1.0
+              ],
+              "count": 391,
+              "accuracy": 0.9923,
+              "confidence": 0.9702
+            }
+          ]
+        },
+        "domain": "lab"
+      },
+      "seasonal": {
+        "n": 330,
+        "accuracy": 0.9606,
+        "macro_f1": 0.9712,
+        "recall_cercosporiose": 0.8952,
+        "per_class": {
+          "cercosporiose": {
+            "precision": 1.0,
+            "recall": 0.8952,
+            "f1": 0.9447,
+            "support": 124
+          },
+          "saudavel": {
+            "precision": 0.9395,
+            "recall": 1.0,
+            "f1": 0.9688,
+            "support": 202
+          },
+          "outras_manchas": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 4
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "cercosporiose",
+            "saudavel",
+            "outras_manchas"
+          ],
+          "rows_true_cols_pred": [
+            [
+              111,
+              13,
+              0
+            ],
+            [
+              0,
+              202,
+              0
+            ],
+            [
+              0,
+              0,
+              4
+            ]
+          ]
+        },
+        "calibration": {
+          "ece": 0.0119,
+          "n_bins": 15,
+          "bins": [
+            {
+              "range": [
+                0.667,
+                0.733
+              ],
+              "count": 1,
+              "accuracy": 1.0,
+              "confidence": 0.7129
+            },
+            {
+              "range": [
+                0.733,
+                0.8
+              ],
+              "count": 6,
+              "accuracy": 0.8333,
+              "confidence": 0.7798
+            },
+            {
+              "range": [
+                0.8,
+                0.867
+              ],
+              "count": 9,
+              "accuracy": 0.7778,
+              "confidence": 0.8415
+            },
+            {
+              "range": [
+                0.867,
+                0.933
+              ],
+              "count": 31,
+              "accuracy": 0.9355,
+              "confidence": 0.9092
+            },
+            {
+              "range": [
+                0.933,
+                1.0
+              ],
+              "count": 283,
+              "accuracy": 0.9717,
+              "confidence": 0.9785
+            }
+          ]
+        },
+        "domain": "campo"
+      }
+    },
+    "by_domain": {
+      "campo": {
+        "n": 855,
+        "accuracy": 0.8924,
+        "macro_f1": 0.8949,
+        "recall_cercosporiose": 0.839,
+        "per_class": {
+          "cercosporiose": {
+            "precision": 0.9167,
+            "recall": 0.839,
+            "f1": 0.8761,
+            "support": 354
+          },
+          "saudavel": {
+            "precision": 0.892,
+            "recall": 0.9571,
+            "f1": 0.9234,
+            "support": 233
+          },
+          "outras_manchas": {
+            "precision": 0.8648,
+            "recall": 0.9067,
+            "f1": 0.8852,
+            "support": 268
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "cercosporiose",
+            "saudavel",
+            "outras_manchas"
+          ],
+          "rows_true_cols_pred": [
+            [
+              297,
+              22,
+              35
+            ],
+            [
+              7,
+              223,
+              3
+            ],
+            [
+              20,
+              5,
+              243
+            ]
+          ]
+        },
+        "calibration": {
+          "ece": 0.0097,
+          "n_bins": 15,
+          "bins": [
+            {
+              "range": [
+                0.333,
+                0.4
+              ],
+              "count": 1,
+              "accuracy": 0.0,
+              "confidence": 0.3499
+            },
+            {
+              "range": [
+                0.4,
+                0.467
+              ],
+              "count": 7,
+              "accuracy": 0.5714,
+              "confidence": 0.4424
+            },
+            {
+              "range": [
+                0.467,
+                0.533
+              ],
+              "count": 18,
+              "accuracy": 0.4444,
+              "confidence": 0.4973
+            },
+            {
+              "range": [
+                0.533,
+                0.6
+              ],
+              "count": 33,
+              "accuracy": 0.6061,
+              "confidence": 0.5692
+            },
+            {
+              "range": [
+                0.6,
+                0.667
+              ],
+              "count": 31,
+              "accuracy": 0.5806,
+              "confidence": 0.6324
+            },
+            {
+              "range": [
+                0.667,
+                0.733
+              ],
+              "count": 33,
+              "accuracy": 0.6667,
+              "confidence": 0.6991
+            },
+            {
+              "range": [
+                0.733,
+                0.8
+              ],
+              "count": 34,
+              "accuracy": 0.7353,
+              "confidence": 0.7672
+            },
+            {
+              "range": [
+                0.8,
+                0.867
+              ],
+              "count": 41,
+              "accuracy": 0.8293,
+              "confidence": 0.8362
+            },
+            {
+              "range": [
+                0.867,
+                0.933
+              ],
+              "count": 123,
+              "accuracy": 0.9106,
+              "confidence": 0.9049
+            },
+            {
+              "range": [
+                0.933,
+                1.0
+              ],
+              "count": 534,
+              "accuracy": 0.9738,
+              "confidence": 0.9741
+            }
+          ]
+        }
+      },
+      "lab": {
+        "n": 522,
+        "accuracy": 0.977,
+        "macro_f1": 0.9631,
+        "recall_cercosporiose": 0.8714,
+        "per_class": {
+          "cercosporiose": {
+            "precision": 0.9531,
+            "recall": 0.8714,
+            "f1": 0.9104,
+            "support": 70
+          },
+          "saudavel": {
+            "precision": 1.0,
+            "recall": 0.9932,
+            "f1": 0.9966,
+            "support": 147
+          },
+          "outras_manchas": {
+            "precision": 0.9712,
+            "recall": 0.9934,
+            "f1": 0.9822,
+            "support": 305
+          }
+        },
+        "confusion_matrix": {
+          "labels": [
+            "cercosporiose",
+            "saudavel",
+            "outras_manchas"
+          ],
+          "rows_true_cols_pred": [
+            [
+              61,
+              0,
+              9
+            ],
+            [
+              1,
+              146,
+              0
+            ],
+            [
+              2,
+              0,
+              303
+            ]
+          ]
+        },
+        "calibration": {
+          "ece": 0.0433,
+          "n_bins": 15,
+          "bins": [
+            {
+              "range": [
+                0.467,
+                0.533
+              ],
+              "count": 3,
+              "accuracy": 0.3333,
+              "confidence": 0.5054
+            },
+            {
+              "range": [
+                0.533,
+                0.6
+              ],
+              "count": 6,
+              "accuracy": 1.0,
+              "confidence": 0.571
+            },
+            {
+              "range": [
+                0.6,
+                0.667
+              ],
+              "count": 9,
+              "accuracy": 0.8889,
+              "confidence": 0.6415
+            },
+            {
+              "range": [
+                0.667,
+                0.733
+              ],
+              "count": 8,
+              "accuracy": 0.75,
+              "confidence": 0.7087
+            },
+            {
+              "range": [
+                0.733,
+                0.8
+              ],
+              "count": 9,
+              "accuracy": 0.7778,
+              "confidence": 0.7641
+            },
+            {
+              "range": [
+                0.8,
+                0.867
+              ],
+              "count": 17,
+              "accuracy": 1.0,
+              "confidence": 0.8414
+            },
+            {
+              "range": [
+                0.867,
+                0.933
+              ],
+              "count": 79,
+              "accuracy": 0.9747,
+              "confidence": 0.9054
+            },
+            {
+              "range": [
+                0.933,
+                1.0
+              ],
+              "count": 391,
+              "accuracy": 0.9923,
+              "confidence": 0.9702
+            }
+          ]
+        }
+      }
+    }
+  },
+  "out_of_domain": {
+    "holdout": "craze",
+    "run": "b0_lodo_craze",
+    "split_file": "lodo_craze.csv",
+    "n": 2075,
+    "accuracy": 0.6092,
+    "macro_f1": 0.4813,
+    "recall_cercosporiose": 0.632,
+    "per_class": {
+      "cercosporiose": {
+        "precision": 0.6663,
+        "recall": 0.632,
+        "f1": 0.6487,
+        "support": 1068
+      },
+      "saudavel": {
+        "precision": 0.3594,
+        "recall": 0.1022,
+        "f1": 0.1592,
+        "support": 225
+      },
+      "outras_manchas": {
+        "precision": 0.5671,
+        "recall": 0.7238,
+        "f1": 0.636,
+        "support": 782
+      }
+    },
+    "confusion_matrix": {
+      "labels": [
+        "cercosporiose",
+        "saudavel",
+        "outras_manchas"
+      ],
+      "rows_true_cols_pred": [
+        [
+          675,
+          30,
+          363
+        ],
+        [
+          133,
+          23,
+          69
+        ],
+        [
+          205,
+          11,
+          566
+        ]
+      ]
+    },
+    "calibration": {
+      "ece": 0.1593
+    },
+    "val_macro_f1": 0.9766
+  }
+}

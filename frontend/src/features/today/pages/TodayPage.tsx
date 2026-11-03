@@ -6,6 +6,7 @@ import { QueryBoundary } from '@/shared/components/QueryBoundary';
 import { formatHectares } from '@/shared/format';
 import { InspectionRow } from '../components/InspectionRow';
 import { PendingSetup } from '../components/PendingSetup';
+import { RiskAlerts } from '@/features/risk/components/RiskAlerts';
 import { useTodayWorkspace } from '../hooks/useTodayWorkspace';
 
 /**
@@ -46,6 +47,8 @@ export function TodayPage() {
         <Stack spacing={4}>
           <PendingSetup gaps={workspace.gaps} />
 
+          {workspace.farm && <RiskAlerts farmId={workspace.farm.id} />}
+
           <Group
             title="Em campo agora"
             hint="Visita aberta. As paradas registradas entram nela."
@@ -69,7 +72,7 @@ export function TodayPage() {
             <Box>
               <Typography variant="h6">Tudo pronto para a primeira vistoria</Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Abra o talhão, marque os pontos de coleta e agende a visita.
+                Abra o talhão, veja o risco de cercosporiose e agende a vistoria.
               </Typography>
               <Button variant="contained" onClick={() => navigate('/talhoes')}>
                 Escolher o talhão

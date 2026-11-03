@@ -1,0 +1,22 @@
+# Ambiente virtual
+.venv/
+__pycache__/
+*.pyc
+
+# Dados brutos e processados: nunca versionar imagens (licencas variadas, varios GB)
+data/raw/
+data/processed/
+data/*.zip
+
+# Execucoes de treino (checkpoints e logs)
+runs/
+
+# Checkpoints do PyTorch ficam fora. O model.onnx do EfficientNet-B0 tem ~16 MB e e versionado;
+# um modelo exportado acima de 20 MB deve entrar aqui e ser publicado fora do git (ver README).
+*.pt
+*.pth
+*.ckpt
+
+# Divisoes sao regeneradas de forma deterministica a partir do manifesto (python -m vision.split);
+# os resumos .summary.json ficam versionados
+data/splits/*.csv

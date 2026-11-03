@@ -32,6 +32,16 @@ internal sealed class CultivationConfiguration : IEntityTypeConfiguration<Cultiv
         builder.Property(x => x.SeasonId).HasConversion(x => x.Value, x => new SeasonId(x));
         builder.Property(x => x.Crop).HasConversion<string>().HasMaxLength(32);
         builder.Property(x => x.Cultivar).HasMaxLength(120).IsRequired();
+        builder.OwnsOne(x => x.RiskFactors, factors =>
+        {
+            factors.Property(x => x.HybridReaction).HasColumnName("risk_hybrid_reaction")
+                .HasConversion<string>().HasMaxLength(32).IsRequired();
+            factors.Property(x => x.CropSequence).HasColumnName("risk_crop_sequence")
+                .HasConversion<string>().HasMaxLength(32).IsRequired();
+            factors.Property(x => x.Tillage).HasColumnName("risk_tillage")
+                .HasConversion<string>().HasMaxLength(32).IsRequired();
+        });
+        builder.Navigation(x => x.RiskFactors).IsRequired();
         builder.HasOne<Field>().WithMany().HasForeignKey(x => x.FieldId).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne<Season>().WithMany().HasForeignKey(x => x.SeasonId).OnDelete(DeleteBehavior.Restrict);
         builder.HasAlternateKey(x => new { x.Id, x.FieldId });

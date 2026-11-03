@@ -1,13 +1,16 @@
-using Npgsql;
+﻿using Npgsql;
 using SmartGrao.Domain.Cultivations;
 using Microsoft.EntityFrameworkCore;
 using SmartGrao.Application.Abstractions;
 using SmartGrao.Domain.Abstractions;
+using SmartGrao.Domain.Analysis;
 using SmartGrao.Domain.Farms;
 using SmartGrao.Domain.Fields;
 using SmartGrao.Domain.Inspections;
 using SmartGrao.Domain.People;
+using SmartGrao.Domain.Photos;
 using SmartGrao.Domain.Protocols;
+using SmartGrao.Domain.Risk;
 using SmartGrao.Domain.Sampling;
 
 namespace SmartGrao.Infrastructure.Persistence;
@@ -38,6 +41,16 @@ public sealed class SmartGraoDbContext(
     public DbSet<Inspection> Inspections => Set<Inspection>();
 
     public DbSet<SamplingPlan> SamplingPlans => Set<SamplingPlan>();
+
+    public DbSet<WeatherHour> WeatherHours => Set<WeatherHour>();
+
+    public DbSet<SatellitePass> SatellitePasses => Set<SatellitePass>();
+
+    public DbSet<Photo> Photos => Set<Photo>();
+
+    public DbSet<Assessment> Assessments => Set<Assessment>();
+
+    public DbSet<AnalysisJob> AnalysisJobs => Set<AnalysisJob>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

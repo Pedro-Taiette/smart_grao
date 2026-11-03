@@ -11,4 +11,5 @@ export type SamplingMode = typeof SamplingMode[keyof typeof SamplingMode];
 export const SamplingMode = {
   Monitoring: 'Monitoring',
   Mapping: 'Mapping',
+  Directed: 'Directed',
 } as const;

@@ -8,6 +8,9 @@ import { PageContainer } from '@/shared/components/AppLayout';
 import { QueryBoundary } from '@/shared/components/QueryBoundary';
 import { CancelInspectionDialog, RescheduleDialog } from '../components/InspectionDialogs';
 import { ObservationDialog } from '../components/ObservationDialog';
+import { ObservationPhotos } from '../components/ObservationPhotos';
+import { plantOrganLabel } from '@/features/protocols/protocolLabels';
+import { useGetPhotos } from '@/api/generated/photos/photos';
 import {
   describeCount, describeProgress, formatDay, formatMoment, inspectionStatusColor,
   inspectionStatusExplanation, inspectionStatusLabel,
@@ -15,6 +18,8 @@ import {
 import { useInspectionWorkspace } from '../hooks/useInspectionWorkspace';
 import { usePeople } from '../hooks/usePeople';
 import { useGetFieldById } from '@/api/generated/fields/fields';
+import { useGetSamplingPlanById } from '@/api/generated/sampling-plans/sampling-plans';
+import { StopsMap } from '../components/StopsMap';
 
 export function InspectionDetailPage() {
   const { inspectionId = '' } = useParams();
@@ -27,10 +32,19 @@ function InspectionWorkspace({ inspectionId }: { inspectionId: string }) {
   const navigate = useNavigate();
   const w = useInspectionWorkspace(inspectionId);
   const inspection = w.inspection;
+  const photosQuery = useGetPhotos({ inspectionId }, {
+    query: {
+      enabled: Boolean(inspectionId),
+      refetchInterval: query => (query.state.data ?? []).some(photo => photo.analysisStatus === 'Pending' || photo.analysisStatus === 'Running') ? 4000 : false,
+    },
+  });
+  const photos = photosQuery.data ?? [];
   const fieldQuery = useGetFieldById(inspection?.fieldId ?? '', {
     query: { enabled: inspection !== undefined },
   });
   const { people } = usePeople(fieldQuery.data?.farmId ?? '', true);
+  const planQuery = useGetSamplingPlanById(inspection?.samplingPlanId ?? '', { query: { enabled: inspection !== undefined } });
+  const visited = new Set((inspection?.observations ?? []).map(o => o.pointSequence).filter((n): n is number => n !== null));
 
   // Esta é a tela que chega por link no celular, sem passar pela navegação: alinhar o contexto aqui
   // é o que faz o resto do sistema abrir na propriedade certa depois.
@@ -96,6 +110,10 @@ function InspectionWorkspace({ inspectionId }: { inspectionId: string }) {
                 onClick={() => w.openDialog({ kind: 'cancel' })}>Não aconteceu</Button>}
             </Stack>
 
+            {fieldQuery.data && planQuery.data && (
+              <StopsMap field={fieldQuery.data} points={planQuery.data.points} visited={visited} />
+            )}
+
             <Divider />
             <Typography variant="h6">Paradas registradas</Typography>
 
@@ -124,7 +142,11 @@ function InspectionWorkspace({ inspectionId }: { inspectionId: string }) {
                       {observation.counts.map(count => (
                         <Typography key={count.id} variant="body2"
                           color={count.detected ? 'text.primary' : 'text.secondary'}>
-                          {count.targetCommonName}: {describeCount(count.value, count.detected, count.unit)}
+                          {count.targetCommonName}
+                          {(() => {
+                            const organ = w.protocol?.items.find(item => item.id === count.protocolItemId)?.organ;
+                            return organ ? ` (${plantOrganLabel[organ].toLowerCase()})` : '';
+                          })()}: {describeCount(count.value, count.detected, count.unit)}
                         </Typography>
                       ))}
                     </Stack>
@@ -136,6 +158,9 @@ function InspectionWorkspace({ inspectionId }: { inspectionId: string }) {
                         foram avaliados nesta parada.
                       </Typography>
                     )}
+                    <ObservationPhotos inspectionId={inspection.id} observation={observation} protocol={w.protocol}
+                      photos={photos.filter(photo => photo.observationId === observation.id)}
+                      canAdd={!w.isFinished || inspection.status === 'Completed'} />
                   </Stack>
                 </Paper>
               ))}

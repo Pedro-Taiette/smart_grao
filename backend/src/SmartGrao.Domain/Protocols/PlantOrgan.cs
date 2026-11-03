@@ -14,6 +14,9 @@ public enum PlantOrgan
 
     Leaf,
 
+    /// <summary>Folhas baixeiras, da base ate a imediatamente abaixo da espiga.</summary>
+    LowerLeaves,
+
     /// <summary>
     /// Folha da espiga ou a imediatamente abaixo (Fe-1). E a folha padrao das doencas foliares:
     /// a severidade nela correlaciona com a da planta inteira.

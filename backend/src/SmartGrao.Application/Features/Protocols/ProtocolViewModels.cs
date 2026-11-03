@@ -71,6 +71,7 @@ public sealed record ProtocolViewModel(
                         : new ReferenceLevelViewModel(item.ReferenceLevel.Threshold, item.ReferenceLevel.Source));
             })
             .OrderBy(item => item.TargetCommonName, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(item => item.Organ)
             .ToList();
 
         return new ProtocolViewModel(

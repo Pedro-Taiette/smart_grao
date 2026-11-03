@@ -44,9 +44,12 @@ public sealed class Cultivation : AggregateRoot<CultivationId>
     public string Cultivar { get; private set; } = string.Empty;
     public DateOnly PlantedOn { get; private set; }
     public DateOnly? EndedOn { get; private set; }
+    public CercosporaRiskFactors RiskFactors { get; private set; } = CercosporaRiskFactors.Unknown;
     public IReadOnlyList<GrowthStageRecord> Stages => _stages.AsReadOnly();
 
-    public static Cultivation Create(FieldId fieldId, SeasonId seasonId, Crop crop, string cultivar, DateOnly plantedOn)
+    public static Cultivation Create(
+        FieldId fieldId, SeasonId seasonId, Crop crop, string cultivar, DateOnly plantedOn,
+        CercosporaRiskFactors? riskFactors = null)
     {
         if (!Enum.IsDefined(crop) || crop == Crop.Undefined)
             throw new DomainException(SmartGraoErrors.Field.UnknownCrop);
@@ -54,11 +57,27 @@ public sealed class Cultivation : AggregateRoot<CultivationId>
             throw new DomainException(SmartGraoErrors.Cultivation.InvalidCultivar);
         if (plantedOn == default)
             throw new DomainException(SmartGraoErrors.Cultivation.InvalidDate);
-        return new Cultivation
+        var cultivation = new Cultivation
         {
             Id = CultivationId.New(), FieldId = fieldId, SeasonId = seasonId,
             Crop = crop, Cultivar = cultivar.Trim(), PlantedOn = plantedOn,
         };
+        if (riskFactors is not null) cultivation.ApplyRiskFactors(riskFactors);
+        return cultivation;
+    }
+
+    /// <summary>Corrigivel mesmo em ciclo encerrado: o recalculo de safras passadas depende dele.</summary>
+    public void UpdateRiskFactors(CercosporaRiskFactors riskFactors)
+    {
+        ApplyRiskFactors(riskFactors);
+        MarkAsUpdated();
+    }
+
+    private void ApplyRiskFactors(CercosporaRiskFactors riskFactors)
+    {
+        if (Crop != Crop.Corn && riskFactors.IsKnown)
+            throw new DomainException(SmartGraoErrors.Cultivation.RiskFactorsNotApplicable);
+        RiskFactors = riskFactors;
     }
 
     public void Close(DateOnly endedOn)

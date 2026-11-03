@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Alert, Button, Stack } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGetInspections } from '@/api/generated/inspections/inspections';
 import { useGetProtocols } from '@/api/generated/protocols/protocols';
-// O histórico de malhas é uma rota do talhão, e por isso o hook sai do módulo de talhões.
-import { useGetSamplingPlansByField } from '@/api/generated/fields/fields';
+import { useCreateDirectedPlan } from '@/api/generated/photos/photos';
+import { useNotifier } from '@/shared/notifications/useNotifier';
 import { ProtocolStatus } from '@/api/generated/model/protocolStatus';
 import type { CultivationViewModel } from '@/api/generated/model/cultivationViewModel';
 import { EmptyState } from '@/shared/components/EmptyState';
@@ -21,28 +21,52 @@ import { usePeople } from '../hooks/usePeople';
  * Mostrar a lista inteira e o ponto: a mesma malha caminhada muitas vezes, cada visita com o seu
  * proprio registro. E o que o criterio da fase 3 pede.
  */
-export function FieldInspectionsSection({ farmId, fieldId, cultivation }: {
+export function FieldInspectionsSection({ farmId, cultivation }: {
   farmId: string;
-  fieldId: string;
   cultivation: CultivationViewModel | null;
 }) {
   const navigate = useNavigate();
-  const [isScheduling, setScheduling] = useState(false);
+  const [params, setParams] = useSearchParams();
+  const [isScheduling, setSchedulingState] = useState(params.has('agendar'));
+  const setScheduling = (open: boolean) => {
+    setSchedulingState(open);
+    if (!open && params.has('agendar')) setParams({ aba: 'vistorias' }, { replace: true });
+  };
   const actions = useInspectionActions();
+  const notifier = useNotifier();
+  const directedPlan = useCreateDirectedPlan();
 
   const inspectionsQuery = useGetInspections(
     { cultivationId: cultivation?.id ?? '' },
     { query: { enabled: Boolean(cultivation) } },
   );
   const { people } = usePeople(farmId, true);
-  const plansQuery = useGetSamplingPlansByField(fieldId, { query: { enabled: Boolean(fieldId) } });
   const protocolsQuery = useGetProtocols(
     { crop: cultivation?.crop ?? 'Corn', status: ProtocolStatus.Published },
     { query: { enabled: Boolean(cultivation) } },
   );
 
+  const protocol = (protocolsQuery.data ?? []).find(p => p.code === 'cercosporiose_deteccao') ?? protocolsQuery.data?.[0];
+
+  async function schedule(responsibleId: string, scheduledFor: string) {
+    if (!cultivation || !protocol) {
+      notifier.notifyError(new Error('Nenhum protocolo de cercosporiose publicado.'));
+      return false;
+    }
+    try {
+      const plan = await directedPlan.mutateAsync({ id: cultivation.id });
+      const created = await actions.scheduleInspection({
+        cultivationId: cultivation.id, samplingPlanId: plan.plan.id, protocolId: protocol.id, responsibleId, scheduledFor,
+      });
+      if (created) navigate(`/vistorias/${created.id}`);
+      return created !== null;
+    } catch (failure) {
+      notifier.notifyError(failure);
+      return false;
+    }
+  }
+
   const inspections = inspectionsQuery.data ?? [];
-  const plans = (plansQuery.data ?? []).filter(plan => plan.cultivationId === cultivation?.id);
 
   if (!cultivation) {
     return (
@@ -91,16 +115,10 @@ export function FieldInspectionsSection({ farmId, fieldId, cultivation }: {
 
       {isScheduling && (
         <ScheduleInspectionDialog
-          isSaving={actions.isSaving}
+          isSaving={actions.isSaving || directedPlan.isPending}
           people={people}
-          plans={plans}
-          protocols={protocolsQuery.data ?? []}
           onClose={() => setScheduling(false)}
-          onSave={async values => {
-            const created = await actions.scheduleInspection({ ...values, cultivationId: cultivation.id });
-            if (created) navigate(`/vistorias/${created.id}`);
-            return created !== null;
-          }}
+          onSave={values => schedule(values.responsibleId, values.scheduledFor)}
         />
       )}
     </Stack>
