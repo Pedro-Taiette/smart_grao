@@ -17,8 +17,19 @@ React + TypeScript + MUI · Leaflet + Geoman · cliente da API gerado pelo Orval
 
 ## Rodando
 
-Pré-requisitos: .NET SDK 10, Node 20+, um banco PostgreSQL com PostGIS e
-`dotnet tool install --global dotnet-ef --version 10.0.9`.
+Pré-requisitos: .NET SDK 10, Node 20+, Python 3.13, [Git LFS](https://git-lfs.com), um banco
+PostgreSQL com PostGIS e `dotnet tool install --global dotnet-ef --version 10.0.9`.
+
+**0. Clone.** Os modelos de visão (`analytics/models/<versão>/model.onnx`) ficam no Git LFS. Ative o
+LFS uma vez por máquina antes de clonar:
+
+```powershell
+git lfs install
+git clone https://github.com/Pedro-Taiette/smart_grao
+```
+
+Se o clone foi feito sem o LFS, o `.onnx` chega como um arquivo-texto de poucos bytes e o serviço não
+carrega o modelo. Corrija com `git lfs install` e `git lfs pull`.
 
 **1. Banco.** Crie `backend/src/SmartGrao.WebApi/appsettings.Development.json` — ele está no
 `.gitignore` porque carrega a senha, então não vem no clone:
@@ -50,6 +61,18 @@ dotnet run --project backend/src/SmartGrao.WebApi
 ```powershell
 cd frontend && npm install && npm run dev
 ```
+
+**5. Serviço de análise** (satélite e modelo de imagem) em `http://localhost:8000`:
+
+```powershell
+cd analytics/service
+python -m venv .venv
+.venv/Scripts/pip install -r requirements.txt
+.venv/Scripts/python -m uvicorn smartgrao_analytics.app:app --port 8000
+```
+
+Sem ele, clima e vistoria funcionam; o satélite não atualiza e a análise das fotos falha depois das
+retentativas (dá para reenfileirar com o serviço de pé).
 
 ## Testes
 
