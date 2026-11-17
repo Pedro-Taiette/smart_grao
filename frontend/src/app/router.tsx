@@ -1,12 +1,9 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import { RedirectToField, RedirectToInspection, RedirectToProtocol } from './legacyRedirects';
+import { RedirectToField, RedirectToInspection } from './legacyRedirects';
 import { TodayPage } from '@/features/today/pages/TodayPage';
 import { FarmsPage } from '@/features/farms/pages/FarmsPage';
 import { FieldsPage } from '@/features/fields/pages/FieldsPage';
 import { FieldPage } from '@/features/fields/pages/FieldPage';
-import { TargetCatalogPage } from '@/features/protocols/pages/TargetCatalogPage';
-import { ProtocolsPage } from '@/features/protocols/pages/ProtocolsPage';
-import { ProtocolDetailPage } from '@/features/protocols/pages/ProtocolDetailPage';
 import { TeamPage } from '@/features/inspections/pages/TeamPage';
 import { InspectionsPage } from '@/features/inspections/pages/InspectionsPage';
 import { InspectionDetailPage } from '@/features/inspections/pages/InspectionDetailPage';
@@ -45,9 +42,6 @@ export const router = createBrowserRouter([
       { path: 'ajustes', element: <SettingsPage /> },
       { path: 'ajustes/fazendas', element: <FarmsPage /> },
       { path: 'ajustes/equipe', element: <TeamPage /> },
-      { path: 'ajustes/catalogo', element: <TargetCatalogPage /> },
-      { path: 'ajustes/protocolos', element: <ProtocolsPage /> },
-      { path: 'ajustes/protocolos/:protocolId', element: <ProtocolDetailPage /> },
 
       // Rotas da organizacao anterior. Ficam como redirecionamento porque links ja foram abertos e
       // salvos — em especial o da execucao de vistoria, que circula por mensagem.
@@ -57,9 +51,6 @@ export const router = createBrowserRouter([
       { path: 'farms/:farmId/fields/:fieldId/cultivations', element: <RedirectToField tab="plantio" /> },
       { path: 'farms/:farmId/fields/:fieldId/inspections', element: <RedirectToField tab="vistorias" /> },
       { path: 'inspections/:inspectionId', element: <RedirectToInspection /> },
-      { path: 'targets', element: <Navigate to="/ajustes/catalogo" replace /> },
-      { path: 'protocols', element: <Navigate to="/ajustes/protocolos" replace /> },
-      { path: 'protocols/:protocolId', element: <RedirectToProtocol /> },
 
       { path: '*', element: <Navigate to="/" replace /> },
     ],

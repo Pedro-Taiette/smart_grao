@@ -171,8 +171,6 @@ export function FieldsPage() {
           farmCenter={workspace.farmCenter}
           selectedFieldId={workspace.selectedFieldId}
           editingFieldId={workspace.redrawingFieldId}
-          samplingPoints={[]}
-          isSamplingOutdated={false}
           isDrawing={isDrawing}
           onDrawingChange={setDrawing}
           onSelectField={workspace.selectField}

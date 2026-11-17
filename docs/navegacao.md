@@ -105,6 +105,12 @@ de domínio mudou.
   contagem é por toque (*das 10 plantas, quantas tinham mancha?*); estágio, observações e ocorrência
   fora das paradas ficam em "Mais opções"; um botão de foto por folha pedida.
 - **Rodar o sistema:** `setup.cmd` e `start.cmd` na raiz (ver [rodando.md](rodando.md)).
+- **Telas fora do foco removidas.** Protocolos, pragas e doenças (`/ajustes/protocolos`,
+  `/ajustes/catalogo`) e a marcação manual de pontos de coleta saíram do frontend: o protocolo de
+  cercosporiose é semeado e as paradas são dirigidas pelo satélite. A API continua com os endpoints,
+  que a vistoria usa por baixo. Links antigos caem em Hoje.
+- **Mapa da vistoria com as áreas do satélite** por baixo das paradas, com legenda — quem está no
+  campo vê por que a parada está ali.
 
 ### Os três eixos explícitos
 
@@ -137,7 +143,7 @@ pergunta em toda tela (`features/risk/components/AxesOverview.tsx`):
 | `/vistorias/:id` | Executar a visita — é o link que abre no celular |
 | `/aferimento` | Desempenho da IA — alcançado por Ajustes |
 | `/ajustes` | Hub de cadastros de referência |
-| `/ajustes/fazendas`, `/ajustes/equipe`, `/ajustes/protocolos`, `/ajustes/catalogo` | Cadastros |
+| `/ajustes/fazendas`, `/ajustes/equipe` | Cadastros |
 
 As rotas da organização anterior (`/farms/...`, `/inspections/:id`, `/protocols`, `/targets`)
 continuam como redirecionamento — links já foram abertos e salvos, em especial o de execução de

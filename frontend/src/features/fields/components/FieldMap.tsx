@@ -3,8 +3,6 @@ import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import { latLngBounds } from 'leaflet';
 import type { FieldViewModel } from '@/api/generated/model/fieldViewModel';
 import type { GeoJsonPolygon } from '@/api/generated/model/geoJsonPolygon';
-import type { SamplingPointViewModel } from '@/api/generated/model/samplingPointViewModel';
-import { SamplingPointsLayer } from '@/features/sampling/components/SamplingPointsLayer';
 import { BRAZIL_CENTER, toLeafletPositions, type LatLngTuple } from '../geo/geoJson';
 import { DrawControl } from './DrawControl';
 import { FieldPolygon } from './FieldPolygon';
@@ -18,10 +16,6 @@ interface FieldMapProps {
   farmCenter: LatLngTuple | null;
   selectedFieldId: string | null;
   editingFieldId: string | null;
-  samplingPoints: SamplingPointViewModel[];
-  isSamplingOutdated: boolean;
-  /** Mapa de consulta: sem traçado. O desenho vive só na tela de talhões. */
-  readOnly?: boolean;
   /** Traçado de um talhão novo ligado (ver {@link DrawControl}). */
   isDrawing?: boolean;
   onDrawingChange?: (isDrawing: boolean) => void;
@@ -72,9 +66,6 @@ export function FieldMap({
   farmCenter,
   selectedFieldId,
   editingFieldId,
-  samplingPoints,
-  isSamplingOutdated,
-  readOnly = false,
   isDrawing = false,
   onDrawingChange = noop,
   onSelectField,
@@ -105,16 +96,9 @@ export function FieldMap({
         />
       ))}
 
-      {/* Os pontos ficam por cima dos contornos, e somem durante o redesenho: eles pertencem ao
-          contorno antigo, e mante-los na tela enquanto ele e arrastado mostraria uma malha que ja
-          nao corresponde ao talhao. */}
-      {editingFieldId === null && (
-        <SamplingPointsLayer points={samplingPoints} isOutdated={isSamplingOutdated} />
-      )}
-
       {/* A barra de desenho some durante a edicao de um contorno: desenhar um talhao novo enquanto
           outro esta aberto para edicao perderia as alteracoes ainda nao salvas. */}
-      {editingFieldId === null && !readOnly && (
+      {editingFieldId === null && (
         <DrawControl isDrawing={isDrawing} onDrawingChange={onDrawingChange} onPolygonDrawn={onPolygonDrawn} />
       )}
     </MapContainer>

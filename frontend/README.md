@@ -35,8 +35,7 @@ src/
     farms/          cadastro das propriedades, mais FarmContext.tsx (a fazenda em uso)
     fields/         mapa e página do talhão, mais geo/ (GeoJSON ↔ Leaflet)
     cultivations/   plantio (safra derivada da data), estágios e encerramento
-    sampling/       marcação de pontos, mais samplingLabels.ts (vocabulário)
-    protocols/      pragas, doenças e protocolos, mais protocolLabels.ts
+    protocols/      protocolLabels.ts: o vocabulário de folhas e contagens que a vistoria usa
     inspections/    equipe, vistorias e coleta em campo, mais inspectionLabels.ts
     risk/           os três eixos (clima, satélite, fotos + IA): axes.ts resume e cruza,
                     AxesOverview mostra; a aba Situação e o painel da tela Hoje

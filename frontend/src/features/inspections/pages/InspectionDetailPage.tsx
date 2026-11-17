@@ -23,6 +23,7 @@ import { usePeople } from '../hooks/usePeople';
 import { useGetFieldById } from '@/api/generated/fields/fields';
 import { useGetSamplingPlanById } from '@/api/generated/sampling-plans/sampling-plans';
 import { StopsMap } from '../components/StopsMap';
+import { useGetSatellitePasses } from '@/api/generated/risk/risk';
 
 export function InspectionDetailPage() {
   const { inspectionId = '' } = useParams();
@@ -47,6 +48,12 @@ function InspectionWorkspace({ inspectionId }: { inspectionId: string }) {
   });
   const { people } = usePeople(fieldQuery.data?.farmId ?? '', true);
   const planQuery = useGetSamplingPlanById(inspection?.samplingPlanId ?? '', { query: { enabled: inspection !== undefined } });
+  // A passagem que dirigiu as paradas, para desenhar as areas por baixo delas.
+  const zoneDate = planQuery.data?.plan.zoneDate ?? null;
+  const satelliteQuery = useGetSatellitePasses(inspection?.cultivationId ?? '', {
+    query: { enabled: inspection !== undefined && zoneDate !== null },
+  });
+  const zones = satelliteQuery.data?.passes.find(pass => pass.date === zoneDate)?.zones ?? [];
   const visited = new Set((inspection?.observations ?? []).map(o => o.pointSequence).filter((n): n is number => n !== null));
   const allStopsDone = inspection !== undefined && inspection.pointCount > 0 && w.remainingPoints.length === 0;
 
@@ -139,7 +146,8 @@ function InspectionWorkspace({ inspectionId }: { inspectionId: string }) {
             </Stack>
 
             {fieldQuery.data && planQuery.data && (
-              <StopsMap field={fieldQuery.data} points={planQuery.data.points} visited={visited} />
+              <StopsMap field={fieldQuery.data} points={planQuery.data.points} visited={visited}
+                zones={zones} zoneDate={zoneDate} />
             )}
 
             <Divider />
