@@ -77,13 +77,29 @@ public sealed class RefreshSatelliteCommandHandler(ISmartGraoDbContext db, IAnal
             throw new DomainException(SmartGraoErrors.Risk.AnalyticsUnavailable);
         }
 
-        var dates = results.Select(x => x.Date).ToList();
-        await db.SatellitePasses.Where(x => x.FieldId == cultivation.FieldId && dates.Contains(x.Date)).ExecuteDeleteAsync(cancellationToken);
-        foreach (var result in results)
-            db.SatellitePasses.Add(ToDomain(cultivation, result));
-        await db.SaveChangesAsync(cancellationToken);
+        // A passagem e do talhao (unica por talhao e data), e dois pedidos podem chegar juntos: dois
+        // plantios do mesmo talhao, ou duas telas abertas. Sem a fila, o segundo regravava as mesmas
+        // datas no meio do primeiro e batia na chave unica. A busca no servico pode correr em paralelo;
+        // so a troca no banco espera a vez.
+        var gate = WriteGates.GetOrAdd(cultivation.FieldId.Value, _ => new SemaphoreSlim(1, 1));
+        await gate.WaitAsync(cancellationToken);
+        try
+        {
+            var dates = results.Select(x => x.Date).ToList();
+            await db.SatellitePasses.Where(x => x.FieldId == cultivation.FieldId && dates.Contains(x.Date)).ExecuteDeleteAsync(cancellationToken);
+            foreach (var result in results)
+                db.SatellitePasses.Add(ToDomain(cultivation, result));
+            await db.SaveChangesAsync(cancellationToken);
+        }
+        finally
+        {
+            gate.Release();
+        }
         return await SatelliteProjection.BuildAsync(db, cultivation, cancellationToken);
     }
+
+    /// <summary>Uma troca de passagens por vez em cada talhao (a API roda numa instancia so).</summary>
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<Guid, SemaphoreSlim> WriteGates = new();
 
     private static SatellitePass ToDomain(Cultivation cultivation, SatellitePassResult result)
     {

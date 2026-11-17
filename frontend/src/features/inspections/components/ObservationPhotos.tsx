@@ -13,6 +13,7 @@ import { plantOrganLabel } from '@/features/protocols/protocolLabels';
 import { useNotifier } from '@/shared/notifications/useNotifier';
 import { PhotoAnalysisDialog } from '@/features/analysis/components/PhotoAnalysisDialog';
 import { isSimulated, latestModel, latestReview, leafLabelName, percent, verdictColor } from '@/features/analysis/analysisLabels';
+import { newId } from '@/shared/newId';
 
 export function photoUrl(id: string) {
   return `${apiBaseUrl}/api/photos/${id}/content`;
@@ -91,7 +92,7 @@ export function ObservationPhotos({ inspectionId, observation, protocol, photos,
 
   function pick(files: FileList | null) {
     if (!files || files.length === 0) return;
-    void send([...files].map(file => ({ id: crypto.randomUUID(), file, organ })));
+    void send([...files].map(file => ({ id: newId(), file, organ })));
     if (input.current) input.current.value = '';
   }
 

@@ -1,0 +1,73 @@
+# SmartGrão inteiro em containers, com o starter pack da demonstração.
+#
+#   demo.cmd   (ou: docker compose up -d --build)  →  http://localhost:8080
+#
+# Banco local: nada aqui mexe no banco compartilhado (Neon). Na primeira subida, as migrations da
+# API criam o esquema e o `seed` roda docker/starter-pack.sql. Ver docs/docker.md.
+name: smartgrao
+
+services:
+  db:
+    image: postgis/postgis:18-3.6
+    environment:
+      POSTGRES_USER: smartgrao
+      POSTGRES_PASSWORD: smartgrao
+      POSTGRES_DB: smartgrao
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U smartgrao -d smartgrao"]
+      interval: 3s
+      timeout: 3s
+      retries: 60
+
+  analytics:
+    build: { context: ., dockerfile: docker/analytics.Dockerfile }
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  api:
+    build: { context: ., dockerfile: docker/api.Dockerfile }
+    environment:
+      ConnectionStrings__SmartGrao: "Host=db;Database=smartgrao;Username=smartgrao;Password=smartgrao"
+      Analytics__BaseUrl: "http://analytics:8000/"
+    volumes:
+      - photos:/data/photos
+    depends_on:
+      db: { condition: service_healthy }
+      analytics: { condition: service_healthy }
+    healthcheck:
+      # A API so abre a porta depois de aplicar as migrations: porta aberta = esquema pronto.
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/127.0.0.1/8080' || exit 1"]
+      interval: 3s
+      timeout: 3s
+      retries: 60
+
+  # Roda o starter pack e termina. Pode rodar a cada subida: o .sql nao duplica nada.
+  seed:
+    image: postgis/postgis:18-3.6
+    environment:
+      PGHOST: db
+      PGUSER: smartgrao
+      PGPASSWORD: smartgrao
+      PGDATABASE: smartgrao
+    volumes:
+      - ./docker/starter-pack.sql:/seed/starter-pack.sql:ro
+    entrypoint: ["psql", "-v", "ON_ERROR_STOP=1", "-q", "-f", "/seed/starter-pack.sql"]
+    depends_on:
+      api: { condition: service_healthy }
+    restart: "no"
+
+  web:
+    build: { context: ., dockerfile: docker/web.Dockerfile }
+    ports:
+      - "8080:80"
+    depends_on:
+      api: { condition: service_healthy }
+
+volumes:
+  pgdata:
+  photos:

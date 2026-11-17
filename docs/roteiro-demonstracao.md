@@ -6,22 +6,29 @@ abaixo é uma tela, na ordem em que a história anda. Tempo total: 12 a 15 minut
 
 ## Antes de começar
 
-Dois cliques em **`start.cmd`**, na raiz: sobe o serviço Python, a API e o frontend e abre o
-navegador. Para subir cada parte num terminal, ver [rodando.md](rodando.md).
+No terminal da pasta do projeto, **`demo.cmd reset`**: sobe tudo em Docker com o starter pack
+(`docker/starter-pack.sql`) no estado inicial e abre `http://localhost:8080` (ver
+[docker.md](docker.md)). Sem Docker, `start.cmd` sobe o sistema contra o banco compartilhado
+([rodando.md](rodando.md)).
 
 Conferir antes de entrar na sala:
 
-- `http://localhost:8000/health` responde `ok`;
 - **Ajustes → Desempenho da IA** mostra os números do modelo (se aparecer "serviço de análise fora
-  do ar", rode `stop.cmd` e `start.cmd` de novo);
-- a internet funciona: clima, satélite e o fundo dos mapas vêm de fora.
+  do ar", aperte Enter na janela do `demo.cmd` e rode `demo.cmd` de novo);
+- a internet funciona: clima, satélite e o fundo dos mapas vêm de fora;
+- abrir uma vez os três plantios abaixo: a primeira busca do satélite de cada um leva de 1 a 2
+  minutos, e é melhor que aconteça antes.
 
-Dados usados (já estão no banco):
+Dados do starter pack (pessoas e fazendas fictícias, contornos de lavouras reais):
 
 | O quê | Onde |
 |---|---|
-| Safrinha 2026 encerrada, lavoura real | Fazenda Santa Rita (Sorriso-MT) → **Talhao Demonstracao** |
-| Safra em andamento com risco alto hoje, vistoria e estação simulada | Fazenda Santa Rita (Marília) → **Talhão Sul** |
+| Milho em andamento, dados do plantio em "Não sei", áreas marcadas pelo satélite | Sítio Santa Rita (Marília-SP) → **Talhão Sul** |
+| Milho em andamento com os três fatores que agravam o risco | Fazenda Boa Esperança (Sorriso-MT) → **Talhão da Sede** |
+| Safrinha 2026 encerrada | Fazenda Boa Esperança → **Talhão da Sede** → safra 2025/2026 |
+
+Clima e satélite não vêm no pacote: o sistema busca sozinho, ao vivo. Por isso o nível de risco do
+dia pode mudar de uma demo para outra — o roteiro não depende de um nível exato.
 
 ## 1. O problema (1 min, sem tela)
 
@@ -31,7 +38,7 @@ tem três camadas: **quando** olhar (clima), **onde** olhar (satélite) e **o qu
 
 ## 2. Cadastro do plantio (1 min)
 
-Marília → Talhões → **Talhão Sul** → aba **Plantio**.
+Sítio Santa Rita → Talhões → **Talhão Sul** → aba **Plantio**.
 
 - O plantio é sempre milho; não há seletor de cultura nem cadastro de safra — a safra sai da data.
 - **Sobre o plantio**: o cadastro pergunta na língua do produtor se o híbrido resiste, o que estava
@@ -50,20 +57,21 @@ eixo, na mesma numeração.
 
 ## 4. Quando olhar — clima (2 min)
 
-Seção **1 · O clima favorece a doença?**
+Fazenda Boa Esperança → **Talhão da Sede** → seção **1 · O clima favorece a doença?**
 
 - O nível de hoje com o porquê: *"N noites úmidas e N dias com temperatura entre 22 e 30 °C nos
-  últimos 14 dias"*, mais o que se sabe do plantio.
+  últimos 14 dias"*, mais o que se sabe do plantio — aqui, híbrido suscetível, milho sobre milho e
+  plantio direto, os três que agravam.
 - O risco dia a dia do ciclo, com a previsão hachurada.
-- O aviso de estágio desatualizado: o sistema não adivinha o estágio, pede — e o botão **Informar
-  estágio** abre o formulário direto.
+- O estágio: o sistema não adivinha, pede. Passados 14 dias do último registro, avisa que está
+  desatualizado, e o botão **Informar estágio** abre o formulário direto.
 - Com risco alto, a decisão vira **Vistorie agora**, com o botão **Vistoriar agora**.
 - Falar das fontes: faixa de 22–30 °C, UR ≥ 90% e janela V4 em diante vêm de Paul & Munkvold; os
   cortes entre níveis são decisão de projeto, e a tela diz que o índice **não é calibrado**.
 
 ## 5. Safra passada — clima e satélite com dados reais (3 min)
 
-Sorriso → **Talhao Demonstracao** → aba **Situação**.
+Talhão da Sede → plantio da **safrinha 2026** (safra 2025/2026) → aba **Situação**.
 
 - **Risco dia a dia** da safrinha 2026: alto de fevereiro ao começo de maio, baixo com a seca. Clima
   real, da reanálise.
@@ -74,8 +82,8 @@ Sorriso → **Talhao Demonstracao** → aba **Situação**.
   abril e mostrar as áreas no mapa.
 - Dizer o limite: a 20 m por pixel o satélite vê vigor, não lesão. Aponta **onde** olhar.
 - As imagens são buscadas sozinhas ao abrir o talhão (se a última passagem tem mais de 5 dias, o
-  intervalo de revisita do Sentinel-2). A primeira busca de uma safra leva de 1 a 2 minutos: abrir o
-  talhão antes de entrar na sala.
+  intervalo de revisita do Sentinel-2). A primeira busca de uma safra leva de 1 a 2 minutos — por
+  isso abrir antes de entrar na sala.
 
 ## 6. Onde olhar — vistoria dirigida (2 min)
 
@@ -90,28 +98,9 @@ De volta ao Talhão Sul → **Vistoriar agora** (na decisão ou na aba **Vistori
 - A regra de 10 paradas × 10 plantas vem da extensão dos EUA — não existe protocolo brasileiro de
   detecção, e a pesquisa registra isso.
 
-## 7. O que é — foto e IA (3 min)
+## 7. Sem ninguém em campo — o rover (2 min)
 
-Abrir a vistoria em andamento de 02/11 → **Parada 1**.
-
-- Contagem por folha: *"Cercosporiose (folhas de baixo): 20%"*. Para mostrar o registro, **Registrar
-  parada 2**: o GPS liga sozinho e a contagem é por toque — *"das 10 plantas, quantas tinham
-  mancha?"*, de 0 a 10 ou **Não olhei**. O sistema converte para percentual. Feche com **Cancelar**
-  para não mexer nos dados da demonstração.
-- **Foto: folhas de baixo** abre a câmera no celular; a foto tem id gerado no aparelho, então reenviar depois de
-  cair a rede não duplica.
-- A foto passa pela fila e o modelo responde: *"Suspeita de cercosporiose — confirme"*, 64%.
-- **Mostrar onde o modelo olhou**: o mapa de oclusão. Aqui o modelo olha também o fundo — é o viés
-  que a pesquisa previu, e o motivo de existir a revisão.
-- Revisar: escolher o nome e confirmar ou corrigir. Essa revisão é a verdade de campo.
-
-Na aba **Situação**, a seção **3 · O que a IA viu nas fotos?** junta todas as fotos do plantio — de
-campo e da estação sentinela **simulada**, marcada como tal —, as que esperam revisão primeiro. O botão
-**Revisar fotos** da decisão abre a primeira suspeita de cercosporiose.
-
-## 8. Sem ninguém em campo — o rover (2 min)
-
-Talhão Sul → aba **Situação** → **Mandar o rover (simulação)** (ou **Ver o rover em ação**, no fim).
+Talhão Sul → aba **Situação** → **Mandar o rover (simulação)**.
 
 - Dizer antes: *"Por que alguém dependeria da foto do celular? Se a pessoa já está olhando a folha,
   a IA é só segunda opinião. A IA faz sentido quando ninguém está olhando."*
@@ -122,6 +111,19 @@ Talhão Sul → aba **Situação** → **Mandar o rover (simulação)** (ou **Ve
   olhou**.
 - No fim: *"A IA viu sinal em N fotos"*, e elas já estão no eixo 3 para alguém revisar de longe.
 - Dizer o limite: drone vê a copa (reforça o *onde*); só quem anda na entrelinha vê a folha de baixo.
+
+## 8. O que é — a IA e a revisão (2 min)
+
+**Revisar fotos no talhão** (no fim da rota) ou a seção **3 · O que a IA viu nas fotos?** da aba
+**Situação**: junta todas as fotos do plantio — de campo e do rover (estas marcadas como **simuladas**) —,
+as que esperam revisão primeiro.
+
+- O palpite do modelo: *"Suspeita de cercosporiose — confirme"*, com a confiança.
+- **Mostrar onde o modelo olhou**: o mapa de oclusão. Às vezes o modelo olha também o fundo — é o
+  viés que a pesquisa previu, e o motivo de existir a revisão.
+- Revisar: escolher o nome e confirmar ou corrigir. Essa revisão é a verdade de campo.
+- Em campo, a mesma coisa sai da parada da vistoria: **Foto: folhas de baixo** abre a câmera do
+  celular; a foto tem id gerado no aparelho, então reenviar depois de cair a rede não duplica.
 
 ## 9. O sistema medindo a si mesmo (2 min)
 
