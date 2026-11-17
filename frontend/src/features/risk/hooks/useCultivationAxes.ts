@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useMutationState, useQueryClient } from '@tanstack/react-query';
 import {
-  getGetSatellitePassesQueryKey, getRefreshSatellitePassesMutationKey, useGetCercosporaRisk,
-  useGetSatellitePasses, useRefreshSatellitePasses,
+  getGetCercosporaAlertsQueryKey, getGetCercosporaRiskQueryKey, getGetSatellitePassesQueryKey,
+  getRefreshSatellitePassesMutationKey, getRefreshWeatherMutationKey, useGetCercosporaRisk,
+  useGetSatellitePasses, useRefreshSatellitePasses, useRefreshWeather,
 } from '@/api/generated/risk/risk';
 import { useGetPhotos } from '@/api/generated/photos/photos';
 import type { CercosporaAlertViewModel } from '@/api/generated/model/cercosporaAlertViewModel';
@@ -18,6 +19,9 @@ import {
  * minutos) nao pode sair duas vezes — nem repetir a cada troca de aba quando o servico esta fora.
  */
 const attempted = new Set<string>();
+
+/** Mesma ideia para o clima: plantio sem nenhuma hora de clima busca uma vez, sozinho. */
+const weatherAttempted = new Set<string>();
 
 /**
  * Os tres eixos de um plantio de milho: clima, satelite e fotos com IA, ja resumidos e cruzados.
@@ -43,7 +47,30 @@ export function useCultivationAxes(cultivationId: string, options: {
     },
   });
   const refresh = useRefreshSatellitePasses();
+  const refreshWeather = useRefreshWeather();
   const [failed, setFailed] = useState(false);
+
+  // Clima: a rotina do servidor atualiza a cada 6 horas, e um plantio recem-cadastrado ficaria sem
+  // nada ate la. Sem nenhuma hora de clima, busca agora.
+  const weatherPending = useMutationState({
+    filters: { mutationKey: getRefreshWeatherMutationKey(), status: 'pending' },
+    select: mutation => (mutation.state.variables as { id?: string } | undefined)?.id,
+  });
+  const isFetchingWeather = weatherPending.includes(cultivationId);
+  const weatherMissing = options.alert
+    ? options.alert.current == null
+    : riskQuery.data !== undefined && !riskQuery.data.weatherRetrievedAt;
+  const { mutateAsync: fetchWeather } = refreshWeather;
+  useEffect(() => {
+    if (!weatherMissing || weatherAttempted.has(cultivationId)) return;
+    weatherAttempted.add(cultivationId);
+    fetchWeather({ id: cultivationId })
+      .then(async result => {
+        cache.setQueryData(getGetCercosporaRiskQueryKey(cultivationId), result);
+        await cache.invalidateQueries({ queryKey: getGetCercosporaAlertsQueryKey() });
+      })
+      .catch(() => { /* sem internet: o resumo do pilar 1 continua dizendo que falta clima */ });
+  }, [weatherMissing, cultivationId, fetchWeather, cache]);
 
   // Pendente aqui ou no botao manual do painel: os dois usam a mesma mutacao.
   const pending = useMutationState({
@@ -72,6 +99,7 @@ export function useCultivationAxes(cultivationId: string, options: {
   // Enquanto chega a primeira resposta, a tela diz "Carregando" — e nao "sem imagens" ou "nenhuma
   // foto", que pareceriam um fato sobre o talhao.
   const loading: AxisSummary = { tone: 'idle', title: 'Carregando…', detail: '' };
+  const fetchingWeather: AxisSummary = { tone: 'idle', title: 'Buscando o clima…', detail: 'Open-Meteo: as últimas semanas e a previsão.' };
   const loadingVerdict: Verdict = { severity: 'info', headline: 'Juntando clima, satélite e fotos deste talhão…', detail: null, actions: [] };
   const isLoading = (!options.alert && riskQuery.isPending) || satelliteQuery.isPending || photosQuery.isPending;
 
@@ -81,7 +109,8 @@ export function useCultivationAxes(cultivationId: string, options: {
     satellite,
     photos,
     photoList: photosQuery.data ?? [],
-    climate: risk ? summarizeClimate(risk) : loading,
+    climate: !risk ? loading
+      : isFetchingWeather && !risk.current?.level ? fetchingWeather : summarizeClimate(risk),
     satelliteSummary: satelliteQuery.isPending ? loading : summarizeSatellite(satellite, { isFetching: isFetchingSatellite, failed }),
     photoSummary: photosQuery.isPending ? loading : summarizePhotos(photos),
     verdict: isLoading ? loadingVerdict : crossVerdict(risk, satellite, photos),

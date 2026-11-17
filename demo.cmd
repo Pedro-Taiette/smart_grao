@@ -1,3 +1,4 @@
 @echo off
-rem Atalho de dois cliques: scripts\demo.ps1 -Action start (SmartGrao em Docker).
-powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\demo.ps1" -Action start
+rem SmartGrao em Docker: dois cliques sobem tudo e abrem o navegador; Enter na janela desliga.
+rem Para comecar do zero: demo.cmd reset
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\demo.ps1" %*

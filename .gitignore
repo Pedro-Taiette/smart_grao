@@ -20,12 +20,7 @@ backend/src/SmartGrao.WebApi/appsettings.Development.json
 ## Fotos gravadas em disco no desenvolvimento
 backend/src/SmartGrao.WebApi/data/
 
-# Credenciais e dump temporario do passo a passo de docs/docker.md
+# Nunca versionar: credenciais do Neon e o antigo pacote da demo (tinha nomes reais da equipe)
 neon.env
 neon.sql
-# Dados da demonstracao (nomes reais da equipe): fora do repositorio publico. Vem no
-# smartgrao-demo-data.zip, que o demo.cmd descompacta. Ver docs/docker.md.
-docker/db/*.sql.gz
-docker/demo-photos/*
-!docker/demo-photos/.gitkeep
 smartgrao-demo-data.zip

@@ -1,5 +1,4 @@
-# API .NET. As fotos e os mapas de calor da demonstracao vem dentro da imagem, em /data/photos: o
-# volume nomeado do compose e criado a partir deles na primeira subida (e volta a eles no reset).
+# API .NET. As fotos enviadas (celular, rover) ficam em /data/photos, num volume do compose.
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 COPY backend/ backend/
@@ -11,10 +10,10 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0
 RUN apt-get update && apt-get install -y --no-install-recommends libgssapi-krb5-2 && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=build /app .
-COPY docker/demo-photos/ /data/photos/
+RUN mkdir -p /data/photos
 ENV ASPNETCORE_URLS=http://+:8080 \
     Storage__PhotoRoot=/data/photos
 EXPOSE 8080
-# Migrations sao um passo explicito do sistema; no container ele roda antes de subir. Com o banco da
-# demonstracao ja migrado, nao faz nada.
+# Migrations sao um passo explicito do sistema; no container ele roda antes de subir. Num banco ja
+# migrado, nao faz nada.
 ENTRYPOINT ["sh", "-c", "dotnet SmartGrao.WebApi.dll migrate && exec dotnet SmartGrao.WebApi.dll"]
