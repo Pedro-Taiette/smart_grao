@@ -37,45 +37,58 @@ Marília → Talhões → **Talhão Sul** → aba **Plantio**.
 - **Sobre o plantio**: o cadastro pergunta na língua do produtor se o híbrido resiste, o que estava
   plantado antes e como foi o plantio. "Não sei" é aceito, e pode ser respondido depois.
 
-## 3. Quando olhar — clima (2 min)
+## 3. Os três eixos de uma vez (1 min)
 
-Aba **Situação** (a primeira do talhão).
+Tela **Hoje**: o cartão do Talhão Sul mostra a decisão em uma frase e os três eixos numerados —
+**1 Clima** (quando olhar), **2 Satélite** (onde olhar), **3 Fotos + IA** (o que é). A decisão é o
+cruzamento dos três: foto confirmada pesa mais; depois a vistoria sugerida pelo clima, dizendo se o
+satélite já sabe onde; depois satélite e clima sozinhos. Nenhum limiar novo: o cruzamento só junta as
+frases. Clicar em **Abrir talhão**: a aba **Situação** repete a decisão em cima e tem uma seção por
+eixo, na mesma numeração.
 
-- O nível de hoje com o que fazer, em uma frase (*"Fique de olho…"*, *"Vale vistoriar agora"*), e o
-  porquê: *"N noites úmidas e N dias com temperatura entre 22 e 30 °C nos últimos 14 dias"*, mais o
-  que se sabe do plantio.
+## 4. Quando olhar — clima (2 min)
+
+Seção **1 · O clima favorece a doença?**
+
+- O nível de hoje com o porquê: *"N noites úmidas e N dias com temperatura entre 22 e 30 °C nos
+  últimos 14 dias"*, mais o que se sabe do plantio.
 - O risco dia a dia do ciclo, com a previsão hachurada.
 - O aviso de estágio desatualizado: o sistema não adivinha o estágio, pede — e o botão **Informar
   estágio** abre o formulário direto.
-- **Vale vistoriar agora** — aparece com risco alto, com o botão **Agendar vistoria**. O mesmo
-  alerta está em **Hoje**.
+- Com risco alto, a decisão vira **Vistorie agora**, com o botão **Vistoriar agora**.
 - Falar das fontes: faixa de 22–30 °C, UR ≥ 90% e janela V4 em diante vêm de Paul & Munkvold; os
   cortes entre níveis são decisão de projeto, e a tela diz que o índice **não é calibrado**.
 
-## 4. Safra passada — clima e satélite com dados reais (3 min)
+## 5. Safra passada — clima e satélite com dados reais (3 min)
 
 Sorriso → **Talhao Demonstracao** → aba **Situação**.
 
 - **Risco dia a dia** da safrinha 2026: alto de fevereiro ao começo de maio, baixo com a seca. Clima
   real, da reanálise.
-- **Onde o talhão destoa**: 39 passagens do Sentinel-2, só 18 com leitura — fevereiro e março quase
+- Seção **2 · Onde a lavoura destoa?**: 39 passagens do Sentinel-2, só 18 com leitura — fevereiro e março quase
   todos encobertos. *"Saber que o satélite não viu é informação"*, e é por isso que o satélite não é
   condição para a vistoria.
 - A curva de NDRE: plantio, dossel fechado em abril, senescência em junho. Clicar numa passagem de
   abril e mostrar as áreas no mapa.
 - Dizer o limite: a 20 m por pixel o satélite vê vigor, não lesão. Aponta **onde** olhar.
+- As imagens são buscadas sozinhas ao abrir o talhão (se a última passagem tem mais de 5 dias, o
+  intervalo de revisita do Sentinel-2). A primeira busca de uma safra leva de 1 a 2 minutos: abrir o
+  talhão antes de entrar na sala.
 
-## 5. Onde olhar — vistoria dirigida (2 min)
+## 6. Onde olhar — vistoria dirigida (2 min)
 
-De volta ao Talhão Sul → **Agendar vistoria** (ou o botão do alerta).
+De volta ao Talhão Sul → **Vistoriar agora** (na decisão ou na aba **Vistorias**).
 
-- A tela pergunta só quem vai e quando. O sistema cria as 10 paradas nas áreas que o satélite marcou
-  nas últimas três semanas, ou espalhadas pelo talhão se não houver área.
+- Um clique: o sistema cria as 10 paradas nas áreas que o satélite marcou nas últimas três semanas
+  (ou espalhadas pelo talhão se não houver área), inicia a visita e abre a primeira parada. Só
+  pergunta quem vai se houver mais de uma pessoa — ou o nome, se não houver ninguém. Com uma visita
+  já em andamento, o botão vira **Continuar a vistoria** e não cria outra. **Agendar para outro dia**
+  continua ao lado.
 - A vistoria abre com as paradas no mapa sobre a imagem; verdes as já visitadas.
 - A regra de 10 paradas × 10 plantas vem da extensão dos EUA — não existe protocolo brasileiro de
   detecção, e a pesquisa registra isso.
 
-## 6. O que é — foto e IA (3 min)
+## 7. O que é — foto e IA (3 min)
 
 Abrir a vistoria em andamento de 02/11 → **Parada 1**.
 
@@ -90,10 +103,11 @@ Abrir a vistoria em andamento de 02/11 → **Parada 1**.
   que a pesquisa previu, e o motivo de existir a revisão.
 - Revisar: escolher o nome e confirmar ou corrigir. Essa revisão é a verdade de campo.
 
-Na aba **Situação** do Talhão Sul, o painel **Estação sentinela (simulada)** mostra fotos automáticas
-chegando pela mesma rota — e a tela diz que são simuladas.
+Na aba **Situação**, a seção **3 · O que a IA viu nas fotos?** junta todas as fotos do plantio — de
+campo e da estação sentinela **simulada**, marcada como tal —, as que esperam revisão primeiro. O botão
+**Revisar fotos** da decisão abre a primeira suspeita de cercosporiose.
 
-## 7. O sistema medindo a si mesmo (2 min)
+## 8. O sistema medindo a si mesmo (2 min)
 
 **Ajustes → Desempenho da IA** (o aferimento).
 
@@ -109,7 +123,7 @@ chegando pela mesma rota — e a tela diz que são simuladas.
   diria se a detecção foi precoce.
 - **Exportar fotos revisadas**: o conjunto de treino da próxima versão.
 
-## 8. O que não está validado (1 min, dizer sem ser perguntado)
+## 9. O que não está validado (1 min, dizer sem ser perguntado)
 
 - O índice climático não foi calibrado com ocorrências brasileiras.
 - O satélite não foi comparado com doença confirmada.

@@ -6,7 +6,7 @@ import { QueryBoundary } from '@/shared/components/QueryBoundary';
 import { formatHectares } from '@/shared/format';
 import { InspectionRow } from '../components/InspectionRow';
 import { PendingSetup } from '../components/PendingSetup';
-import { RiskAlerts } from '@/features/risk/components/RiskAlerts';
+import { FarmCornOverview } from '@/features/risk/components/FarmCornOverview';
 import { useTodayWorkspace } from '../hooks/useTodayWorkspace';
 
 /**
@@ -27,8 +27,8 @@ export function TodayPage() {
         title={workspace.farm ? workspace.farm.name : 'SmartGrão'}
         description={
           workspace.farm
-            ? `${workspace.fieldCount} talhão(ões) · ${formatHectares(workspace.totalHectares)} · ${workspace.openCycleCount} cultivo(s) em andamento`
-            : 'Monitoramento de pragas e doenças foliares.'
+            ? `${workspace.fieldCount} talhão(ões) · ${formatHectares(workspace.totalHectares)} · ${workspace.openCycleCount} plantio(s) de milho`
+            : 'Detecção precoce de cercosporiose no milho: clima, satélite e IA nas fotos.'
         }
         action={
           workspace.farm && (
@@ -47,7 +47,7 @@ export function TodayPage() {
         <Stack spacing={4}>
           <PendingSetup gaps={workspace.gaps} />
 
-          {workspace.farm && <RiskAlerts farmId={workspace.farm.id} />}
+          {workspace.farm && <FarmCornOverview farmId={workspace.farm.id} />}
 
           <Group
             title="Em campo agora"
@@ -70,9 +70,9 @@ export function TodayPage() {
               quem acabou de terminar o cadastro e nao sabe qual e o proximo passo. */}
           {workspace.gaps.length === 0 && workspace.showsNothing && (
             <Box>
-              <Typography variant="h6">Tudo pronto para a primeira vistoria</Typography>
+              <Typography variant="h6">Tudo pronto</Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Abra o talhão, veja o risco de cercosporiose e agende a vistoria.
+                Abra o talhão para ver o clima, o satélite e as fotos — e o que fazer com eles.
               </Typography>
               <Button variant="contained" onClick={() => navigate('/talhoes')}>
                 Escolher o talhão

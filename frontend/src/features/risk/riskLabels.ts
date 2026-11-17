@@ -35,18 +35,6 @@ export function describeRisk(day: DailyRiskViewModel, windowDays: number, factor
   return `${describeWeather(day, windowDays)}${planting ? `. ${planting}` : ''}.`;
 }
 
-/**
- * O que fazer com o nível, em uma frase. O nível sozinho ("moderado") nao diz se e para agir —
- * e essa e a unica pergunta de quem abre a tela.
- */
-export function riskAdvice(level: RiskLevel | null | undefined, suggestsInspection: boolean): string {
-  if (suggestsInspection) return 'Vale vistoriar agora. Olhe as folhas de baixo.';
-  if (level === RiskLevel.High) return 'O clima favorece a doença. Fique de olho nas folhas de baixo.';
-  if (level === RiskLevel.Moderate) return 'Fique de olho: se o tempo continuar úmido, o risco sobe.';
-  if (level === RiskLevel.Low) return 'Nada a fazer por enquanto.';
-  return 'Ainda sem clima suficiente para calcular o risco.';
-}
-
 /** O que fazer quando o estágio não sustenta a conta; null quando está tudo em ordem. */
 export function stageWarning(stage: StageStatusViewModel): string | null {
   if (stage.window === StageWindow.Unknown && !stage.stage)

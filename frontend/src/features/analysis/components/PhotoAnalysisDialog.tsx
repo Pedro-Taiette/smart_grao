@@ -90,7 +90,7 @@ export function PhotoAnalysisDialog({ photo, onClose }: { photo: PhotoViewModel;
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">{human ? 'Revisar de novo' : 'O que é, olhando a foto?'}</Typography>
               <TextField size="small" label="Quem está revisando" value={reviewer} onChange={e => setReviewer(e.target.value)}
-                sx={{ maxWidth: 320 }} />
+                sx={{ maxWidth: 320 }} helperText={reviewer.trim() ? undefined : 'Escreva seu nome para liberar os botões abaixo. Fica guardado.'} />
               <TextField size="small" label="Observação (opcional)" value={notes} onChange={e => setNotes(e.target.value)} />
             </Stack>
           )}

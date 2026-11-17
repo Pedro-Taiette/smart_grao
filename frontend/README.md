@@ -38,7 +38,8 @@ src/
     sampling/       marcação de pontos, mais samplingLabels.ts (vocabulário)
     protocols/      pragas, doenças e protocolos, mais protocolLabels.ts
     inspections/    equipe, vistorias e coleta em campo, mais inspectionLabels.ts
-    risk/           a aba Situação: risco climático, satélite e estação, mais riskLabels.ts
+    risk/           os três eixos (clima, satélite, fotos + IA): axes.ts resume e cruza,
+                    AxesOverview mostra; a aba Situação e o painel da tela Hoje
     analysis/       revisão das fotos e o desempenho da IA (aferimento)
     settings/       o hub dos cadastros de referência
   shared/           componentes e utilidades sem dono

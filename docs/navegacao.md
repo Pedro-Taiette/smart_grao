@@ -106,6 +106,26 @@ de domínio mudou.
   fora das paradas ficam em "Mais opções"; um botão de foto por folha pedida.
 - **Rodar o sistema:** `setup.cmd` e `start.cmd` na raiz (ver [rodando.md](rodando.md)).
 
+### Os três eixos explícitos
+
+O sistema é só sobre cercosporiose, e a detecção tem três eixos: **clima** (quando olhar),
+**satélite** (onde olhar) e **fotos + IA** (o que é). Eles passaram a ter o mesmo número, ícone e
+pergunta em toda tela (`features/risk/components/AxesOverview.tsx`):
+
+- **Decisão cruzada em cima.** `features/risk/axes.ts` resume cada eixo numa frase e junta os três
+  numa decisão com o botão da ação. Não há limiar novo: a vistoria continua sugerida pelo clima
+  (fase 5); o satélite diz se as paradas já têm onde cair; foto revisada como cercosporiose pesa
+  mais que tudo. Foto da estação simulada é sinalizada no resumo.
+- **Hoje** mostra todo plantio de milho em andamento com os três eixos — antes só os de risco
+  moderado ou alto, e só o clima.
+- **Situação** tem uma seção numerada por eixo; as fotos do plantio inteiro (campo e estação) ficam
+  juntas na seção 3, as que esperam revisão primeiro.
+- **Satélite sem clique.** A busca sai sozinha ao abrir o plantio quando a última passagem tem mais
+  de 5 dias (revisita do Sentinel-2); o botão virou "Buscar de novo".
+- **Vistoriar agora.** Um clique cria as paradas dirigidas, agenda para hoje, inicia e abre a
+  primeira parada (`?registrar=parada`). Continua a visita em andamento em vez de criar outra. A
+  equipe deixou de ser pendência: sem ninguém cadastrado, o botão pede o nome na hora.
+
 ## Rotas
 
 | Rota | Tela |

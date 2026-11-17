@@ -3,7 +3,8 @@ import AddIcon from '@mui/icons-material/Add';
 import CheckIcon from '@mui/icons-material/Check';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { cropLabels } from '@/features/fields/cropLabels';
 import { useSyncFarmFromRecord } from '@/features/farms/useFarmContext';
 import { PageContainer } from '@/shared/components/AppLayout';
@@ -48,6 +49,19 @@ function InspectionWorkspace({ inspectionId }: { inspectionId: string }) {
   const planQuery = useGetSamplingPlanById(inspection?.samplingPlanId ?? '', { query: { enabled: inspection !== undefined } });
   const visited = new Set((inspection?.observations ?? []).map(o => o.pointSequence).filter((n): n is number => n !== null));
   const allStopsDone = inspection !== undefined && inspection.pointCount > 0 && w.remainingPoints.length === 0;
+
+  // Vindo de "Vistoriar agora": a parada ja abre, uma vez, assim que a vistoria e o protocolo chegam.
+  const [params, setParams] = useSearchParams();
+  const opened = useRef(false);
+  const { openDialog, isInProgress, protocol } = w;
+  const wantsStop = params.get('registrar') === 'parada';
+  const hasRemaining = w.remainingPoints.length > 0;
+  useEffect(() => {
+    if (!wantsStop || opened.current || !isInProgress || !protocol || !planQuery.data) return;
+    opened.current = true;
+    if (hasRemaining) openDialog({ kind: 'observation' });
+    setParams({}, { replace: true });
+  }, [wantsStop, isInProgress, protocol, planQuery.data, hasRemaining, openDialog, setParams]);
 
   // Comecar e registrar a primeira parada sao o mesmo gesto para quem chegou no talhao: o botao
   // faz os dois, em vez de pedir um "Iniciar" que so destrava outro botao.
