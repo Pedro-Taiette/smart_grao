@@ -1,5 +1,7 @@
 import { Alert, Box, Button, Chip, Divider, Paper, Stack, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import CheckIcon from '@mui/icons-material/Check';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate, useParams } from 'react-router-dom';
 import { cropLabels } from '@/features/fields/cropLabels';
@@ -45,6 +47,13 @@ function InspectionWorkspace({ inspectionId }: { inspectionId: string }) {
   const { people } = usePeople(fieldQuery.data?.farmId ?? '', true);
   const planQuery = useGetSamplingPlanById(inspection?.samplingPlanId ?? '', { query: { enabled: inspection !== undefined } });
   const visited = new Set((inspection?.observations ?? []).map(o => o.pointSequence).filter((n): n is number => n !== null));
+  const allStopsDone = inspection !== undefined && inspection.pointCount > 0 && w.remainingPoints.length === 0;
+
+  // Comecar e registrar a primeira parada sao o mesmo gesto para quem chegou no talhao: o botao
+  // faz os dois, em vez de pedir um "Iniciar" que so destrava outro botao.
+  async function startAndRecord(id: string) {
+    if (await w.startInspection(id) !== null) w.openDialog({ kind: 'observation' });
+  }
 
   // Esta é a tela que chega por link no celular, sem passar pela navegação: alinhar o contexto aqui
   // é o que faz o resto do sistema abrir na propriedade certa depois.
@@ -73,8 +82,7 @@ function InspectionWorkspace({ inspectionId }: { inspectionId: string }) {
                   label={inspectionStatusLabel[inspection.status]} />
               </Stack>
               <Typography variant="body2" color="text.secondary">
-                {inspection.responsibleName} · {cropLabels[inspection.crop]} ·{' '}
-                {inspection.protocolName} v{inspection.protocolVersion}
+                {inspection.responsibleName} · {cropLabels[inspection.crop]} · {inspection.protocolName}
               </Typography>
             </Box>
 
@@ -95,16 +103,22 @@ function InspectionWorkspace({ inspectionId }: { inspectionId: string }) {
 
             <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
               {w.isScheduled && <>
-                <Button variant="contained" disabled={w.isSaving}
-                  onClick={() => w.startInspection(inspection.id)}>Iniciar vistoria</Button>
+                <Button variant="contained" size="large" startIcon={<PlayArrowIcon />} disabled={w.isSaving || !w.protocol}
+                  onClick={() => void startAndRecord(inspection.id)}>Começar vistoria</Button>
                 <Button disabled={w.isSaving}
                   onClick={() => w.openDialog({ kind: 'reschedule' })}>Remarcar</Button>
               </>}
               {w.isInProgress && <>
-                <Button variant="contained" startIcon={<AddIcon />} disabled={w.isSaving || !w.protocol}
-                  onClick={() => w.openDialog({ kind: 'observation' })}>Registrar parada</Button>
-                <Button disabled={w.isSaving || inspection.observations.length === 0}
-                  onClick={() => w.completeInspection(inspection.id)}>Concluir</Button>
+                {!allStopsDone && <Button variant="contained" size="large" startIcon={<AddIcon />} disabled={w.isSaving || !w.protocol}
+                  onClick={() => w.openDialog({ kind: 'observation' })}>
+                  {w.remainingPoints[0] ? `Registrar parada ${w.remainingPoints[0].sequence}` : 'Registrar parada'}
+                </Button>}
+                <Button variant={allStopsDone ? 'contained' : 'text'} size={allStopsDone ? 'large' : 'medium'}
+                  startIcon={allStopsDone ? <CheckIcon /> : undefined}
+                  disabled={w.isSaving || inspection.observations.length === 0}
+                  onClick={() => w.completeInspection(inspection.id)}>Concluir vistoria</Button>
+                {allStopsDone && <Button disabled={w.isSaving}
+                  onClick={() => w.openDialog({ kind: 'observation' })}>Registrar algo a mais</Button>}
               </>}
               {!w.isFinished && <Button color="error" disabled={w.isSaving}
                 onClick={() => w.openDialog({ kind: 'cancel' })}>Não aconteceu</Button>}
@@ -132,9 +146,10 @@ function InspectionWorkspace({ inspectionId }: { inspectionId: string }) {
                       {observation.hasPoorAccuracy && <Chip size="small" color="warning" label="GPS impreciso" />}
                     </Stack>
                     <Typography variant="body2" color="text.secondary">
-                      {formatMoment(observation.recordedAt)} ·{' '}
-                      {observation.location.latitude.toFixed(5)}, {observation.location.longitude.toFixed(5)}
-                      {observation.accuracyMeters !== null && ` · ${Math.round(observation.accuracyMeters)} m`}
+                      {formatMoment(observation.recordedAt)}
+                      {observation.accuracyMeters !== null
+                        ? ` · GPS com precisão de ${Math.round(observation.accuracyMeters)} m`
+                        : ' · posição informada à mão'}
                     </Typography>
                     {observation.notes && <Typography variant="body2"
                       sx={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>{observation.notes}</Typography>}

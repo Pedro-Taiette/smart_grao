@@ -6,8 +6,8 @@ import GrassIcon from '@mui/icons-material/Grass';
 import TodayIcon from '@mui/icons-material/Today';
 import MapIcon from '@mui/icons-material/Map';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
-import InsightsIcon from '@mui/icons-material/Insights';
 import SettingsIcon from '@mui/icons-material/Settings';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { FarmSelector } from './FarmSelector';
 
@@ -18,19 +18,24 @@ import { FarmSelector } from './FarmSelector';
  * fora, com dois itens de tres que so se usam na implantacao. Aqui sao tarefas: o que fazer hoje,
  * onde e o que ja foi feito. Cadastro de referencia desceu para Ajustes, que continua a um clique
  * mas deixa de disputar a barra com o trabalho do dia.
+ *
+ * O aferimento do modelo tambem desceu para Ajustes: e a tela que mede a IA, util para a equipe e
+ * para a banca, e nao uma tarefa de quem cuida da lavoura.
  */
 const destinations = [
   { to: '/', label: 'Hoje', icon: <TodayIcon /> },
   { to: '/talhoes', label: 'Talhões', icon: <MapIcon /> },
   { to: '/vistorias', label: 'Vistorias', icon: <FactCheckIcon /> },
-  { to: '/aferimento', label: 'Aferimento', icon: <InsightsIcon /> },
 ] as const;
 
 const settings = { to: '/ajustes', label: 'Ajustes', icon: <SettingsIcon /> } as const;
 
 /** A raiz so casa consigo mesma; as demais casam com as telas internas da secao. */
 function isActive(pathname: string, to: string) {
-  return to === '/' ? pathname === '/' : pathname.startsWith(to);
+  if (to === '/') return pathname === '/';
+  // O aferimento mora fora de /ajustes na URL (links antigos), mas e um item de Ajustes.
+  if (to === '/ajustes' && pathname.startsWith('/aferimento')) return true;
+  return pathname.startsWith(to);
 }
 
 /**
@@ -139,12 +144,21 @@ export function PageContainer({ children }: { children: React.ReactNode }) {
  * Existia copiado em cinco telas com espacamentos levemente diferentes. Centralizar isso e metade
  * da sensacao de "sistema unico" em vez de "telas construidas em semanas diferentes".
  */
-export function PageHeader({ title, description, action }: {
+export function PageHeader({ title, description, action, back }: {
   title: string;
   description?: string;
   action?: React.ReactNode;
+  /** Tela de dentro de outra: o caminho de volta fica visivel, em vez de depender do navegador. */
+  back?: { to: string; label: string };
 }) {
+  const navigate = useNavigate();
   return (
+    <>
+    {back && (
+      <Button startIcon={<ArrowBackIcon />} sx={{ mb: 1, ml: -1 }} onClick={() => navigate(back.to)}>
+        {back.label}
+      </Button>
+    )}
     <Stack
       direction="row"
       sx={{ mb: 3, gap: 2, justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap' }}
@@ -157,5 +171,6 @@ export function PageHeader({ title, description, action }: {
       </Box>
       {action}
     </Stack>
+    </>
   );
 }

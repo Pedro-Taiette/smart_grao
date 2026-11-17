@@ -70,25 +70,25 @@ export function useTodayWorkspace() {
       gaps.push({
         id: 'field',
         title: 'Desenhe o primeiro talhão',
-        description: 'O contorno no mapa é onde o clima e o satélite são lidos.',
+        description: 'Marque no mapa o contorno da lavoura. É ali que o sistema lê o clima e o satélite.',
         actionLabel: 'Desenhar',
         to: '/talhoes',
       });
     } else if (openCycles.length === 0) {
       gaps.push({
         id: 'cultivation',
-        title: 'Nenhum talhão com cultivo em andamento',
-        description: 'O cultivo diz o que está plantado e desde quando — sem ele não há vistoria a agendar.',
-        actionLabel: 'Registrar cultivo',
-        to: `/talhoes/${activeFields[0].id}?aba=cultivo`,
+        title: 'Registre o que foi plantado',
+        description: 'Diga qual milho foi plantado e quando. É a partir daí que o sistema calcula o risco.',
+        actionLabel: 'Registrar plantio',
+        to: `/talhoes/${activeFields[0].id}?aba=plantio&registrar=plantio`,
       });
     }
 
     if (farm && team.people.length === 0) {
       gaps.push({
         id: 'team',
-        title: 'Ninguém cadastrado na equipe',
-        description: 'Toda vistoria tem um responsável. Cadastre quem vai a campo.',
+        title: 'Cadastre quem vai a campo',
+        description: 'Toda vistoria tem um responsável. Pode ser você mesmo.',
         actionLabel: 'Cadastrar pessoa',
         to: '/ajustes/equipe',
       });

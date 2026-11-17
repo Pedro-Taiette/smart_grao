@@ -41,7 +41,8 @@ export const unknownRiskFactors: CercosporaRiskFactorsViewModel = {
   hybridReaction: HybridReaction.Unknown, cropSequence: CropSequence.Unknown, tillage: TillageSystem.Unknown,
 };
 
-export function riskFactorsSummary(factors: CercosporaRiskFactorsViewModel) {
+/** O que se sabe do plantio, numa linha; null quando nada foi respondido. */
+export function riskFactorsSummary(factors: CercosporaRiskFactorsViewModel): string | null {
   const parts = [
     factors.hybridReaction !== HybridReaction.Unknown && `Híbrido ${hybridReactionLabel[factors.hybridReaction].toLowerCase()}`,
     factors.cropSequence === CropSequence.CornAfterCorn && 'milho sobre milho',
@@ -49,5 +50,5 @@ export function riskFactorsSummary(factors: CercosporaRiskFactorsViewModel) {
     factors.tillage === TillageSystem.NoTill && 'plantio direto',
     factors.tillage === TillageSystem.Conventional && 'plantio convencional',
   ].filter(Boolean);
-  return parts.length === 0 ? 'Risco de cercosporiose não informado' : parts.join(' · ');
+  return parts.length === 0 ? null : parts.join(' · ');
 }

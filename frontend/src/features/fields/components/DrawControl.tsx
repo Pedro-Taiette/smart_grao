@@ -5,39 +5,27 @@ import type { GeoJsonPolygon } from '@/api/generated/model/geoJsonPolygon';
 import { layerToGeoJsonPolygon } from '../geo/geoJson';
 
 interface DrawControlProps {
+  /** Ligado: o proximo clique no mapa comeca o contorno. Desligado: cancela o traçado em curso. */
+  isDrawing: boolean;
+  onDrawingChange: (isDrawing: boolean) => void;
   onPolygonDrawn: (boundary: GeoJsonPolygon) => void;
 }
 
 /**
- * A barra de desenho do Leaflet-Geoman, reduzida ao que o Pilar 1 usa.
+ * O traçado de contorno do Leaflet-Geoman, comandado de fora do mapa.
  *
- * So a ferramenta de poligono fica visivel: circulo, retangulo e linha desenham geometrias que a
- * API recusaria, e oferecer um botao que sempre falha e pior do que nao ter o botao.
+ * Antes era a barra do Geoman: um icone de poligono de 30 px no canto do mapa, sem texto, que
+ * ninguem achava. Agora quem liga o traçado e um botao com nome na lateral ("Desenhar novo
+ * talhao"), e a tela explica o que fazer enquanto ele esta ligado. A barra nao aparece mais.
  *
  * `allowSelfIntersection: false` impede o "nó de gravata" durante o traçado. O backend continua
  * recusando (`geo.invalid_polygon`) — este e apenas o aviso que chega antes, enquanto o dedo ainda
  * esta no mapa.
  */
-export function DrawControl({ onPolygonDrawn }: DrawControlProps) {
+export function DrawControl({ isDrawing, onDrawingChange, onPolygonDrawn }: DrawControlProps) {
   const map = useMap();
 
   useEffect(() => {
-    map.pm.addControls({
-      position: 'topright',
-      drawPolygon: true,
-      drawMarker: false,
-      drawCircle: false,
-      drawCircleMarker: false,
-      drawPolyline: false,
-      drawRectangle: false,
-      drawText: false,
-      editMode: false,
-      dragMode: false,
-      cutPolygon: false,
-      removalMode: false,
-      rotateMode: false,
-    });
-
     map.pm.setGlobalOptions({ allowSelfIntersection: false });
 
     const handleCreate = ({ layer }: { layer: Layer }) => {
@@ -50,14 +38,28 @@ export function DrawControl({ onPolygonDrawn }: DrawControlProps) {
 
       if (boundary) onPolygonDrawn(boundary);
     };
+    const handleEnd = () => onDrawingChange(false);
 
     map.on('pm:create', handleCreate);
+    map.on('pm:drawend', handleEnd);
 
     return () => {
       map.off('pm:create', handleCreate);
-      map.pm.removeControls();
+      map.off('pm:drawend', handleEnd);
     };
-  }, [map, onPolygonDrawn]);
+  }, [map, onPolygonDrawn, onDrawingChange]);
+
+  useEffect(() => {
+    const active = map.pm.globalDrawModeEnabled();
+    if (isDrawing && !active) {
+      map.pm.enableDraw('Polygon', { snappable: true, finishOn: 'dblclick' });
+    } else if (!isDrawing && active) {
+      map.pm.disableDraw();
+    }
+  }, [map, isDrawing]);
+
+  // Sair da tela no meio do traçado nao pode deixar o modo ligado no mapa reaproveitado.
+  useEffect(() => () => { map.pm.disableDraw(); }, [map]);
 
   return null;
 }

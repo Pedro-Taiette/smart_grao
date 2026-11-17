@@ -20,8 +20,11 @@ interface FieldMapProps {
   editingFieldId: string | null;
   samplingPoints: SamplingPointViewModel[];
   isSamplingOutdated: boolean;
-  /** Mapa de consulta: sem a barra de desenho. O traçado vive só na tela de talhões. */
+  /** Mapa de consulta: sem traçado. O desenho vive só na tela de talhões. */
   readOnly?: boolean;
+  /** Traçado de um talhão novo ligado (ver {@link DrawControl}). */
+  isDrawing?: boolean;
+  onDrawingChange?: (isDrawing: boolean) => void;
   onSelectField: (fieldId: string) => void;
   onPolygonDrawn: (boundary: GeoJsonPolygon) => void;
   onGeometryChange: (boundary: GeoJsonPolygon) => void;
@@ -55,6 +58,8 @@ function FitToFields({ fields, fallback }: { fields: FieldViewModel[]; fallback:
   return null;
 }
 
+function noop() {}
+
 /**
  * O mapa dos talhoes.
  *
@@ -70,6 +75,8 @@ export function FieldMap({
   samplingPoints,
   isSamplingOutdated,
   readOnly = false,
+  isDrawing = false,
+  onDrawingChange = noop,
   onSelectField,
   onPolygonDrawn,
   onGeometryChange,
@@ -107,7 +114,9 @@ export function FieldMap({
 
       {/* A barra de desenho some durante a edicao de um contorno: desenhar um talhao novo enquanto
           outro esta aberto para edicao perderia as alteracoes ainda nao salvas. */}
-      {editingFieldId === null && !readOnly && <DrawControl onPolygonDrawn={onPolygonDrawn} />}
+      {editingFieldId === null && !readOnly && (
+        <DrawControl isDrawing={isDrawing} onDrawingChange={onDrawingChange} onPolygonDrawn={onPolygonDrawn} />
+      )}
     </MapContainer>
   );
 }

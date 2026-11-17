@@ -2,8 +2,7 @@ import { Box, Button, Chip, Paper, Stack, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { RiskLevel } from '@/api/generated/model/riskLevel';
 import { useGetCercosporaAlerts } from '@/api/generated/risk/risk';
-import { riskFactorsSummary } from '@/features/cultivations/riskFactorLabels';
-import { describeWeather, riskChipSx, riskLevelLabel, stageWarning } from '../riskLabels';
+import { describeRisk, riskAdvice, riskChipSx, riskLevelLabel, stageWarning } from '../riskLabels';
 
 const windowDays = 14;
 
@@ -31,13 +30,14 @@ export function RiskAlerts({ farmId }: { farmId: string }) {
                   {alert.current?.level && <Chip size="small" label={riskLevelLabel[alert.current.level]}
                     sx={riskChipSx(alert.current.level)} />}
                 </Stack>
+                <Typography variant="body2">{riskAdvice(alert.current?.level, alert.suggestsInspection)}</Typography>
                 {alert.current && <Typography variant="body2" color="text.secondary">
-                  {describeWeather(alert.current, windowDays)}. {riskFactorsSummary(alert.riskFactors)}.
+                  {describeRisk(alert.current, windowDays, alert.riskFactors)}
                 </Typography>}
                 {stageWarning(alert.stage) && <Typography variant="body2" color="warning.dark">{stageWarning(alert.stage)}</Typography>}
               </Box>
               <Stack direction="row" spacing={1}>
-                <Button onClick={() => navigate(`/talhoes/${alert.fieldId}?aba=risco`)}>Ver risco</Button>
+                <Button onClick={() => navigate(`/talhoes/${alert.fieldId}`)}>Ver talhão</Button>
                 {alert.suggestsInspection && <Button variant="contained"
                   onClick={() => navigate(`/talhoes/${alert.fieldId}?aba=vistorias&agendar=cercosporiose`)}>
                   Agendar vistoria

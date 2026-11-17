@@ -61,7 +61,8 @@ export function FieldFormDialog({ open, farmId, field, boundary, onClose }: Fiel
               </Alert>
             )}
 
-            <FormTextField name="name" control={form.control} label="Nome do talhão" autoFocus />
+            <FormTextField name="name" control={form.control} label="Nome do talhão"
+              helperText="Como vocês chamam essa área. Ex.: Talhão Sul, Lote 3." autoFocus />
 
           </Stack>
         </DialogContent>

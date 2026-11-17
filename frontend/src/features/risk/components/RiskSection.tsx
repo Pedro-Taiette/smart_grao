@@ -9,10 +9,9 @@ import {
 } from '@/api/generated/risk/risk';
 import { useCultivations } from '@/features/cultivations/hooks/useCultivations';
 import { cycleDate } from '@/features/cultivations/cultivationSchema';
-import { riskFactorsSummary } from '@/features/cultivations/riskFactorLabels';
 import { QueryBoundary } from '@/shared/components/QueryBoundary';
 import { useNotifier } from '@/shared/notifications/useNotifier';
-import { describeWeather, riskChipSx, riskLevelLabel, stageWarning } from '../riskLabels';
+import { describeRisk, riskAdvice, riskChipSx, riskLevelLabel, stageWarning } from '../riskLabels';
 import { RiskTimeline } from './RiskTimeline';
 import { SatellitePanel } from './SatellitePanel';
 import { StationPanel } from './StationPanel';
@@ -21,7 +20,14 @@ function label(c: CultivationViewModel) {
   return `${c.cultivar} · plantio em ${cycleDate(c.plantedOn)}${c.endedOn ? '' : ' (em andamento)'}`;
 }
 
+/**
+ * A situacao do talhao: o risco de cercosporiose hoje e o que fazer com ele.
+ *
+ * E a aba que abre primeiro. O topo responde em uma frase "preciso fazer alguma coisa?", com o
+ * botao da acao ao lado; clima dia a dia, satelite e estacao vem embaixo, para quem quer o porque.
+ */
 export function RiskSection({ farmId, fieldId }: { farmId: string; fieldId: string }) {
+  const [, setParams] = useSearchParams();
   const { cultivations, isLoading, error, refetch } = useCultivations(farmId, fieldId);
   const corn = cultivations.filter(c => c.crop === Crop.Corn);
   const [chosen, setChosen] = useState<string>('');
@@ -30,11 +36,15 @@ export function RiskSection({ farmId, fieldId }: { farmId: string; fieldId: stri
   return (
     <QueryBoundary isLoading={isLoading} error={error} onRetry={refetch}>
       {!selected ? (
-        <Alert severity="info">Cadastre um cultivo de milho neste talhão para acompanhar o risco de cercosporiose.</Alert>
+        <Alert severity="info"
+          action={<Button color="inherit" size="small"
+            onClick={() => setParams({ aba: 'plantio', registrar: 'plantio' })}>Registrar plantio</Button>}>
+          Registre o plantio de milho deste talhão para o sistema acompanhar o risco de cercosporiose.
+        </Alert>
       ) : (
         <Stack spacing={2}>
           {corn.length > 1 && (
-            <TextField select size="small" label="Safra" sx={{ maxWidth: 420 }}
+            <TextField select size="small" label="Ver outro plantio" sx={{ maxWidth: 420 }}
               value={selected.id} onChange={event => setChosen(event.target.value)}>
               {corn.map(c => <MenuItem key={c.id} value={c.id}>{label(c)}</MenuItem>)}
             </TextField>
@@ -67,7 +77,7 @@ function CultivationRisk({ cultivation }: { cultivation: CultivationViewModel })
   }
 
   const refreshButton = (
-    <Button variant="outlined" disabled={refresh.isPending} onClick={() => void update()}>
+    <Button size="small" disabled={refresh.isPending} onClick={() => void update()}>
       {refresh.isPending ? 'Buscando clima…' : closed ? 'Buscar o clima da safra' : 'Atualizar clima'}
     </Button>
   );
@@ -93,9 +103,14 @@ function CultivationRisk({ cultivation }: { cultivation: CultivationViewModel })
               </Stack>
 
               {risk.current?.level && (
-                <Typography>
-                  {describeWeather(risk.current, risk.windowDays)}. {riskFactorsSummary(risk.riskFactors)}.
-                </Typography>
+                <Box>
+                  {!closed && <Typography variant="h6" component="p">
+                    {riskAdvice(risk.current.level, risk.suggestsInspection)}
+                  </Typography>}
+                  <Typography variant="body2" color="text.secondary">
+                    {describeRisk(risk.current, risk.windowDays, risk.riskFactors)}
+                  </Typography>
+                </Box>
               )}
               {!risk.current && (
                 <Typography color="text.secondary">
@@ -105,18 +120,18 @@ function CultivationRisk({ cultivation }: { cultivation: CultivationViewModel })
                 </Typography>
               )}
 
-              {!closed && stageWarning(risk.stage) && <Alert severity="warning"
-                action={<Button color="inherit" size="small" onClick={() => setParams({ aba: 'cultivo' }, { replace: true })}>Registrar estádio</Button>}>
-                {stageWarning(risk.stage)}
-              </Alert>}
-
-              {risk.suggestsInspection && (
+              {risk.suggestsInspection && !closed && (
                 <Alert severity="error"
-                  action={<Button color="inherit" size="small" onClick={() => setParams({ aba: 'vistorias', agendar: 'cercosporiose' })}>Agendar vistoria</Button>}>
-                  Vale vistoriar agora. As condições das últimas duas semanas favorecem a infecção, e a lesão aparece
-                  de 14 a 21 dias depois dela. Olhe as folhas de baixo.
+                  action={<Button variant="contained" color="error" onClick={() => setParams({ aba: 'vistorias', agendar: 'cercosporiose' })}>Agendar vistoria</Button>}>
+                  As condições das últimas duas semanas favorecem a infecção, e a mancha aparece de 14 a 21 dias
+                  depois dela.
                 </Alert>
               )}
+
+              {!closed && stageWarning(risk.stage) && <Alert severity="warning"
+                action={<Button color="inherit" size="small" onClick={() => setParams({ aba: 'plantio', registrar: 'estagio' })}>Informar estágio</Button>}>
+                {stageWarning(risk.stage)}
+              </Alert>}
             </Stack>
           </Paper>
 

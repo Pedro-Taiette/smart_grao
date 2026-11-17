@@ -88,7 +88,8 @@ export function CalibrationPage() {
   return (
     <PageContainer>
       <PageHeader
-        title="Aferimento"
+        title="Desempenho da IA"
+        back={{ to: '/ajustes', label: 'Ajustes' }}
         description="O quanto o sistema acerta: o modelo de imagem num conjunto de teste, o modelo contra as revisões feitas aqui, e quantos dias o aviso chegou antes da confirmação na folha."
         action={<Button variant="outlined" href={`${apiBaseUrl}/api/calibration/reviewed-photos.csv`}>Exportar fotos revisadas</Button>}
       />

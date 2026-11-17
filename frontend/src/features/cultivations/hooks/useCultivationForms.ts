@@ -3,17 +3,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { CercosporaRiskFactorsViewModel } from '@/api/generated/model/cercosporaRiskFactorsViewModel';
 import { focusCrop } from '@/features/fields/cropLabels';
 import {
-  seasonSchema, cultivationSchema, stageSchema, closureSchema, riskFactorsSchema, today,
-  type SeasonValues, type CultivationValues, type StageValues, type ClosureValues, type RiskFactorsValues,
+  cultivationSchema, stageSchema, closureSchema, riskFactorsSchema, today,
+  type CultivationValues, type StageValues, type ClosureValues, type RiskFactorsValues,
 } from '../cultivationSchema';
 
-export function useSeasonForm() {
-  return useForm<SeasonValues>({ resolver: zodResolver(seasonSchema), defaultValues: { name: '' } });
-}
-export function useCultivationForm(seasonId: string, riskFactors: CercosporaRiskFactorsViewModel) {
+export function useCultivationForm(riskFactors: CercosporaRiskFactorsViewModel) {
   return useForm<CultivationValues>({
     resolver: zodResolver(cultivationSchema),
-    defaultValues: { seasonId, crop: focusCrop, cultivar: '', plantedOn: today(), riskFactors },
+    defaultValues: { crop: focusCrop, cultivar: '', plantedOn: today(), riskFactors },
   });
 }
 export function useRiskFactorsForm(riskFactors: CercosporaRiskFactorsViewModel) {

@@ -54,7 +54,7 @@ export const router = createBrowserRouter([
       { path: 'farms', element: <Navigate to="/ajustes/fazendas" replace /> },
       { path: 'farms/:farmId/team', element: <Navigate to="/ajustes/equipe" replace /> },
       { path: 'farms/:farmId/fields', element: <Navigate to="/talhoes" replace /> },
-      { path: 'farms/:farmId/fields/:fieldId/cultivations', element: <RedirectToField tab="cultivo" /> },
+      { path: 'farms/:farmId/fields/:fieldId/cultivations', element: <RedirectToField tab="plantio" /> },
       { path: 'farms/:farmId/fields/:fieldId/inspections', element: <RedirectToField tab="vistorias" /> },
       { path: 'inspections/:inspectionId', element: <RedirectToInspection /> },
       { path: 'targets', element: <Navigate to="/ajustes/catalogo" replace /> },
