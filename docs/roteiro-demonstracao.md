@@ -6,24 +6,14 @@ abaixo é uma tela, na ordem em que a história anda. Tempo total: 12 a 15 minut
 
 ## Antes de começar
 
-Três processos, cada um num terminal:
-
-```powershell
-# 1. Serviço Python (satélite e modelo de imagem) — porta 8000
-cd analytics/service
-.venv/Scripts/python -m uvicorn smartgrao_analytics.app:app --port 8000
-
-# 2. API — porta 5148
-dotnet run --project backend/src/SmartGrao.WebApi
-
-# 3. Frontend — porta 5173
-npm --prefix frontend run dev
-```
+Dois cliques em **`start.cmd`**, na raiz: sobe o serviço Python, a API e o frontend e abre o
+navegador. Para subir cada parte num terminal, ver [rodando.md](rodando.md).
 
 Conferir antes de entrar na sala:
 
 - `http://localhost:8000/health` responde `ok`;
-- **Aferimento** mostra os números do modelo (se aparecer "serviço de análise fora do ar", falta o 1);
+- **Ajustes → Desempenho da IA** mostra os números do modelo (se aparecer "serviço de análise fora
+  do ar", rode `stop.cmd` e `start.cmd` de novo);
 - a internet funciona: clima, satélite e o fundo dos mapas vêm de fora.
 
 Dados usados (já estão no banco):
@@ -39,29 +29,32 @@ A cercosporiose começa nas folhas de baixo, sob o dossel. Quando dá para ver d
 hora. Uma IA que só olha a foto depende de alguém já desconfiar e acertar a folha. Por isso o sistema
 tem três camadas: **quando** olhar (clima), **onde** olhar (satélite) e **o que** é (foto + IA).
 
-## 2. Cadastro do cultivo (1 min)
+## 2. Cadastro do plantio (1 min)
 
-Marília → Talhões → **Talhão Sul** → aba **Cultivo**.
+Marília → Talhões → **Talhão Sul** → aba **Plantio**.
 
-- O cultivo é sempre milho; não há seletor de cultura.
-- **Risco de cercosporiose**: o cadastro pergunta na língua do produtor como o híbrido reage, o que
-  estava plantado antes e como foi o plantio. "Não sei" é aceito.
+- O plantio é sempre milho; não há seletor de cultura nem cadastro de safra — a safra sai da data.
+- **Sobre o plantio**: o cadastro pergunta na língua do produtor se o híbrido resiste, o que estava
+  plantado antes e como foi o plantio. "Não sei" é aceito, e pode ser respondido depois.
 
 ## 3. Quando olhar — clima (2 min)
 
-Aba **Risco de cercosporiose**.
+Aba **Situação** (a primeira do talhão).
 
-- O nível de hoje com o porquê: *"N noites úmidas e N dias com temperatura entre 22 e 30 °C nos
-  últimos 14 dias"*, mais os fatores do cultivo.
+- O nível de hoje com o que fazer, em uma frase (*"Fique de olho…"*, *"Vale vistoriar agora"*), e o
+  porquê: *"N noites úmidas e N dias com temperatura entre 22 e 30 °C nos últimos 14 dias"*, mais o
+  que se sabe do plantio.
 - O risco dia a dia do ciclo, com a previsão hachurada.
-- O aviso de estádio desatualizado: o sistema não adivinha o estádio, pede.
-- **Vale vistoriar agora** — aparece com risco alto. O mesmo alerta está em **Hoje**.
+- O aviso de estágio desatualizado: o sistema não adivinha o estágio, pede — e o botão **Informar
+  estágio** abre o formulário direto.
+- **Vale vistoriar agora** — aparece com risco alto, com o botão **Agendar vistoria**. O mesmo
+  alerta está em **Hoje**.
 - Falar das fontes: faixa de 22–30 °C, UR ≥ 90% e janela V4 em diante vêm de Paul & Munkvold; os
   cortes entre níveis são decisão de projeto, e a tela diz que o índice **não é calibrado**.
 
 ## 4. Safra passada — clima e satélite com dados reais (3 min)
 
-Sorriso → **Talhao Demonstracao** → aba **Risco de cercosporiose**.
+Sorriso → **Talhao Demonstracao** → aba **Situação**.
 
 - **Risco dia a dia** da safrinha 2026: alto de fevereiro ao começo de maio, baixo com a seca. Clima
   real, da reanálise.
@@ -86,20 +79,23 @@ De volta ao Talhão Sul → **Agendar vistoria** (ou o botão do alerta).
 
 Abrir a vistoria em andamento de 02/11 → **Parada 1**.
 
-- Contagem por folha: *"Cercosporiose (folhas de baixo): 20%"*.
-- **Tirar foto** abre a câmera no celular; a foto tem id gerado no aparelho, então reenviar depois de
+- Contagem por folha: *"Cercosporiose (folhas de baixo): 20%"*. Para mostrar o registro, **Registrar
+  parada 2**: o GPS liga sozinho e a contagem é por toque — *"das 10 plantas, quantas tinham
+  mancha?"*, de 0 a 10 ou **Não olhei**. O sistema converte para percentual. Feche com **Cancelar**
+  para não mexer nos dados da demonstração.
+- **Foto: folhas de baixo** abre a câmera no celular; a foto tem id gerado no aparelho, então reenviar depois de
   cair a rede não duplica.
 - A foto passa pela fila e o modelo responde: *"Suspeita de cercosporiose — confirme"*, 64%.
 - **Mostrar onde o modelo olhou**: o mapa de oclusão. Aqui o modelo olha também o fundo — é o viés
   que a pesquisa previu, e o motivo de existir a revisão.
 - Revisar: escolher o nome e confirmar ou corrigir. Essa revisão é a verdade de campo.
 
-Na aba de risco do Talhão Sul, o painel **Estação sentinela (simulada)** mostra fotos automáticas
+Na aba **Situação** do Talhão Sul, o painel **Estação sentinela (simulada)** mostra fotos automáticas
 chegando pela mesma rota — e a tela diz que são simuladas.
 
 ## 7. O sistema medindo a si mesmo (2 min)
 
-**Aferimento**.
+**Ajustes → Desempenho da IA** (o aferimento).
 
 - Modelo no teste público: aponta 90% das folhas com cercosporiose; 87% dos alertas estão certos;
   campo × laboratório separados.

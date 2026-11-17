@@ -84,6 +84,28 @@ não o topo.
 | Plano de amostragem | Pontos de coleta | O produtor marca pontos, não gera planos |
 | Protocolo | Protocolo | Mantido: é palavra de agrônomo de verdade |
 
+## Simplificação de novembro de 2026
+
+Feita depois da fase 9, com a equipe tendo dificuldade de usar e de rodar o sistema. Nenhuma regra
+de domínio mudou.
+
+- **Aferimento saiu do menu** e virou o cartão **Desempenho da IA** em Ajustes. A rota
+  `/aferimento` continua; é tela da equipe e da banca, não tarefa de quem cuida da lavoura.
+- **O talhão abre na Situação.** As abas viraram `Situação · Vistorias · Plantio` (eram
+  `Cultivo · Risco de cercosporiose · Vistorias`). A primeira linha diz o que fazer
+  (*"Nada a fazer por enquanto"*, *"Fique de olho"*, *"Vale vistoriar agora"*), e não só o nível.
+  `?aba=cultivo` e `?aba=risco` seguem valendo como apelido.
+- **Safra deixou de ser cadastro.** Sai da data do plantio; antes era um passo obrigatório e sem
+  explicação antes do primeiro cultivo.
+- **Avisos com botão que resolve.** "Informar estágio" abre o formulário do estágio, em vez de só
+  trocar de aba.
+- **Desenho com botão e instrução.** "Desenhar novo talhão" na lateral, em vez do ícone do Geoman
+  no canto do mapa.
+- **Vistoria em campo.** "Começar vistoria" já abre a primeira parada; o GPS liga sozinho; a
+  contagem é por toque (*das 10 plantas, quantas tinham mancha?*); estágio, observações e ocorrência
+  fora das paradas ficam em "Mais opções"; um botão de foto por folha pedida.
+- **Rodar o sistema:** `setup.cmd` e `start.cmd` na raiz (ver [rodando.md](rodando.md)).
+
 ## Rotas
 
 | Rota | Tela |
@@ -93,6 +115,7 @@ não o topo.
 | `/talhoes/:fieldId` | O talhão: cultivo, pontos, vistorias |
 | `/vistorias` | Todas as visitas da fazenda |
 | `/vistorias/:id` | Executar a visita — é o link que abre no celular |
+| `/aferimento` | Desempenho da IA — alcançado por Ajustes |
 | `/ajustes` | Hub de cadastros de referência |
 | `/ajustes/fazendas`, `/ajustes/equipe`, `/ajustes/protocolos`, `/ajustes/catalogo` | Cadastros |
 
