@@ -18,6 +18,7 @@ import { AxesOverview, axes, type AxisId } from './AxesOverview';
 import { RiskTimeline } from './RiskTimeline';
 import { SatellitePanel } from './SatellitePanel';
 import { PhotosPanel } from './PhotosPanel';
+import { AutonomousWip } from './AutonomousWip';
 
 function label(c: CultivationViewModel) {
   return `${c.cultivar} · plantio em ${cycleDate(c.plantedOn)}${c.endedOn ? '' : ' (em andamento)'}`;
@@ -75,8 +76,9 @@ function CultivationSituation({ farmId, cultivation }: { farmId: string; cultiva
   const target = hash.replace('#', '') as AxisId | '';
   useEffect(() => {
     if (!target || data.isLoading) return;
-    const timer = window.setTimeout(() => scrollTo(target), 50);
-    return () => window.clearTimeout(timer);
+    // A segunda rolagem corrige o salto do mapa do satelite, que termina de montar depois.
+    const timers = [50, 900].map(delay => window.setTimeout(() => scrollTo(target), delay));
+    return () => timers.forEach(timer => window.clearTimeout(timer));
   }, [target, data.isLoading]);
 
   function review() {
@@ -112,6 +114,8 @@ function CultivationSituation({ farmId, cultivation }: { farmId: string; cultiva
           <PhotosPanel photos={data.photoList} facts={data.photos}
             openedId={openedPhoto} onOpen={setOpenedPhoto} onClose={() => setOpenedPhoto(null)} />
         </AxisSection>
+
+        {!closed && <AutonomousWip />}
       </Stack>
     </QueryBoundary>
   );

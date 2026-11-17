@@ -1,8 +1,16 @@
 # SmartGrão
 
-Acompanhamento do milho para **detectar cedo a cercosporiose**. O sistema avisa quando o clima
-favorece a doença, mostra onde o talhão destoa no satélite e manda conferir aquele ponto — com foto
-analisada por IA e revisão humana.
+Acompanhamento do milho para **detectar cedo a cercosporiose**, em três pilares:
+
+| Pilar | Pergunta | Como |
+|---|---|---|
+| **1 · Clima** | Quando olhar? | Índice de favorabilidade com o clima do Open-Meteo |
+| **2 · Satélite** | Onde olhar? | Áreas do talhão com NDRE abaixo do resto, no Sentinel-2 |
+| **3 · Fotos + IA** | O que é? | Modelo de imagem nas fotos das folhas, com revisão humana |
+
+O cruzamento dos três vira uma decisão na tela ("Vistorie agora as 2 áreas que o satélite marcou").
+**Em desenvolvimento:** coleta autônoma por drone e rover, para reforçar os pilares 2 e 3 sem
+depender de alguém ir a campo — ver [docs/modulo-coleta-autonoma.md](docs/modulo-coleta-autonoma.md).
 
 ## Para começar
 
@@ -43,6 +51,8 @@ docs/        decisões de arquitetura, regras de domínio e referência da API
 
 - [Rodando](docs/rodando.md) — os scripts de um clique, problemas comuns e o passo a passo manual
 - [Guia rápido](docs/guia-rapido.md) — como usar o sistema, do talhão à foto revisada
+- [Coleta autônoma — drone e rover (WIP)](docs/modulo-coleta-autonoma.md) — papel de cada um, o que
+  já existe e a POC simulada
 - [Roteiro da demonstração](docs/roteiro-demonstracao.md) — a defesa passo a passo, com os dados de demonstração
 - [Roadmap — cercosporiose no milho](docs/roadmap-cercosporiose.md) — fases 4 a 9 do semestre:
   risco climático, satélite, vistoria dirigida e IA de imagem, com o calendário até a entrega

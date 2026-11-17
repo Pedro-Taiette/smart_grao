@@ -254,7 +254,8 @@ precisão e matriz de confusão; o resto fica para depois.
   origem desde a fase 7, o simulador não exige nada novo do backend. Tudo que vem dele aparece
   marcado como **simulado** na tela.
 - **Imagens de drone.** Aceitar o envio pela mesma fila, com origem *drone*. Voo, ortomosaico e
-  regulamentação ficam fora.
+  regulamentação ficam fora. Evoluiu para o módulo de coleta autônoma (drone + rover), em
+  desenvolvimento: [modulo-coleta-autonoma.md](modulo-coleta-autonoma.md).
 - **Offline completo** da captura em campo.
 
 ## Fora do escopo
