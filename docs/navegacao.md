@@ -84,17 +84,67 @@ não o topo.
 | Plano de amostragem | Pontos de coleta | O produtor marca pontos, não gera planos |
 | Protocolo | Protocolo | Mantido: é palavra de agrônomo de verdade |
 
+## Simplificação de novembro de 2026
+
+Feita depois da fase 9, com a equipe tendo dificuldade de usar e de rodar o sistema. Nenhuma regra
+de domínio mudou.
+
+- **Aferimento saiu do menu** e virou o cartão **Desempenho da IA** em Ajustes. A rota
+  `/aferimento` continua; é tela da equipe e da banca, não tarefa de quem cuida da lavoura.
+- **O talhão abre na Situação.** As abas viraram `Situação · Vistorias · Plantio` (eram
+  `Cultivo · Risco de cercosporiose · Vistorias`). A primeira linha diz o que fazer
+  (*"Nada a fazer por enquanto"*, *"Fique de olho"*, *"Vale vistoriar agora"*), e não só o nível.
+  `?aba=cultivo` e `?aba=risco` seguem valendo como apelido.
+- **Safra deixou de ser cadastro.** Sai da data do plantio; antes era um passo obrigatório e sem
+  explicação antes do primeiro cultivo.
+- **Avisos com botão que resolve.** "Informar estágio" abre o formulário do estágio, em vez de só
+  trocar de aba.
+- **Desenho com botão e instrução.** "Desenhar novo talhão" na lateral, em vez do ícone do Geoman
+  no canto do mapa.
+- **Vistoria em campo.** "Começar vistoria" já abre a primeira parada; o GPS liga sozinho; a
+  contagem é por toque (*das 10 plantas, quantas tinham mancha?*); estágio, observações e ocorrência
+  fora das paradas ficam em "Mais opções"; um botão de foto por folha pedida.
+- **Rodar o sistema:** `setup.cmd` e `start.cmd` na raiz (ver [rodando.md](rodando.md)).
+- **Telas fora do foco removidas.** Protocolos, pragas e doenças (`/ajustes/protocolos`,
+  `/ajustes/catalogo`) e a marcação manual de pontos de coleta saíram do frontend: o protocolo de
+  cercosporiose é semeado e as paradas são dirigidas pelo satélite. A API continua com os endpoints,
+  que a vistoria usa por baixo. Links antigos caem em Hoje.
+- **Mapa da vistoria com as áreas do satélite** por baixo das paradas, com legenda — quem está no
+  campo vê por que a parada está ali.
+
+### Os três eixos explícitos
+
+O sistema é só sobre cercosporiose, e a detecção tem três eixos: **clima** (quando olhar),
+**satélite** (onde olhar) e **fotos + IA** (o que é). Eles passaram a ter o mesmo número, ícone e
+pergunta em toda tela (`features/risk/components/AxesOverview.tsx`):
+
+- **Decisão cruzada em cima.** `features/risk/axes.ts` resume cada eixo numa frase e junta os três
+  numa decisão com o botão da ação. Não há limiar novo: a vistoria continua sugerida pelo clima
+  (fase 5); o satélite diz se as paradas já têm onde cair; foto revisada como cercosporiose pesa
+  mais que tudo. Foto da estação simulada é sinalizada no resumo.
+- **Hoje** mostra todo plantio de milho em andamento com os três eixos — antes só os de risco
+  moderado ou alto, e só o clima.
+- **Situação** tem uma seção numerada por eixo; as fotos do plantio inteiro (campo e estação) ficam
+  juntas na seção 3, as que esperam revisão primeiro.
+- **Satélite sem clique.** A busca sai sozinha ao abrir o plantio quando a última passagem tem mais
+  de 5 dias (revisita do Sentinel-2); o botão virou "Buscar de novo".
+- **Vistoriar agora.** Um clique cria as paradas dirigidas, agenda para hoje, inicia e abre a
+  primeira parada (`?registrar=parada`). Continua a visita em andamento em vez de criar outra. A
+  equipe deixou de ser pendência: sem ninguém cadastrado, o botão pede o nome na hora.
+
 ## Rotas
 
 | Rota | Tela |
 |---|---|
 | `/` | Hoje — pendências e agenda |
 | `/talhoes` | Mapa da propriedade |
-| `/talhoes/:fieldId` | O talhão: cultivo, pontos, vistorias |
+| `/talhoes/:fieldId` | O talhão: situação, vistorias, plantio |
+| `/talhoes/:fieldId/rover` | Rover autônomo (simulação) |
 | `/vistorias` | Todas as visitas da fazenda |
 | `/vistorias/:id` | Executar a visita — é o link que abre no celular |
+| `/aferimento` | Desempenho da IA — alcançado por Ajustes |
 | `/ajustes` | Hub de cadastros de referência |
-| `/ajustes/fazendas`, `/ajustes/equipe`, `/ajustes/protocolos`, `/ajustes/catalogo` | Cadastros |
+| `/ajustes/fazendas`, `/ajustes/equipe` | Cadastros |
 
 As rotas da organização anterior (`/farms/...`, `/inspections/:id`, `/protocols`, `/targets`)
 continuam como redirecionamento — links já foram abertos e salvos, em especial o de execução de

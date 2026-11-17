@@ -24,12 +24,21 @@ import { cropLabels } from '../cropLabels';
  * A aba vive na URL (`?aba=`) e nao em estado: e o que permite mandar por mensagem "os pontos do
  * Talhao Sul" e o que faz o botao de voltar do navegador desfazer a troca de aba, que e o que quem
  * clicou espera.
+ *
+ * A ordem e a da pergunta de quem abre o talhao: "esta tudo bem aqui?" (Situacao), "quando alguem
+ * olhou?" (Vistorias) e, por ultimo, o cadastro do plantio. Talhao que nunca teve plantio abre direto
+ * no Plantio, porque e a unica coisa que da para fazer nele.
  */
 const tabs = [
-  { id: 'cultivo', label: 'Cultivo' },
-  { id: 'risco', label: 'Risco de cercosporiose' },
+  { id: 'situacao', label: 'Situação' },
   { id: 'vistorias', label: 'Vistorias' },
+  { id: 'plantio', label: 'Plantio' },
 ] as const;
+
+type TabId = typeof tabs[number]['id'];
+
+/** Nomes antigos das abas, que ainda circulam em links salvos. */
+const tabAliases: Record<string, TabId> = { risco: 'situacao', cultivo: 'plantio' };
 
 export function FieldPage() {
   const { fieldId = '' } = useParams();
@@ -47,8 +56,11 @@ export function FieldPage() {
   const cultivations = useFarmCultivations(field?.farmId ?? '');
   const open = cultivations.openFor(fieldId) ?? null;
 
-  const requested = params.get('aba');
-  const tab = tabs.find((candidate) => candidate.id === requested)?.id ?? 'cultivo';
+  const raw = params.get('aba') ?? '';
+  const requested = tabAliases[raw] ?? raw;
+  const hasHistory = cultivations.cultivations.some((cycle) => cycle.fieldId === fieldId);
+  const tab: TabId = tabs.find((candidate) => candidate.id === requested)?.id
+    ?? (hasHistory ? 'situacao' : 'plantio');
 
   return (
     <PageContainer>
@@ -79,7 +91,7 @@ export function FieldPage() {
                 {formatHectares(field.areaHectares)}
                 {open
                   ? ` · ${cropLabels[open.crop]} ${open.cultivar} · plantio em ${cycleDate(open.plantedOn)}`
-                  : ' · sem cultivo em andamento'}
+                  : ' · nada plantado'}
               </Typography>
             </Box>
 
@@ -95,8 +107,8 @@ export function FieldPage() {
               ))}
             </Tabs>
 
-            {tab === 'cultivo' && <CultivationSection farmId={field.farmId} fieldId={fieldId} />}
-            {tab === 'risco' && <RiskSection farmId={field.farmId} fieldId={fieldId} />}
+            {tab === 'plantio' && <CultivationSection farmId={field.farmId} fieldId={fieldId} />}
+            {tab === 'situacao' && <RiskSection farmId={field.farmId} fieldId={fieldId} />}
             {tab === 'vistorias' && (
               <FieldInspectionsSection farmId={farmId} cultivation={open} />
             )}

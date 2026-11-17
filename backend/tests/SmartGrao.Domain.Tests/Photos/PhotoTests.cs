@@ -91,6 +91,20 @@ public sealed class PhotoTests
     }
 
     [Fact]
+    public void RoverPhotoKeepsItsSourceAndPlace()
+    {
+        var (_, _, cultivation) = Stop();
+
+        var photo = Photo.FromDevice(new PhotoId(Guid.NewGuid()), cultivation, PhotoSource.Rover, true,
+            PlantOrgan.LowerLeaves, Morning, GeoCoordinate.From(-22.318, -49.955), "image/jpeg", 40_000);
+
+        Assert.Equal(PhotoSource.Rover, photo.Source);
+        Assert.True(photo.IsSimulated);
+        Assert.Null(photo.InspectionId);
+        Assert.NotNull(photo.Location);
+    }
+
+    [Fact]
     public void PhonePhotoNeedsAStop()
     {
         var (_, _, cultivation) = Stop();

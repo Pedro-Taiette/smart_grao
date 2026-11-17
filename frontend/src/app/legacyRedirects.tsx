@@ -20,8 +20,3 @@ export function RedirectToInspection() {
   const { inspectionId } = useParams();
   return <Navigate to={`/vistorias/${inspectionId}`} replace />;
 }
-
-export function RedirectToProtocol() {
-  const { protocolId } = useParams();
-  return <Navigate to={`/ajustes/protocolos/${protocolId}`} replace />;
-}

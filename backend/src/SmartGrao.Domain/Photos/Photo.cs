@@ -16,6 +16,8 @@ public enum PhotoSource
     Phone = 0,
     Station,
     Drone,
+    /// <summary>Robo de solo que anda na entrelinha e fotografa as folhas de baixo, onde a doenca comeca.</summary>
+    Rover,
 }
 
 /// <summary>

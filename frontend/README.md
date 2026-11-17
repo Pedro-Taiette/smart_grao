@@ -34,18 +34,27 @@ src/
     today/          a tela de abertura: pendências e agenda do dia
     farms/          cadastro das propriedades, mais FarmContext.tsx (a fazenda em uso)
     fields/         mapa e página do talhão, mais geo/ (GeoJSON ↔ Leaflet)
-    cultivations/   safras, ciclos e estágios de um talhão
-    sampling/       marcação de pontos, mais samplingLabels.ts (vocabulário)
-    protocols/      pragas, doenças e protocolos, mais protocolLabels.ts
+    cultivations/   plantio (safra derivada da data), estágios e encerramento
+    protocols/      protocolLabels.ts: o vocabulário de folhas e contagens que a vistoria usa
     inspections/    equipe, vistorias e coleta em campo, mais inspectionLabels.ts
+    risk/           os três eixos (clima, satélite, fotos + IA): axes.ts resume e cruza,
+                    AxesOverview mostra; a aba Situação e o painel da tela Hoje
+    analysis/       revisão das fotos e o desempenho da IA (aferimento)
+    rover/          o rover autônomo simulado: rota, animação e envio pela rota de dispositivo
     settings/       o hub dos cadastros de referência
   shared/           componentes e utilidades sem dono
 ```
 
 ## Navegação
 
-Três destinos de trabalho — **Hoje**, **Talhões**, **Vistorias** — e um porão de cadastro em
-**Ajustes**. A fazenda não é uma tela: é um seletor fixo na barra do topo, lembrado entre sessões.
+Três destinos de trabalho — **Hoje**, **Talhões**, **Vistorias** — e um porão em **Ajustes**
+(fazendas, equipe e o desempenho da IA). A fazenda não é uma tela: é um seletor fixo na barra do
+topo, lembrado entre sessões.
+
+O talhão abre na aba **Situação** (o risco e o que fazer), depois **Vistorias** e **Plantio**.
+Outras telas abrem um formulário do talhão pela URL: `?aba=plantio&registrar=estagio` ou
+`registrar=plantio`, e `?aba=vistorias&agendar=cercosporiose`. É o que deixa o botão de um aviso
+levar direto ao formulário, sem um clique no meio.
 
 As razões de cada decisão, o que se perdeu ao tirar a fazenda da URL e o mapa completo de rotas
 estão em [`docs/navegacao.md`](../docs/navegacao.md).
@@ -78,13 +87,16 @@ excluído.
 
 ## O fluxo do Pilar 1
 
-1. Cadastre a fazenda em **Fazendas**. A sede é opcional e serve para o mapa abrir sobre a sua terra.
-2. Clique em **Talhões**. A ferramenta de polígono fica no canto superior direito do mapa.
+1. Cadastre a fazenda em **Ajustes → Fazendas**. A sede é opcional e serve para o mapa abrir sobre
+   a sua terra.
+2. Em **Talhões**, clique em **Desenhar novo talhão** e marque os cantos no mapa. O botão liga o
+   traçado do Geoman — a barra de ícones do Geoman não aparece mais.
 3. Feche o contorno — o diálogo pede o nome. A área em hectares é calculada pelo backend,
    nunca digitada.
-4. Selecione um talhão para editar, redesenhar o contorno, desativar ou excluir.
-5. Em **Safras e cultivos**, cadastre a safra e o cultivo (milho é o padrão), registre estágios e
-   encerre o ciclo antes de iniciar outro. No mapa, selecione o cultivo para consultar seus planos.
+4. Selecione um talhão para editar, redesenhar o contorno, desativar ou excluir; **Abrir** leva à
+   página dele.
+5. Na aba **Plantio**, registre o plantio (híbrido e data). A safra não é perguntada: sai da data do
+   plantio (`seasonNameFor`, julho a junho) e é criada na hora se ainda não existir.
 
 O fluxo, a migration necessária e o roteiro de validação estão em
 [Fase 1 — Safras e cultivos](../docs/fase-1-cultivos.md).

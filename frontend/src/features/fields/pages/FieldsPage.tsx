@@ -1,5 +1,7 @@
+import { useCallback, useState } from 'react';
 import { Alert, Box, Button, Divider, List, Paper, Typography } from '@mui/material';
 import OpenInNewIcon from '@mui/icons-material/ArrowForward';
+import DrawIcon from '@mui/icons-material/Draw';
 import { useNavigate } from 'react-router-dom';
 import { useFarmContext } from '@/features/farms/useFarmContext';
 import { useFarmCultivations } from '@/features/cultivations/hooks/useFarmCultivations';
@@ -27,6 +29,13 @@ export function FieldsPage() {
   const cultivations = useFarmCultivations(farmId);
 
   const totalHectares = workspace.fields.reduce((sum, field) => sum + field.areaHectares, 0);
+  const [isDrawing, setDrawing] = useState(false);
+  const { handlePolygonDrawn } = workspace;
+  const finishDrawing = useCallback((boundary: Parameters<typeof handlePolygonDrawn>[0]) => {
+    setDrawing(false);
+    handlePolygonDrawn(boundary);
+  }, [handlePolygonDrawn, setDrawing]);
+  const canDraw = workspace.redrawingFieldId === null;
 
   const describeCycle = (fieldId: string) => {
     const open = cultivations.openFor(fieldId);
@@ -68,7 +77,25 @@ export function FieldsPage() {
           <Typography variant="body2" color="text.secondary">
             {workspace.fields.length} talhão(ões) — {formatHectares(totalHectares)}
           </Typography>
+          {canDraw && (
+            <Button
+              fullWidth
+              variant={workspace.fields.length === 0 ? 'contained' : 'outlined'}
+              startIcon={<DrawIcon />}
+              sx={{ mt: 1.5 }}
+              onClick={() => setDrawing(!isDrawing)}
+            >
+              {isDrawing ? 'Cancelar desenho' : 'Desenhar novo talhão'}
+            </Button>
+          )}
         </Box>
+
+        {isDrawing && (
+          <Alert severity="info" sx={{ mx: 2, mb: 2 }}>
+            Clique no mapa em cada canto da lavoura. Para fechar o contorno, clique de novo no
+            primeiro ponto. A área é calculada sozinha.
+          </Alert>
+        )}
 
         <Divider />
 
@@ -81,8 +108,8 @@ export function FieldsPage() {
             {workspace.fields.length === 0 ? (
               <Box sx={{ p: 2 }}>
                 <Typography variant="body2" color="text.secondary">
-                  Nenhum talhão ainda. Use a ferramenta de polígono no canto superior direito do
-                  mapa para desenhar o primeiro contorno.
+                  Nenhum talhão ainda. Clique em "Desenhar novo talhão" e marque o contorno da
+                  lavoura no mapa.
                 </Typography>
               </Box>
             ) : (
@@ -94,6 +121,7 @@ export function FieldsPage() {
                     cultivation={describeCycle(field.id)}
                     isSelected={field.id === workspace.selectedFieldId}
                     onSelect={workspace.selectField}
+                    onOpen={(id) => navigate(`/talhoes/${id}`)}
                   />
                 ))}
               </List>
@@ -143,10 +171,10 @@ export function FieldsPage() {
           farmCenter={workspace.farmCenter}
           selectedFieldId={workspace.selectedFieldId}
           editingFieldId={workspace.redrawingFieldId}
-          samplingPoints={[]}
-          isSamplingOutdated={false}
+          isDrawing={isDrawing}
+          onDrawingChange={setDrawing}
           onSelectField={workspace.selectField}
-          onPolygonDrawn={workspace.handlePolygonDrawn}
+          onPolygonDrawn={finishDrawing}
           onGeometryChange={workspace.setPendingGeometry}
         />
       </Box>

@@ -52,6 +52,7 @@ export function FarmsPage() {
     <PageContainer>
       <PageHeader
         title="Fazendas"
+        back={{ to: '/ajustes', label: 'Ajustes' }}
         description="As propriedades. A que estiver selecionada é a que o resto do sistema mostra."
         action={
           <Button variant="contained" startIcon={<AddIcon />} onClick={openCreate}>

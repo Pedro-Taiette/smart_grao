@@ -2,6 +2,8 @@ import { RiskLevel } from '@/api/generated/model/riskLevel';
 import { StageWindow } from '@/api/generated/model/stageWindow';
 import type { DailyRiskViewModel } from '@/api/generated/model/dailyRiskViewModel';
 import type { StageStatusViewModel } from '@/api/generated/model/stageStatusViewModel';
+import type { CercosporaRiskFactorsViewModel } from '@/api/generated/model/cercosporaRiskFactorsViewModel';
+import { riskFactorsSummary } from '@/features/cultivations/riskFactorLabels';
 import { cycleDate } from '@/features/cultivations/cultivationSchema';
 
 export const riskLevelLabel: Record<RiskLevel, string> = {
@@ -27,12 +29,18 @@ export function describeWeather(day: DailyRiskViewModel, windowDays: number) {
   return `${nights} e ${warm} com temperatura entre 22 e 30 °C nos últimos ${windowDays} dias`;
 }
 
-/** O que fazer quando o estádio não sustenta a conta; null quando está tudo em ordem. */
+/** O porquê do nível, numa frase: o clima e, se houver, o que se sabe do plantio. */
+export function describeRisk(day: DailyRiskViewModel, windowDays: number, factors: CercosporaRiskFactorsViewModel) {
+  const planting = riskFactorsSummary(factors);
+  return `${describeWeather(day, windowDays)}${planting ? `. ${planting}` : ''}.`;
+}
+
+/** O que fazer quando o estágio não sustenta a conta; null quando está tudo em ordem. */
 export function stageWarning(stage: StageStatusViewModel): string | null {
   if (stage.window === StageWindow.Unknown && !stage.stage)
-    return 'Nenhum estádio registrado. Registre o estádio atual para o sistema saber se a lavoura já está na fase de risco (a partir de V4).';
+    return 'Informe o estágio da lavoura: o risco só vale a partir de V4 (4 folhas).';
   if (stage.isStale && stage.stage && stage.observedOn)
-    return `O último estádio registrado é ${stage.stage}, de ${cycleDate(stage.observedOn)}. Registre o estádio atual.`;
+    return `O último estágio informado é ${stage.stage}, de ${cycleDate(stage.observedOn)}. Informe o estágio de hoje.`;
   if (stage.window === StageWindow.Before)
     return `A lavoura está em ${stage.stage}. O acompanhamento começa em V4.`;
   if (stage.window === StageWindow.After)

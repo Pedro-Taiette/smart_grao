@@ -7,9 +7,11 @@ import { getGetSeasonsQueryKey, useCreateSeason } from '@/api/generated/seasons/
 import type { CreateCultivationViewModel } from '@/api/generated/model/createCultivationViewModel';
 import type { CercosporaRiskFactorsViewModel } from '@/api/generated/model/cercosporaRiskFactorsViewModel';
 import type { RecordGrowthStageViewModel } from '@/api/generated/model/recordGrowthStageViewModel';
+import type { SeasonViewModel } from '@/api/generated/model/seasonViewModel';
 import { useNotifier } from '@/shared/notifications/useNotifier';
+import { seasonNameFor } from '../cultivationSchema';
 
-export function useCultivationActions(farmId: string, fieldId: string) {
+export function useCultivationActions(farmId: string, fieldId: string, seasons: SeasonViewModel[] = []) {
   const cache = useQueryClient();
   const notifier = useNotifier();
   const season = useCreateSeason();
@@ -37,11 +39,25 @@ export function useCultivationActions(farmId: string, fieldId: string) {
     }
   }
 
+  /**
+   * A safra sai da data do plantio e e criada na hora se ainda nao existir — quem cadastra o milho
+   * nao precisa saber que "safra" e um registro a parte.
+   */
+  async function seasonIdFor(plantedOn: string) {
+    const name = seasonNameFor(plantedOn);
+    const existing = seasons.find(s => s.name.trim().toLowerCase() === name.toLowerCase());
+    if (existing) return existing.id;
+    const created = await season.mutateAsync({ data: { farmId, name } });
+    return created.id;
+  }
+
   return {
     isSaving: season.isPending || create.isPending || close.isPending || stage.isPending || risk.isPending,
-    createSeason: (name: string) => save(() => season.mutateAsync({ data: { farmId, name } }), 'Safra cadastrada.'),
-    createCultivation: (data: Omit<CreateCultivationViewModel, 'fieldId'>) =>
-      save(() => create.mutateAsync({ data: { ...data, fieldId } }), 'Cultivo cadastrado.'),
+    createCultivation: (data: Omit<CreateCultivationViewModel, 'fieldId' | 'seasonId'>) =>
+      save(async () => {
+        const seasonId = await seasonIdFor(data.plantedOn);
+        await create.mutateAsync({ data: { ...data, seasonId, fieldId } });
+      }, 'Plantio registrado.'),
     closeCultivation: (id: string, endedOn: string) =>
       save(() => close.mutateAsync({ id, data: { endedOn } }), 'Cultivo encerrado.', id),
     recordStage: (id: string, data: RecordGrowthStageViewModel) =>

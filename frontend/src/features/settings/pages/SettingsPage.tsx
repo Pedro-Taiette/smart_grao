@@ -1,6 +1,7 @@
 import { Box, Card, CardActionArea, Stack, Typography } from '@mui/material';
 import AgricultureIcon from '@mui/icons-material/Agriculture';
 import GroupsIcon from '@mui/icons-material/Groups';
+import InsightsIcon from '@mui/icons-material/Insights';
 import { useNavigate } from 'react-router-dom';
 import { PageContainer, PageHeader } from '@/shared/components/AppLayout';
 
@@ -24,6 +25,12 @@ const entries = [
     description: 'Quem pode ser responsável por uma vistoria nesta fazenda.',
     icon: <GroupsIcon fontSize="large" color="primary" />,
   },
+  {
+    to: '/aferimento',
+    label: 'Desempenho da IA',
+    description: 'O quanto o modelo acerta, as fotos revisadas e a exportação para treino.',
+    icon: <InsightsIcon fontSize="large" color="primary" />,
+  },
 ] as const;
 
 export function SettingsPage() {
@@ -33,7 +40,7 @@ export function SettingsPage() {
     <PageContainer>
       <PageHeader
         title="Ajustes"
-        description="Cadastros de referência. Normalmente feitos uma vez, no começo."
+        description="Cadastros feitos uma vez, no começo, e a avaliação do modelo de IA."
       />
 
       <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' } }}>

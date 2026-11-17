@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import { Box, Button, Chip, MenuItem, Stack, TextField, Typography } from '@mui/material';
+import { Box, Button, Chip, Stack, Typography } from '@mui/material';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import { useQueryClient } from '@tanstack/react-query';
 import type { IFormFile } from '@/api/generated/model/iFormFile';
 import type { ObservationViewModel } from '@/api/generated/model/observationViewModel';
@@ -34,7 +35,7 @@ export function PhotoThumbnail({ photo, onOpen }: { photo: PhotoViewModel; onOpe
       <Box component="img" src={photoUrl(photo.id)} alt={plantOrganLabel[photo.organ]}
         sx={{ width: 128, height: 96, objectFit: 'cover', borderRadius: 1, display: 'block', bgcolor: 'grey.200' }} />
       <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.25 }}>
-        {plantOrganLabel[photo.organ]}{photo.isSimulated ? ' · simulada' : ''}
+        {plantOrganLabel[photo.organ]}{photo.source === 'Rover' ? ' · rover' : photo.source === 'Station' ? ' · estação' : ''}{photo.isSimulated ? ' · simulada' : ''}
       </Typography>
       <AnalysisLine photo={photo} />
     </Box>
@@ -56,8 +57,10 @@ export function ObservationPhotos({ inspectionId, observation, protocol, photos,
   const input = useRef<HTMLInputElement>(null);
   const requested = (protocol?.items ?? []).filter(item => item.photosRequested > 0 && item.organ);
   const organs = [...new Set(requested.map(item => item.organ!))];
-  const [chosenOrgan, setOrgan] = useState<PlantOrgan | null>(null);
-  const organ = chosenOrgan && organs.includes(chosenOrgan) ? chosenOrgan : organs[0] ?? PlantOrgan.Leaf;
+  // Um botao por folha pedida: "Foto das folhas de baixo" ja diz o que fotografar, sem um seletor
+  // antes do botao. O orgao escolhido fica guardado ate o arquivo voltar da camera.
+  const choices = organs.length > 0 ? organs : [PlantOrgan.Leaf];
+  const [organ, setOrgan] = useState<PlantOrgan>(choices[0]);
   const [failed, setFailed] = useState<Pending[]>([]);
   const [sending, setSending] = useState(false);
   const [opened, setOpened] = useState<string | null>(null);
@@ -104,17 +107,14 @@ export function ObservationPhotos({ inspectionId, observation, protocol, photos,
       )}
       {canAdd && (
         <Stack direction="row" useFlexGap spacing={1} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
-          {organs.length > 1 && (
-            <TextField select size="small" label="Qual folha" value={organ} sx={{ width: 280 }}
-              onChange={event => setOrgan(event.target.value as PlantOrgan)}>
-              {organs.map(o => <MenuItem key={o} value={o}>{plantOrganLabel[o]}</MenuItem>)}
-            </TextField>
-          )}
           <input ref={input} type="file" accept="image/jpeg,image/png,image/webp" capture="environment" multiple hidden
             onChange={event => pick(event.target.files)} />
-          <Button variant="outlined" disabled={sending} onClick={() => input.current?.click()}>
-            {sending ? 'Enviando…' : 'Tirar foto'}
-          </Button>
+          {choices.map(choice => (
+            <Button key={choice} variant="outlined" startIcon={<PhotoCameraIcon />} disabled={sending}
+              onClick={() => { setOrgan(choice); input.current?.click(); }}>
+              {sending ? 'Enviando…' : choices.length > 1 ? `Foto: ${plantOrganLabel[choice].toLowerCase()}` : 'Tirar foto'}
+            </Button>
+          ))}
           {failed.length > 0 && <>
             <Chip color="warning" label={`${failed.length} foto(s) não enviada(s)`} />
             <Button disabled={sending} onClick={() => void send(failed)}>Tentar de novo</Button>

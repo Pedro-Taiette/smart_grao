@@ -4,7 +4,6 @@ import { useFarmContext } from '@/features/farms/useFarmContext';
 import { useFields } from '@/features/fields/hooks/useFields';
 import { useFarmCultivations } from '@/features/cultivations/hooks/useFarmCultivations';
 import { useFarmInspections } from '@/features/inspections/hooks/useFarmInspections';
-import { usePeople } from '@/features/inspections/hooks/usePeople';
 import { daysFromToday } from '@/features/inspections/inspectionLabels';
 import type { SetupGap } from '../components/PendingSetup';
 
@@ -20,7 +19,6 @@ export function useTodayWorkspace() {
   const fields = useFields(farmId);
   const cultivations = useFarmCultivations(farmId);
   const inspections = useFarmInspections(farmId);
-  const team = usePeople(farmId, true);
 
 
   const openCycles = cultivations.cultivations.filter((cycle) => cycle.endedOn === null);
@@ -55,7 +53,7 @@ export function useTodayWorkspace() {
   // Na ordem em que precisam ser resolvidas: cada uma e pre-requisito da seguinte, e mostrar as
   // cinco de uma vez transformaria a tela de abertura numa lista de reclamacoes.
   const gaps: SetupGap[] = [];
-  const isReady = !farmLoading && !fields.isLoading && !cultivations.isLoading && !team.isLoading;
+  const isReady = !farmLoading && !fields.isLoading && !cultivations.isLoading;
 
   if (isReady) {
     if (!farm) {
@@ -70,29 +68,22 @@ export function useTodayWorkspace() {
       gaps.push({
         id: 'field',
         title: 'Desenhe o primeiro talhão',
-        description: 'O contorno no mapa é onde o clima e o satélite são lidos.',
+        description: 'Marque no mapa o contorno da lavoura. É ali que o sistema lê o clima e o satélite.',
         actionLabel: 'Desenhar',
         to: '/talhoes',
       });
     } else if (openCycles.length === 0) {
       gaps.push({
         id: 'cultivation',
-        title: 'Nenhum talhão com cultivo em andamento',
-        description: 'O cultivo diz o que está plantado e desde quando — sem ele não há vistoria a agendar.',
-        actionLabel: 'Registrar cultivo',
-        to: `/talhoes/${activeFields[0].id}?aba=cultivo`,
+        title: 'Registre o que foi plantado',
+        description: 'Diga qual milho foi plantado e quando. É a partir daí que o sistema calcula o risco.',
+        actionLabel: 'Registrar plantio',
+        to: `/talhoes/${activeFields[0].id}?aba=plantio&registrar=plantio`,
       });
     }
 
-    if (farm && team.people.length === 0) {
-      gaps.push({
-        id: 'team',
-        title: 'Ninguém cadastrado na equipe',
-        description: 'Toda vistoria tem um responsável. Cadastre quem vai a campo.',
-        actionLabel: 'Cadastrar pessoa',
-        to: '/ajustes/equipe',
-      });
-    }
+    // A equipe deixou de ser pendencia: "Vistoriar agora" pede o nome de quem vai na hora, quando
+    // ninguem esta cadastrado. Cadastrar antes era um passo sem motivo aparente.
 
   }
 

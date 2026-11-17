@@ -12,6 +12,7 @@ import { EmptyState } from '@/shared/components/EmptyState';
 import { QueryBoundary } from '@/shared/components/QueryBoundary';
 import { InspectionRow } from '@/features/today/components/InspectionRow';
 import { ScheduleInspectionDialog } from './InspectionDialogs';
+import { InspectNowButton } from './InspectNowButton';
 import { useInspectionActions } from '../hooks/useInspectionActions';
 import { usePeople } from '../hooks/usePeople';
 
@@ -79,15 +80,16 @@ export function FieldInspectionsSection({ farmId, cultivation }: {
 
   return (
     <Stack spacing={2}>
-      <Button
-        variant="contained"
-        startIcon={<AddIcon />}
-        sx={{ alignSelf: 'flex-start' }}
-        disabled={actions.isSaving}
-        onClick={() => setScheduling(true)}
-      >
-        Agendar vistoria
-      </Button>
+      {/* Vistoriar agora e o caminho normal: cria as paradas, inicia e abre a primeira. Agendar fica
+          para quando quem vai a campo e outra pessoa, ou outro dia. */}
+      {!cultivation.endedOn && (
+        <Stack direction="row" useFlexGap spacing={1} sx={{ flexWrap: 'wrap' }}>
+          <InspectNowButton farmId={farmId} cultivationId={cultivation.id} size="large" />
+          <Button startIcon={<AddIcon />} disabled={actions.isSaving} onClick={() => setScheduling(true)}>
+            Agendar para outro dia
+          </Button>
+        </Stack>
+      )}
 
       <QueryBoundary
         isLoading={inspectionsQuery.isPending}
@@ -96,13 +98,9 @@ export function FieldInspectionsSection({ farmId, cultivation }: {
       >
         {inspections.length === 0 ? (
           <EmptyState
-            title="Nenhuma vistoria para este cultivo"
-            description="Agende a primeira visita: escolha quem vai, qual caminhada e o que coletar em cada parada."
-            action={
-              <Button variant="contained" startIcon={<AddIcon />} onClick={() => setScheduling(true)}>
-                Agendar vistoria
-              </Button>
-            }
+            title="Nenhuma vistoria neste plantio ainda"
+            description="O sistema escolhe as 10 paradas — onde o satélite viu a lavoura destoar, ou espalhadas pelo talhão. Em cada uma, você olha 10 plantas e fotografa as folhas."
+
           />
         ) : (
           <Stack spacing={1.5}>

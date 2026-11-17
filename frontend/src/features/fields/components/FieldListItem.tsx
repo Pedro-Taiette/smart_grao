@@ -1,4 +1,4 @@
-import { Box, Chip, ListItemButton, Stack, Typography } from '@mui/material';
+import { Box, Button, Chip, ListItem, ListItemButton, Stack, Typography } from '@mui/material';
 import type { FieldViewModel } from '@/api/generated/model/fieldViewModel';
 import { formatHectares } from '@/shared/format';
 
@@ -13,32 +13,44 @@ interface FieldListItemProps {
    */
   cultivation: string | null;
   onSelect: (fieldId: string) => void;
+  onOpen: (fieldId: string) => void;
 }
 
-/** Uma linha da lista lateral de talhoes. */
-export function FieldListItem({ field, isSelected, cultivation, onSelect }: FieldListItemProps) {
+/**
+ * Uma linha da lista lateral de talhoes.
+ *
+ * Clicar na linha mostra o talhao no mapa (e as opcoes do contorno); o botao "Abrir" leva direto a
+ * pagina dele. Antes so havia a selecao, e "abrir" era um segundo botao que aparecia longe, no pe
+ * da lista.
+ */
+export function FieldListItem({ field, isSelected, cultivation, onSelect, onOpen }: FieldListItemProps) {
   return (
-    <ListItemButton
-      selected={isSelected}
-      onClick={() => onSelect(field.id)}
-      sx={{ borderRadius: 1, mb: 0.5, alignItems: 'flex-start', flexDirection: 'column', gap: 0.5 }}
+    <ListItem
+      disablePadding
+      sx={{ mb: 0.5 }}
+      secondaryAction={
+        <Button size="small" onClick={() => onOpen(field.id)}>Abrir</Button>
+      }
     >
-      <Stack
-        direction="row"
-        sx={{ width: '100%', justifyContent: 'space-between', alignItems: 'center' }}
+      <ListItemButton
+        selected={isSelected}
+        onClick={() => onSelect(field.id)}
+        sx={{ borderRadius: 1, alignItems: 'flex-start', flexDirection: 'column', gap: 0.5, pr: 10 }}
       >
-        <Typography variant="subtitle2" noWrap>
-          {field.name}
-        </Typography>
-        {!field.active && <Chip label="Inativo" size="small" />}
-      </Stack>
+        <Stack direction="row" sx={{ width: '100%', gap: 1, alignItems: 'center' }}>
+          <Typography variant="subtitle2" noWrap>
+            {field.name}
+          </Typography>
+          {!field.active && <Chip label="Inativo" size="small" />}
+        </Stack>
 
-      <Box>
-        <Typography variant="body2" color="text.secondary">
-          {formatHectares(field.areaHectares)}
-          {cultivation ? ` · ${cultivation}` : ' · em pousio'}
-        </Typography>
-      </Box>
-    </ListItemButton>
+        <Box>
+          <Typography variant="body2" color="text.secondary">
+            {formatHectares(field.areaHectares)}
+            {cultivation ? ` · ${cultivation}` : ' · nada plantado'}
+          </Typography>
+        </Box>
+      </ListItemButton>
+    </ListItem>
   );
 }

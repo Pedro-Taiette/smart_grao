@@ -45,6 +45,7 @@ export function TeamPage() {
     <PageContainer>
       <PageHeader
         title="Equipe"
+        back={{ to: '/ajustes', label: 'Ajustes' }}
         description={`Quem pode ser responsável por uma vistoria em ${farm.name}.`}
         action={
           <Button variant="contained" startIcon={<AddIcon />} disabled={actions.isSaving}

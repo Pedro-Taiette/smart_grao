@@ -1,19 +1,26 @@
+import { useEffect, useRef } from 'react';
 import { Alert, Box, Button, Chip, Divider, Paper, Stack, Typography } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import { useSearchParams } from 'react-router-dom';
 import { Crop } from '@/api/generated/model/crop';
 import { CropSequence } from '@/api/generated/model/cropSequence';
+import type { CultivationViewModel } from '@/api/generated/model/cultivationViewModel';
 import { cropLabels } from '@/features/fields/cropLabels';
+import { EmptyState } from '@/shared/components/EmptyState';
 import { QueryBoundary } from '@/shared/components/QueryBoundary';
-import { CultivationDialog, SeasonDialog, StageDialog, ClosureDialog, RiskFactorsDialog } from './CultivationDialogs';
+import { CultivationDialog, StageDialog, ClosureDialog, RiskFactorsDialog } from './CultivationDialogs';
 import { riskFactorsSummary, unknownRiskFactors } from '../riskFactorLabels';
 import { cycleDate } from '../cultivationSchema';
 import { useCultivationWorkspace } from '../hooks/useCultivationWorkspace';
 
 /**
- * Safras, ciclos e estagios de um talhao.
+ * O plantio de um talhao: o que esta plantado, desde quando e em que estagio.
  *
- * Era uma tela propria, alcancada por um botao dentro da tela de talhoes. Virou uma aba da pagina do
- * talhao: "o que esta plantado aqui" e a mesma pergunta que "que talhao e este", e separa-las cobrava
- * uma navegacao para juntar de volta o que sempre se le junto.
+ * A safra deixou de ser um cadastro a parte (sai da data do plantio), entao a tela tem uma unica
+ * pergunta por vez: "o que esta plantado aqui?" — e, se nada, um botao grande para responder.
+ *
+ * Outras telas abrem um formulario daqui pela URL (`?registrar=estagio`): o aviso "registre o
+ * estagio" da aba de situacao leva direto ao formulario, sem o clique intermediario.
  */
 export function CultivationSection({ farmId, fieldId }: { farmId: string; fieldId: string }) {
   // Uma chave por talhao monta o estado dos formularios do zero: um dialogo aberto nao pode
@@ -23,92 +30,65 @@ export function CultivationSection({ farmId, fieldId }: { farmId: string; fieldI
 
 function Workspace({ farmId, fieldId }: { farmId: string; fieldId: string }) {
   const w = useCultivationWorkspace(farmId, fieldId);
+  const [params, setParams] = useSearchParams();
   const common = { isSaving: w.isSaving, onClose: w.closeDialog };
-  const hasOpenCycle = w.cultivations.some(c => c.endedOn === null);
-  const previous = w.cultivations.reduce<typeof w.cultivations[number] | undefined>(
+  const current = w.cultivations.find(c => c.endedOn === null);
+  const past = w.cultivations.filter(c => c.endedOn !== null);
+  const previous = w.cultivations.reduce<CultivationViewModel | undefined>(
     (latest, c) => (!latest || c.plantedOn > latest.plantedOn ? c : latest), undefined);
   const newCycleRisk = previous
     ? { ...unknownRiskFactors, cropSequence: previous.crop === Crop.Corn ? CropSequence.CornAfterCorn : CropSequence.Rotation }
     : unknownRiskFactors;
+  const canPlant = !current && Boolean(w.field?.active);
+
+  // Pedido vindo de outra tela: abre o formulario uma vez e limpa a URL, para o F5 nao reabrir.
+  const handled = useRef(false);
+  const request = params.get('registrar');
+  const { openDialog } = w;
+  useEffect(() => {
+    if (handled.current || w.isLoading || !request) return;
+    handled.current = true;
+    if (request === 'estagio' && current) openDialog({ kind: 'stage', cultivation: current });
+    if (request === 'plantio' && canPlant) openDialog({ kind: 'cultivation' });
+    const next = new URLSearchParams(params);
+    next.delete('registrar');
+    setParams(next, { replace: true });
+  }, [request, w.isLoading, current, canPlant, openDialog, params, setParams]);
 
   return <>
     <QueryBoundary isLoading={w.isLoading} error={w.error} onRetry={w.refetch}>
       <Stack spacing={2.5}>
-        <Paper variant="outlined" sx={{ p: 2 }}>
-          <Stack spacing={1.5}>
-            <Box>
-              <Typography variant="h6">Safras da fazenda</Typography>
-              <Typography variant="body2" color="text.secondary">
-                O período agrícola em que os cultivos acontecem. Vale para todos os talhões.
-              </Typography>
-            </Box>
-            <Stack direction="row" useFlexGap spacing={1} sx={{ flexWrap: 'wrap' }}>
-              {w.seasons.map(s => <Chip key={s.id} label={s.name} />)}
-              {w.seasons.length === 0 && <Typography color="text.secondary">
-                Cadastre uma safra para iniciar o primeiro cultivo.
-              </Typography>}
-            </Stack>
-            <Button sx={{ alignSelf: 'flex-start' }} disabled={w.isSaving}
-              onClick={() => w.openDialog({ kind: 'season' })}>Nova safra</Button>
-          </Stack>
-        </Paper>
-
-        <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
-          <Typography variant="h6">Cultivos deste talhão</Typography>
-          <Button variant="contained"
-            disabled={w.isSaving || !w.field?.active || hasOpenCycle || w.seasons.length === 0}
-            onClick={() => w.openDialog({ kind: 'cultivation' })}>Novo cultivo</Button>
-        </Stack>
-
-        {!w.field?.active && <Alert severity="info">Reative o talhão para iniciar um cultivo.</Alert>}
-        {hasOpenCycle && <Typography variant="body2" color="text.secondary">
-          Encerre o cultivo em andamento antes de iniciar o próximo.
-        </Typography>}
-        {w.cultivations.length === 0 && <Alert severity="info">
-          Nenhum cultivo registrado neste talhão. É o cultivo que diz o que está plantado e desde
-          quando — as vistorias dependem dele.
+        {!w.field?.active && <Alert severity="info">
+          Este talhão está fora de operação. Reative-o no mapa de talhões para registrar um plantio.
         </Alert>}
 
-        {w.cultivations.map(c => <Paper key={c.id} variant="outlined" sx={{ p: 2.5 }}>
-          <Stack spacing={1.5}>
-            <Stack direction="row" useFlexGap spacing={1} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
-              <Typography variant="h6">{cropLabels[c.crop]} · {c.cultivar}</Typography>
-              <Chip size="small" color={c.endedOn ? 'default' : 'success'}
-                label={c.endedOn ? 'Encerrado' : 'Em andamento'} />
-            </Stack>
-            <Typography variant="body2">
-              Safra {w.seasons.find(s => s.id === c.seasonId)?.name ?? '—'} · Plantio em {cycleDate(c.plantedOn)}
-              {c.endedOn ? ` · Encerrado em ${cycleDate(c.endedOn)}` : ''}
-            </Typography>
-            {c.crop === Crop.Corn && <Typography variant="body2" color="text.secondary">{riskFactorsSummary(c.riskFactors)}</Typography>}
-            <Divider />
-            <Typography variant="subtitle2">Estágios observados</Typography>
-            {c.stages.length === 0 && <Typography variant="body2" color="text.secondary">
-              Nenhum estágio registrado.
-            </Typography>}
-            {c.stages.map(s => <Box key={s.id}>
-              <Typography variant="body2"><strong>{cycleDate(s.observedOn)} · {s.stage}</strong></Typography>
-              {s.notes && <Typography variant="body2" color="text.secondary"
-                sx={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>{s.notes}</Typography>}
-            </Box>)}
-            <Stack direction="row" spacing={1}>
-              <Button disabled={w.isSaving} onClick={() => w.openDialog({ kind: 'stage', cultivation: c })}>
-                Registrar estágio
-              </Button>
-              {c.crop === Crop.Corn && <Button disabled={w.isSaving} onClick={() => w.openDialog({ kind: 'risk', cultivation: c })}>
-                Risco de cercosporiose
-              </Button>}
-              {!c.endedOn && <Button disabled={w.isSaving} onClick={() => w.openDialog({ kind: 'closure', cultivation: c })}>
-                Encerrar cultivo
-              </Button>}
-            </Stack>
+        {current
+          ? <CurrentPlanting cultivation={current} isSaving={w.isSaving} openDialog={w.openDialog} />
+          : canPlant && <Paper variant="outlined">
+              <EmptyState
+                title="Nada plantado neste talhão"
+                description="Registre o plantio de milho para o sistema começar a acompanhar o risco de cercosporiose."
+                action={<Button variant="contained" size="large" startIcon={<AddIcon />} disabled={w.isSaving}
+                  onClick={() => w.openDialog({ kind: 'cultivation' })}>Registrar plantio</Button>}
+              />
+            </Paper>}
+
+        {past.length > 0 && <Box>
+          <Typography variant="h6" sx={{ mb: 1 }}>Plantios anteriores</Typography>
+          <Stack spacing={1}>
+            {past.map(c => <Paper key={c.id} variant="outlined" sx={{ p: 2 }}>
+              <Typography variant="subtitle1">{cropLabels[c.crop]} · {c.cultivar}</Typography>
+              <Typography variant="body2" color="text.secondary">
+                Safra {w.seasons.find(s => s.id === c.seasonId)?.name ?? '—'} · plantado em {cycleDate(c.plantedOn)}
+                {c.endedOn ? ` · encerrado em ${cycleDate(c.endedOn)}` : ''}
+              </Typography>
+            </Paper>)}
           </Stack>
-        </Paper>)}
+        </Box>}
       </Stack>
     </QueryBoundary>
 
-    {w.dialog?.kind === 'season' && <SeasonDialog {...common} onSave={w.createSeason} />}
-    {w.dialog?.kind === 'cultivation' && <CultivationDialog {...common} seasons={w.seasons} riskFactors={newCycleRisk} onSave={w.createCultivation} />}
+    {w.dialog?.kind === 'cultivation' && <CultivationDialog {...common} riskFactors={newCycleRisk} onSave={w.createCultivation} />}
     {w.dialog?.kind === 'risk' && <RiskFactorsDialog {...common} riskFactors={w.dialog.cultivation.riskFactors}
       onSave={values => w.dialog?.kind === 'risk'
         ? w.updateRiskFactors(w.dialog.cultivation.id, values)
@@ -122,4 +102,61 @@ function Workspace({ farmId, fieldId }: { farmId: string; fieldId: string }) {
         ? w.closeCultivation(w.dialog.cultivation.id, date)
         : Promise.resolve(false)} />}
   </>;
+}
+
+type OpenDialog = ReturnType<typeof useCultivationWorkspace>['openDialog'];
+
+function CurrentPlanting({ cultivation: c, isSaving, openDialog }: {
+  cultivation: CultivationViewModel; isSaving: boolean; openDialog: OpenDialog;
+}) {
+  const latest = c.stages[c.stages.length - 1];
+  const summary = riskFactorsSummary(c.riskFactors);
+
+  return <Paper variant="outlined" sx={{ p: 2.5 }}>
+    <Stack spacing={1.5}>
+      <Stack direction="row" useFlexGap spacing={1} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
+        <Typography variant="h6">{cropLabels[c.crop]} · {c.cultivar}</Typography>
+        <Chip size="small" color="success" label="Plantado" />
+      </Stack>
+      <Typography variant="body2">Plantado em {cycleDate(c.plantedOn)}</Typography>
+
+      <Divider />
+
+      <Stack direction="row" sx={{ gap: 2, alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+        <Box>
+          <Typography variant="subtitle2">Estágio da lavoura</Typography>
+          <Typography variant="body2" color={latest ? 'text.primary' : 'text.secondary'}>
+            {latest ? `${latest.stage}, visto em ${cycleDate(latest.observedOn)}` : 'Ainda não informado'}
+          </Typography>
+        </Box>
+        <Button variant="contained" disabled={isSaving}
+          onClick={() => openDialog({ kind: 'stage', cultivation: c })}>Informar estágio</Button>
+      </Stack>
+
+      {c.crop === Crop.Corn && <Stack direction="row" sx={{ gap: 2, alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+        <Box>
+          <Typography variant="subtitle2">Sobre o plantio</Typography>
+          <Typography variant="body2" color={summary ? 'text.primary' : 'text.secondary'}>
+            {summary ?? 'Não informado (opcional)'}
+          </Typography>
+        </Box>
+        <Button disabled={isSaving} onClick={() => openDialog({ kind: 'risk', cultivation: c })}>
+          {summary ? 'Alterar' : 'Responder'}
+        </Button>
+      </Stack>}
+
+      {c.stages.length > 1 && <Box>
+        <Typography variant="subtitle2">Histórico de estágios</Typography>
+        {[...c.stages].reverse().slice(1).map(s => (
+          <Typography key={s.id} variant="body2" color="text.secondary">
+            {cycleDate(s.observedOn)} · {s.stage}{s.notes ? ` — ${s.notes}` : ''}
+          </Typography>
+        ))}
+      </Box>}
+
+      <Divider />
+      <Button color="inherit" sx={{ alignSelf: 'flex-start' }} disabled={isSaving}
+        onClick={() => openDialog({ kind: 'closure', cultivation: c })}>Encerrar plantio (colheita)</Button>
+    </Stack>
+  </Paper>;
 }

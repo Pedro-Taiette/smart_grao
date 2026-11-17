@@ -1,13 +1,15 @@
 import { useMemo, useState } from 'react';
-import { Alert, Box, Button, Chip, Paper, Stack, Tooltip, Typography } from '@mui/material';
-import { useQueryClient } from '@tanstack/react-query';
+import { Alert, Box, Button, Chip, LinearProgress, Stack, Tooltip, Typography } from '@mui/material';
+import { useMutationState, useQueryClient } from '@tanstack/react-query';
 import { MapContainer, Polygon, TileLayer } from 'react-leaflet';
 import { latLngBounds } from 'leaflet';
 import type { CultivationViewModel } from '@/api/generated/model/cultivationViewModel';
 import type { SatellitePassViewModel } from '@/api/generated/model/satellitePassViewModel';
 import { SatellitePassStatus } from '@/api/generated/model/satellitePassStatus';
 import { useGetFieldById } from '@/api/generated/fields/fields';
-import { getGetSatellitePassesQueryKey, useGetSatellitePasses, useRefreshSatellitePasses } from '@/api/generated/risk/risk';
+import {
+  getGetSatellitePassesQueryKey, getRefreshSatellitePassesMutationKey, useGetSatellitePasses, useRefreshSatellitePasses,
+} from '@/api/generated/risk/risk';
 import { cycleDate } from '@/features/cultivations/cultivationSchema';
 import { toLeafletPositions } from '@/features/fields/geo/geoJson';
 import { QueryBoundary } from '@/shared/components/QueryBoundary';
@@ -52,12 +54,23 @@ function NdreSeries({ passes, selected, onSelect }: {
   );
 }
 
+/**
+ * Eixo 2 — as passagens do Sentinel-2 no ciclo e as areas que destoam.
+ *
+ * A busca sai sozinha (ver `useCultivationAxes`); o botao fica para quem quer forcar. Enquanto
+ * qualquer busca deste plantio esta em curso — a automatica ou a do botao — o painel mostra.
+ */
 export function SatellitePanel({ cultivation }: { cultivation: CultivationViewModel }) {
   const cache = useQueryClient();
   const notifier = useNotifier();
   const fieldQuery = useGetFieldById(cultivation.fieldId);
   const query = useGetSatellitePasses(cultivation.id);
   const refresh = useRefreshSatellitePasses();
+  const pending = useMutationState({
+    filters: { mutationKey: getRefreshSatellitePassesMutationKey(), status: 'pending' },
+    select: mutation => (mutation.state.variables as { id?: string } | undefined)?.id,
+  });
+  const isFetching = pending.includes(cultivation.id);
   const passes = useMemo(() => query.data?.passes ?? [], [query.data]);
   const readings = passes.filter(p => p.status === SatellitePassStatus.Ok);
   const [chosen, setChosen] = useState<string | null>(null);
@@ -78,25 +91,28 @@ export function SatellitePanel({ cultivation }: { cultivation: CultivationViewMo
   const cloudy = passes.length - readings.length;
 
   return (
-    <Paper variant="outlined" sx={{ p: 2.5 }}>
       <Stack spacing={2}>
         <Stack direction="row" useFlexGap spacing={1.5} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
-          <Box>
-            <Typography variant="subtitle2">Onde o talhão destoa</Typography>
-            <Typography variant="body2" color="text.secondary">
-              Sentinel-2, a cada poucos dias. Mostra a área da lavoura que está diferente do resto — não diz que é cercosporiose.
-            </Typography>
-          </Box>
-          <Box sx={{ flexGrow: 1 }} />
-          <Button variant="outlined" disabled={refresh.isPending} onClick={() => void update()}>
-            {refresh.isPending ? 'Buscando imagens… (pode levar alguns minutos)' : 'Buscar imagens de satélite'}
+          <Typography variant="body2" color="text.secondary" sx={{ flex: '1 1 320px' }}>
+            Imagens do Sentinel-2, a cada poucos dias, buscadas sozinhas. Marcam a área onde a planta está menos
+            vigorosa que o resto do talhão — é para lá que a vistoria manda as paradas. Não dizem que é
+            cercosporiose: a 20 m por pixel, o satélite vê vigor, não lesão.
+          </Typography>
+          <Button size="small" disabled={isFetching} onClick={() => void update()}>
+            {isFetching ? 'Buscando…' : 'Buscar de novo'}
           </Button>
         </Stack>
+        {isFetching && <Box>
+          <LinearProgress />
+          <Typography variant="caption" color="text.secondary">
+            Buscando imagens novas do satélite. Pode levar de 1 a 2 minutos; dá para continuar usando a tela.
+          </Typography>
+        </Box>}
 
         <QueryBoundary isLoading={query.isPending || fieldQuery.isPending} error={query.error ?? fieldQuery.error}
           onRetry={() => { void query.refetch(); void fieldQuery.refetch(); }}>
           {passes.length === 0 ? (
-            <Typography color="text.secondary">Nenhuma passagem buscada ainda.</Typography>
+            <Typography color="text.secondary">{isFetching ? 'Aguardando as primeiras imagens…' : 'Nenhuma passagem buscada ainda.'}</Typography>
           ) : (
             <Stack spacing={2}>
               <Typography variant="body2">
@@ -146,6 +162,5 @@ export function SatellitePanel({ cultivation }: { cultivation: CultivationViewMo
           )}
         </QueryBoundary>
       </Stack>
-    </Paper>
   );
 }

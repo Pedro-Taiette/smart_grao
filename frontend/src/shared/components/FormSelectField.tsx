@@ -11,6 +11,8 @@ interface FormSelectFieldProps<T extends FieldValues, TValue extends string> {
   control: Control<T>;
   label: string;
   options: readonly Option<TValue>[];
+  /** Dica do campo; a mensagem de validacao a substitui quando existe. */
+  helperText?: string;
 }
 
 /** Seletor ligado ao react-hook-form, com a mesma ligacao de erro do {@link FormTextField}. */
@@ -19,6 +21,7 @@ export function FormSelectField<T extends FieldValues, TValue extends string>({
   control,
   label,
   options,
+  helperText,
 }: FormSelectFieldProps<T, TValue>) {
   return (
     <Controller
@@ -31,7 +34,7 @@ export function FormSelectField<T extends FieldValues, TValue extends string>({
           select
           label={label}
           error={Boolean(fieldState.error)}
-          helperText={fieldState.error?.message}
+          helperText={fieldState.error?.message ?? helperText}
         >
           {options.map((option) => (
             <MenuItem key={option.value} value={option.value}>
