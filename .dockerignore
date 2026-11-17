@@ -1,0 +1,12 @@
+# O contexto do build e a raiz do repositorio. Sem isto, os 25 GB de analytics/data iriam junto.
+.git
+**/node_modules
+**/bin
+**/obj
+**/.venv
+**/__pycache__
+**/*.pyc
+analytics/data
+analytics/runs
+frontend/dist
+**/appsettings.Development.json

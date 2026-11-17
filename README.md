@@ -15,7 +15,13 @@ desenvolvimento. Ver [docs/modulo-coleta-autonoma.md](docs/modulo-coleta-autonom
 
 ## Para começar
 
-No Windows, depois de instalar .NET 10, Node.js, Python 3.13 e Git LFS e clonar o repositório:
+**Só para a demonstração (qualquer PC):** instale o [Docker Desktop](https://www.docker.com/products/docker-desktop)
+e coloque o **`smartgrao-demo-data.zip`** (os dados da demo, passados por fora do repositório) na
+pasta do projeto. Dois cliques em **`demo.cmd`**: sobe tudo — banco com os dados da demo, API,
+serviço de análise e frontend — e abre `http://localhost:8080`. **`demo-reset.cmd`** volta a demo
+ao início. Ver [docs/docker.md](docs/docker.md).
+
+**Para desenvolver**, no Windows, com .NET 10, Node.js, Python 3.13 e Git LFS:
 
 1. Dois cliques em **`setup.cmd`** — prepara tudo (só precisa uma vez, ou depois de um `git pull`).
 2. Dois cliques em **`start.cmd`** — abre o sistema no navegador. Fechar a janela desliga.
@@ -44,12 +50,14 @@ backend/     solução .NET (Domain, Application, Infrastructure, WebApi) e test
 frontend/    React + MUI
 openapi/     contrato emitido a cada build do backend; é a entrada do Orval
 analytics/   treino do modelo de imagem e o serviço de análise (satélite + IA)
-scripts/     setup, start e stop — chamados pelos .cmd da raiz
+scripts/     setup, start, stop e demo — chamados pelos .cmd da raiz
+docker/      imagens da demo (banco com os dados, API, análise, frontend) e o nginx
 docs/        decisões de arquitetura, regras de domínio e referência da API
 ```
 
 ## Documentação
 
+- [Docker](docs/docker.md) — a demo inteira em containers, com os dados congelados e o reset
 - [Rodando](docs/rodando.md) — os scripts de um clique, problemas comuns e o passo a passo manual
 - [Guia rápido](docs/guia-rapido.md) — como usar o sistema, do talhão à foto revisada
 - [Coleta autônoma — rover e drone](docs/modulo-coleta-autonoma.md) — papel de cada um, o rover

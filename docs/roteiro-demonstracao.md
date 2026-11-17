@@ -6,14 +6,16 @@ abaixo é uma tela, na ordem em que a história anda. Tempo total: 12 a 15 minut
 
 ## Antes de começar
 
-Dois cliques em **`start.cmd`**, na raiz: sobe o serviço Python, a API e o frontend e abre o
-navegador. Para subir cada parte num terminal, ver [rodando.md](rodando.md).
+Dois cliques em **`demo-reset.cmd`**, na raiz: sobe tudo em Docker com os dados da demonstração
+no estado inicial e abre `http://localhost:8080` (ver [docker.md](docker.md)). Os nomes das
+fazendas na cópia são **Fazenda Santa Rita (Marília)** e **Fazenda Santa Rita (Sorriso)**. Sem
+Docker, `start.cmd` sobe o sistema contra o banco compartilhado ([rodando.md](rodando.md)).
 
 Conferir antes de entrar na sala:
 
 - `http://localhost:8000/health` responde `ok`;
 - **Ajustes → Desempenho da IA** mostra os números do modelo (se aparecer "serviço de análise fora
-  do ar", rode `stop.cmd` e `start.cmd` de novo);
+  do ar", rode `demo-stop.cmd` e `demo.cmd` de novo);
 - a internet funciona: clima, satélite e o fundo dos mapas vêm de fora.
 
 Dados usados (já estão no banco):

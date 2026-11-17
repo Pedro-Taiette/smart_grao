@@ -8,7 +8,7 @@ import { useGetPhotos } from '@/api/generated/photos/photos';
 import type { CercosporaAlertViewModel } from '@/api/generated/model/cercosporaAlertViewModel';
 import { today } from '@/features/cultivations/cultivationSchema';
 import {
-  crossVerdict, photoFacts, satelliteFacts, satelliteIsStale, summarizeClimate, summarizePhotos,
+  type AxisSummary, type Verdict, crossVerdict, photoFacts, satelliteFacts, satelliteIsStale, summarizeClimate, summarizePhotos,
   summarizeSatellite,
 } from '../axes';
 
@@ -69,18 +69,24 @@ export function useCultivationAxes(cultivationId: string, options: {
       .catch(() => setFailed(true));
   }, [satellite, cultivationId, day, options.endedOn, mutateAsync, cache]);
 
+  // Enquanto chega a primeira resposta, a tela diz "Carregando" — e nao "sem imagens" ou "nenhuma
+  // foto", que pareceriam um fato sobre o talhao.
+  const loading: AxisSummary = { tone: 'idle', title: 'Carregando…', detail: '' };
+  const loadingVerdict: Verdict = { severity: 'info', headline: 'Juntando clima, satélite e fotos deste talhão…', detail: null, actions: [] };
+  const isLoading = (!options.alert && riskQuery.isPending) || satelliteQuery.isPending || photosQuery.isPending;
+
   return {
     risk,
     riskFull: riskQuery.data,
     satellite,
     photos,
     photoList: photosQuery.data ?? [],
-    climate: summarizeClimate(risk),
-    satelliteSummary: summarizeSatellite(satellite, { isFetching: isFetchingSatellite, failed }),
-    photoSummary: summarizePhotos(photosQuery.data ? photos : undefined),
-    verdict: crossVerdict(risk, satellite, photosQuery.data ? photos : undefined),
+    climate: risk ? summarizeClimate(risk) : loading,
+    satelliteSummary: satelliteQuery.isPending ? loading : summarizeSatellite(satellite, { isFetching: isFetchingSatellite, failed }),
+    photoSummary: photosQuery.isPending ? loading : summarizePhotos(photos),
+    verdict: isLoading ? loadingVerdict : crossVerdict(risk, satellite, photos),
     isFetchingSatellite,
-    isLoading: (!options.alert && riskQuery.isPending) || satelliteQuery.isPending || photosQuery.isPending,
+    isLoading,
     error: (options.alert ? null : riskQuery.error) ?? satelliteQuery.error ?? photosQuery.error,
     refetch: () => { void riskQuery.refetch(); void satelliteQuery.refetch(); void photosQuery.refetch(); },
   };

@@ -5,6 +5,7 @@ import type { IFormFile } from '@/api/generated/model/iFormFile';
 import { PhotoSource } from '@/api/generated/model/photoSource';
 import { PlantOrgan } from '@/api/generated/model/plantOrgan';
 import { positionAt, type RoverRoute } from './route';
+import { newId } from '@/shared/newId';
 
 export interface Sample {
   file: string;
@@ -71,7 +72,7 @@ export function useRoverSimulation(route: RoverRoute | null, cultivationId: stri
     if (deck.current.length === 0) deck.current = shuffled(samples);
     const sample = deck.current.pop();
     if (!sample) return;
-    const photoId = crypto.randomUUID();
+    const photoId = newId();
     setCaptures(current => [...current, { stopSequence, photoId, sample, status: 'sending' }]);
     try {
       const blob = await (await fetch(`/rover-samples/${sample.file}`)).blob();
