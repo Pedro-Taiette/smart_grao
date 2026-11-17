@@ -1,0 +1,57 @@
+{
+  "rows": 10849,
+  "groups": 528,
+  "by_split": {
+    "train": 7637,
+    "val": 1137,
+    "test": 1038,
+    "final": 1037
+  },
+  "by_split_dataset_label": {
+    "final|craze": {
+      "cercosporiose": 534,
+      "outras_manchas": 391,
+      "saudavel": 112
+    },
+    "test|craze": {
+      "cercosporiose": 534,
+      "outras_manchas": 391,
+      "saudavel": 113
+    },
+    "train|cds": {
+      "cercosporiose": 444,
+      "outras_manchas": 899,
+      "saudavel": 0
+    },
+    "train|digipathos": {
+      "cercosporiose": 0,
+      "outras_manchas": 1460,
+      "saudavel": 0
+    },
+    "train|plantvillage": {
+      "cercosporiose": 442,
+      "outras_manchas": 1850,
+      "saudavel": 1013
+    },
+    "train|seasonal": {
+      "cercosporiose": 744,
+      "outras_manchas": 126,
+      "saudavel": 659
+    },
+    "val|cds": {
+      "cercosporiose": 79,
+      "outras_manchas": 149,
+      "saudavel": 0
+    },
+    "val|plantvillage": {
+      "cercosporiose": 71,
+      "outras_manchas": 327,
+      "saudavel": 149
+    },
+    "val|seasonal": {
+      "cercosporiose": 123,
+      "outras_manchas": 1,
+      "saudavel": 238
+    }
+  }
+}

@@ -13,6 +13,10 @@ Os conjuntos, as licenças e o porquê de cada escolha estão na
 [pesquisa](../docs/pesquisa-cercosporiose.md#5-conjuntos-de-imagens-trilha-b). Imagens e pesos não
 entram no git.
 
+**Modelo 0.2.0 (em andamento):** o roteiro passo a passo para o grupo (protocolo craze_dev/craze_final,
+quem faz o quê, comandos, erros comuns) está em [TREINO.md](TREINO.md), e os resultados em
+[resultados.md](resultados.md).
+
 ## Ambiente
 
 Python 3.13 e GPU NVIDIA com CUDA 12.8 (testado numa RTX 3050 6 GB). No Windows:
@@ -98,9 +102,9 @@ lesão na borda), RGB, `/255`, normalização do ImageNet. Tudo isso está em `l
 
 - `runs/<execução>/`: `best.pt`, `history.json`, `eval_val.json`, `eval_test.json`, `summary.json`
   (fora do git).
-- `models/<versão>/`: `model.onnx` (~16 MB, versionado), `labels.json`, `metrics.json` (métricas do
-  teste e da validação, mais a conferência ONNX × PyTorch) e `train_config.json`. Um modelo acima de
-  20 MB deve entrar no `.gitignore` e ser publicado fora do git.
+- `models/<versão>/`: `model.onnx`, `labels.json`, `metrics.json` (métricas do teste e da validação,
+  mais a conferência ONNX × PyTorch) e `train_config.json`. O 0.1.0 (~16 MB) está no git comum; do
+  0.2.0 em diante os `.onnx` vão pelo Git LFS (ver [TREINO.md](TREINO.md#16-entregar)).
 - `eval_*.json` traz recall e precisão por classe, F1 macro, matriz de confusão, calibração (ECE em
   15 faixas) e tudo isso também **por conjunto e por domínio** (campo × lab).
 
@@ -136,3 +140,10 @@ acurácia 0,609, F1 macro 0,481, recall de cercosporiose 0,632 (precisão 0,666)
 0,10, ECE 0,159. A validação do mesmo treino dava F1 0,977. Esse é o tamanho da troca de domínio:
 **o número de validação nos conjuntos conhecidos não diz nada sobre uma lavoura nova**, e a confiança
 do modelo fica mal calibrada fora do domínio.
+
+## 0.2.0: o que mudou até agora
+
+O Craze foi dividido por planta em `craze_dev` (escolha) e `craze_final` (avaliado uma vez, no fim),
+com a atribuição fixa em `data/splits/craze_dev_final.csv`. Na mesma base (craze_dev), a linha de base
+B0 dá F1 macro 0,460. O melhor até agora, DINOv2-S com LP-FT e WiSE 0,75, dá 0,620, com recall de
+cercosporiose 0,85, recall de saudável 0,43 e ECE 0,06. Os detalhes estão em [resultados.md](resultados.md).

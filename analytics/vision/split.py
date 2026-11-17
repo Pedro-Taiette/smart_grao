@@ -2,12 +2,22 @@
 
     python -m vision.split grouped                 # data/splits/grouped.csv
     python -m vision.split lodo --holdout craze    # data/splits/lodo_craze.csv
+    python -m vision.split lodo --holdout craze --halves              # lodo_craze_halves.csv
+    python -m vision.split lodo --holdout cds --exclude craze         # lodo_cds_sem_craze.csv
+    python -m vision.split all                     # data/splits/all.csv (tudo treino: producao)
 
 - grouped: cada conjunto e dividido por grupo (estratificado pela classe) em ~70/15/15, e as partes
   sao unidas. O teste mistura os conjuntos de campo e de laboratorio; os numeros por conjunto e por
   dominio saem separados na avaliacao.
 - lodo (leave-one-dataset-out): o conjunto escolhido vira o teste inteiro; os demais sao divididos
   por grupo em treino e validacao (~85/15). Mede a troca de dominio (outro pais, outra camera).
+  Com --halves, o conjunto de fora e dividido por grupo, estratificado, em duas metades: "test"
+  (craze_dev, usado para escolher receita) e "final" (craze_final, avaliado uma vez so, no fim). A
+  atribuicao fica em data/splits/<conjunto>_dev_final.csv, versionado: se o arquivo existe, ele manda
+  (mesmas metades em qualquer maquina); se falta imagem nele, a divisao para. O treino e a validacao
+  sao os mesmos do lodo sem --halves. --exclude tira conjuntos inteiros (folds
+  auxiliares sem o Craze, para nenhuma foto dele entrar em treino de selecao).
+- all: tudo e treino, para o modelo de producao (numero de epocas fixado antes, sem validacao).
 
 Conjuntos marcados como so-treino (Digipathos: laboratorio, so "outras_manchas" e grupo grosseiro)
 nunca entram na validacao nem no teste.
@@ -61,13 +71,31 @@ def grouped_split(manifest: pd.DataFrame, seed: int) -> pd.DataFrame:
     return pd.concat(parts, ignore_index=True)
 
 
-def lodo_split(manifest: pd.DataFrame, holdout: str, seed: int) -> pd.DataFrame:
+def _halves(frame: pd.DataFrame, holdout: str, seed: int) -> np.ndarray:
+    reference = SPLITS_DIR / f"{holdout}_dev_final.csv"
+    if reference.exists():
+        known = pd.read_csv(reference, dtype=str, keep_default_na=False).set_index("path")["split"]
+        missing = sorted(set(frame["path"]) - set(known.index))
+        if missing:
+            raise SystemExit(f"{len(missing)} imagens fora de {reference.name} (ex.: {missing[:3]}); "
+                             "o manifesto difere do usado para fixar as metades")
+        return frame["path"].map(known).to_numpy()
+    folds = _group_folds(frame, n_splits=2, seed=seed)
+    sides = np.where(folds == 0, "test", "final")
+    SPLITS_DIR.mkdir(parents=True, exist_ok=True)
+    frame.assign(split=sides)[["path", "group", "label", "split"]].to_csv(reference, index=False)
+    return sides
+
+
+def lodo_split(manifest: pd.DataFrame, holdout: str, seed: int, halves: bool = False) -> pd.DataFrame:
     if holdout not in set(manifest["dataset"]):
         raise SystemExit(f"Conjunto {holdout!r} nao esta no manifesto")
     if holdout in TRAIN_ONLY_DATASETS:
         raise SystemExit(f"{holdout} e so-treino e nao serve de teste")
     test = manifest[manifest["dataset"] == holdout].copy()
     test["split"] = "test"
+    if halves:
+        test["split"] = _halves(test, holdout, seed)
     parts = [test]
     for dataset, frame in manifest[manifest["dataset"] != holdout].groupby("dataset"):
         frame = frame.copy()
@@ -100,17 +128,25 @@ def describe(split: pd.DataFrame) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("mode", choices=["grouped", "lodo"])
+    parser.add_argument("mode", choices=["grouped", "lodo", "all"])
     parser.add_argument("--holdout", default="craze")
+    parser.add_argument("--halves", action="store_true", help="divide o conjunto de fora em test/final")
+    parser.add_argument("--exclude", nargs="*", default=[], help="conjuntos tirados por inteiro")
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
 
     manifest = pd.read_csv(MANIFEST_PATH, dtype=str, keep_default_na=False)
     manifest = manifest[manifest["excluded"] == ""][COLUMNS].reset_index(drop=True)
+    manifest = manifest[~manifest["dataset"].isin(args.exclude)].reset_index(drop=True)
     if args.mode == "grouped":
         split, name = grouped_split(manifest, args.seed), "grouped"
+    elif args.mode == "all":
+        split, name = manifest.assign(split="train"), "all"
     else:
-        split, name = lodo_split(manifest, args.holdout, args.seed), f"lodo_{args.holdout}"
+        split = lodo_split(manifest, args.holdout, args.seed, args.halves)
+        name = f"lodo_{args.holdout}" + ("_halves" if args.halves else "")
+    if args.exclude:
+        name += "_sem_" + "_".join(sorted(args.exclude))
     check_no_leak(split)
     SPLITS_DIR.mkdir(parents=True, exist_ok=True)
     split.to_csv(SPLITS_DIR / f"{name}.csv", index=False)

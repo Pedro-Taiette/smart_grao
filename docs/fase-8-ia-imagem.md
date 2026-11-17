@@ -68,9 +68,14 @@ o campo, e a confiança do modelo deixa de valer. Fica em `metrics.json` (`out_o
 no aferimento.
 
 **Em outra máquina.** Treino e uso são separados. O treino (`analytics/vision`) precisa de GPU e dos
-~24 GB de imagens, e roda uma vez por versão. O uso precisa só do `model.onnx` (16 MB, no git), do
-`labels.json` e do serviço: clonar, criar o ambiente de `analytics/service`
-(`pip install -r requirements.txt`) e subir o uvicorn. Roda na CPU, menos de 1 s por foto.
+~24 GB de imagens, e roda uma vez por versão. O uso precisa só do `model.onnx`, do `labels.json` e
+do serviço: `git lfs install`, clonar, criar o ambiente de `analytics/service`
+(`pip install -r requirements.txt`) e subir o uvicorn. Roda na CPU.
+
+**Distribuição.** Do 0.2.0 em diante, o `model.onnx` vai para o **Git LFS**
+(`analytics/models/**/*.onnx` no `.gitattributes`): o git guarda um ponteiro e o arquivo é baixado no
+clone. O 0.1.0 (16 MB) ficou no git normal. A cota gratuita de LFS do GitHub é limitada; versões
+antigas que ninguém usa podem sair do repositório.
 
 ## Telas
 
