@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Alert, Box, Button, Chip, MenuItem, Paper, Stack, TextField, Typography } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { Crop } from '@/api/generated/model/crop';
 import type { CultivationViewModel } from '@/api/generated/model/cultivationViewModel';
 import type { CercosporaRiskViewModel } from '@/api/generated/model/cercosporaRiskViewModel';
@@ -67,6 +67,7 @@ function scrollTo(axis: AxisId) {
 
 function CultivationSituation({ farmId, cultivation }: { farmId: string; cultivation: CultivationViewModel }) {
   const [, setParams] = useSearchParams();
+  const navigate = useNavigate();
   const { hash } = useLocation();
   const data = useCultivationAxes(cultivation.id, { endedOn: cultivation.endedOn });
   const closed = cultivation.endedOn !== null;
@@ -99,6 +100,7 @@ function CultivationSituation({ farmId, cultivation }: { farmId: string; cultiva
           onAxis={scrollTo}
           onReview={review}
           onStage={() => setParams({ aba: 'plantio', registrar: 'estagio' })}
+          onRover={() => navigate(`/talhoes/${cultivation.fieldId}/rover`)}
           reviewCount={data.photos.awaitingReview.length}
         />
 
@@ -115,7 +117,7 @@ function CultivationSituation({ farmId, cultivation }: { farmId: string; cultiva
             openedId={openedPhoto} onOpen={setOpenedPhoto} onClose={() => setOpenedPhoto(null)} />
         </AxisSection>
 
-        {!closed && <AutonomousWip />}
+        {!closed && <AutonomousWip fieldId={cultivation.fieldId} />}
       </Stack>
     </QueryBoundary>
   );

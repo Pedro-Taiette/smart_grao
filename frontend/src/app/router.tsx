@@ -9,6 +9,7 @@ import { InspectionsPage } from '@/features/inspections/pages/InspectionsPage';
 import { InspectionDetailPage } from '@/features/inspections/pages/InspectionDetailPage';
 import { SettingsPage } from '@/features/settings/pages/SettingsPage';
 import { CalibrationPage } from '@/features/analysis/pages/CalibrationPage';
+import { RoverPage } from '@/features/rover/pages/RoverPage';
 import { AppLayout } from '@/shared/components/AppLayout';
 
 /**
@@ -32,6 +33,7 @@ export const router = createBrowserRouter([
 
       { path: 'talhoes', element: <FieldsPage /> },
       { path: 'talhoes/:fieldId', element: <FieldPage /> },
+      { path: 'talhoes/:fieldId/rover', element: <RoverPage /> },
 
       { path: 'vistorias', element: <InspectionsPage /> },
       { path: 'vistorias/:inspectionId', element: <InspectionDetailPage /> },

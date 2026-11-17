@@ -41,8 +41,9 @@ export function PhotosPanel({ photos, facts, openedId, onOpen, onClose }: {
 
       {simulated && (
         <Alert severity="info">
-          Parte das fotos é da estação sentinela <strong>simulada</strong>: sem hardware nem lavoura neste
-          semestre, elas vêm do conjunto de teste e chegam pela mesma rota que a estação real usaria.
+          Parte das fotos é da estação sentinela ou do rover <strong>simulados</strong>: sem hardware nem lavoura
+          neste semestre, elas vêm do conjunto público de teste e chegam pela mesma rota que o equipamento real
+          usaria. Estão marcadas com a origem e "simulada".
         </Alert>
       )}
 

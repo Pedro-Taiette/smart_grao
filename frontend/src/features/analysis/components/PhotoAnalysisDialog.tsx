@@ -62,7 +62,10 @@ export function PhotoAnalysisDialog({ photo, onClose }: { photo: PhotoViewModel;
             <FormControlLabel control={<Switch checked={showHeatmap} onChange={(_, v) => setShowHeatmap(v)} />}
               label="Mostrar onde o modelo olhou" />
           )}
-          {photo.isSimulated && <Alert severity="info">Foto de estação simulada, não de campo.</Alert>}
+          {photo.isSimulated && <Alert severity="info">
+            Foto {photo.source === 'Rover' ? 'do rover' : 'da estação'} simulado(a): imagem de exemplo do conjunto público de
+            teste, não desta lavoura.
+          </Alert>}
           {!model && <Typography color="text.secondary">A análise desta foto ainda não terminou.</Typography>}
           {model && (
             <Stack spacing={0.5}>

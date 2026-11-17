@@ -142,7 +142,7 @@ export function photoFacts(photos: PhotoViewModel[]): PhotoFacts {
   return { total: photos.length, analyzing, awaitingReview, suspected, confirmed, includesSimulated };
 }
 
-const simulatedNote = ' Inclui fotos da estação simulada.';
+const simulatedNote = ' Inclui fotos simuladas (estação ou rover).';
 
 export function summarizePhotos(facts: PhotoFacts | undefined): AxisSummary {
   const summary = describePhotos(facts);

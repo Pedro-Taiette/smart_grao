@@ -1,0 +1,57 @@
+[
+  {
+    "file": "leaf-01.jpg",
+    "datasetLabel": "cercosporiose",
+    "original": "Gray_leaf_spot/DSC_0378.JPG"
+  },
+  {
+    "file": "leaf-02.jpg",
+    "datasetLabel": "cercosporiose",
+    "original": "Gray_leaf_spot/DSC_0547.JPG"
+  },
+  {
+    "file": "leaf-03.jpg",
+    "datasetLabel": "cercosporiose",
+    "original": "Gray_leaf_spot/DSC_1330.JPG"
+  },
+  {
+    "file": "leaf-04.jpg",
+    "datasetLabel": "cercosporiose",
+    "original": "Gray_leaf_spot/DSC_1350.JPG"
+  },
+  {
+    "file": "leaf-05.jpg",
+    "datasetLabel": "cercosporiose",
+    "original": "Gray_leaf_spot/image_558.jpg"
+  },
+  {
+    "file": "leaf-06.jpg",
+    "datasetLabel": "cercosporiose",
+    "original": "Gray_leaf_spot/image_578.jpg"
+  },
+  {
+    "file": "leaf-07.jpg",
+    "datasetLabel": "saudavel",
+    "original": "Healthy/IMG_20240210_161000.jpg"
+  },
+  {
+    "file": "leaf-08.jpg",
+    "datasetLabel": "saudavel",
+    "original": "Healthy/IMG_20240210_161041.jpg"
+  },
+  {
+    "file": "leaf-09.jpg",
+    "datasetLabel": "saudavel",
+    "original": "Healthy/IMG_20240210_161110.jpg"
+  },
+  {
+    "file": "leaf-10.jpg",
+    "datasetLabel": "saudavel",
+    "original": "Healthy/IMG_20240210_161214.jpg"
+  },
+  {
+    "file": "leaf-11.jpg",
+    "datasetLabel": "saudavel",
+    "original": "Healthy/IMG_20240210_161317.jpg"
+  }
+]

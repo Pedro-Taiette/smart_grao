@@ -64,6 +64,10 @@ Em cada parada:
 O mapa da vistoria mostra as paradas: vermelhas faltam, verdes já foram. Terminou as 10? Toque em
 **Concluir vistoria**.
 
+**Ou mande o rover.** Ao lado de **Vistoriar agora** aparece **Mandar o rover (simulação)**: um robô
+que iria sozinho às áreas marcadas e fotografaria as folhas. Por enquanto é uma simulação — as fotos
+são de exemplo e ficam marcadas como simuladas —, mas a análise é a da IA de verdade.
+
 **Revise o que a IA disse.** O botão **Revisar fotos** abre a primeira foto que espera revisão — as
 suspeitas de cercosporiose primeiro. A IA dá um palpite (ex.: *"Suspeita de cercosporiose —
 confirme"*); escolha o que a folha realmente tem. Essa revisão é o que ensina o sistema e mede se a

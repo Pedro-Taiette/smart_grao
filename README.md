@@ -9,8 +9,9 @@ Acompanhamento do milho para **detectar cedo a cercosporiose**, em três pilares
 | **3 · Fotos + IA** | O que é? | Modelo de imagem nas fotos das folhas, com revisão humana |
 
 O cruzamento dos três vira uma decisão na tela ("Vistorie agora as 2 áreas que o satélite marcou").
-**Em desenvolvimento:** coleta autônoma por drone e rover, para reforçar os pilares 2 e 3 sem
-depender de alguém ir a campo — ver [docs/modulo-coleta-autonoma.md](docs/modulo-coleta-autonoma.md).
+**Coleta autônoma:** um rover (simulado, sem hardware) vai até as áreas do satélite, fotografa as
+folhas de baixo e manda para a IA — sem depender de alguém ir a campo. O drone segue em
+desenvolvimento. Ver [docs/modulo-coleta-autonoma.md](docs/modulo-coleta-autonoma.md).
 
 ## Para começar
 
@@ -51,8 +52,8 @@ docs/        decisões de arquitetura, regras de domínio e referência da API
 
 - [Rodando](docs/rodando.md) — os scripts de um clique, problemas comuns e o passo a passo manual
 - [Guia rápido](docs/guia-rapido.md) — como usar o sistema, do talhão à foto revisada
-- [Coleta autônoma — drone e rover (WIP)](docs/modulo-coleta-autonoma.md) — papel de cada um, o que
-  já existe e a POC simulada
+- [Coleta autônoma — rover e drone](docs/modulo-coleta-autonoma.md) — papel de cada um, o rover
+  simulado (o que é real e o que é simulado) e os próximos passos
 - [Roteiro da demonstração](docs/roteiro-demonstracao.md) — a defesa passo a passo, com os dados de demonstração
 - [Roadmap — cercosporiose no milho](docs/roadmap-cercosporiose.md) — fases 4 a 9 do semestre:
   risco climático, satélite, vistoria dirigida e IA de imagem, com o calendário até a entrega

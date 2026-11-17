@@ -12,4 +12,5 @@ export const PhotoSource = {
   Phone: 'Phone',
   Station: 'Station',
   Drone: 'Drone',
+  Rover: 'Rover',
 } as const;

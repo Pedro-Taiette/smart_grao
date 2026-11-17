@@ -1,7 +1,8 @@
-# Módulo de coleta autônoma — drone e rover (WIP)
+# Módulo de coleta autônoma — drone e rover
 
-**Situação: em desenvolvimento.** Nada aqui coleta dado ainda. A tela mostra o módulo como "Em
-desenvolvimento" na aba **Situação** do talhão, sem botão e sem dado.
+**Situação:** o **rover tem uma simulação** funcionando (`/talhoes/:id/rover`). O **drone** segue em
+desenvolvimento, só como plano. A aba **Situação** do talhão mostra os dois com o rótulo certo
+("Simulação" e "Em desenvolvimento").
 
 ## Por quê
 
@@ -37,21 +38,40 @@ detecta: ele vê vigor da copa, não a lesão inicial.
 - **Simulador de referência.** `analytics/service/simulate_station.py` envia fotos do conjunto de
   teste como se fosse a estação; o simulador do rover segue o mesmo molde.
 
-## POC proposta (mock)
+## O rover simulado (feito)
 
-Sem hardware nem lavoura, a primeira versão é uma **simulação**, marcada como simulada em toda tela:
+Um mini-módulo à parte, aberto pelo talhão (**Ver o rover em ação**, ou **Mandar o rover** ao lado
+de "Vistoriar agora"). O que é simulado e o que é real:
 
-1. `simulate_rover.py` pega o plano dirigido de um plantio e "percorre" as paradas em ordem.
-2. Em cada parada, envia 1–2 fotos de folha de baixo do conjunto de teste pela rota de dispositivo,
-   com a posição da parada e origem *rover*.
-3. A vistoria dirigida mostra o trajeto no mapa e as paradas cobertas pelo rover; as fotos entram no
-   eixo 3 com a etiqueta "rover · simulado".
-4. Para o drone: sobrepor ao mapa do eixo 2 uma imagem de alta resolução de exemplo recortada pelo
-   contorno, para mostrar o ganho de detalhe sobre o Sentinel-2 — também marcada como simulada.
+| Parte | Simulada ou real |
+|---|---|
+| Rota: base → áreas do satélite → base | **Calculada** das áreas reais do satélite (as das últimas 3 semanas, as maiores primeiro); sem área, pontos espalhados |
+| Rover andando no mapa, com rumo, distância e "chega em" | **Simulado** (animação acelerada, ~40 s a volta) |
+| Foto da folha de baixo em cada parada | **Simulada**: imagem de exemplo do conjunto de teste público |
+| Envio da foto | **Real**: `POST /api/photos/device`, origem `Rover`, `isSimulated = true`, com a posição da parada |
+| Fila de análise e modelo de IA | **Reais**: os mesmos das fotos de campo, com o mapa de onde o modelo olhou |
+| Revisão | **Real**: as fotos entram no eixo 3 do talhão como "rover · simulada" |
 
-Mudanças de backend esperadas: `Rover` em `PhotoSource` (a origem é gravada como texto de até 16
-caracteres, então não precisa de migration) e, se o trajeto for mostrado, guardar a sequência de
-posições do equipamento.
+A tela mostra, em cada parada, o palpite da IA ao lado do **gabarito do conjunto** (o rótulo que o
+conjunto público dá à foto) e conta quantas a IA acertou. É honesto com a banca: a simulação não
+escolhe o resultado, o modelo é que responde.
+
+**Fotos de exemplo:** 11 imagens (6 cercosporiose, 5 sadias) da divisão de **teste** do *Seasonal
+Corn Leaf Disease* (CC BY 4.0, Bangladesh), em `frontend/public/rover-samples/` com a atribuição. O
+modelo não as viu no treino. São de outra lavoura, e a tela diz isso.
+
+**Backend:** `Rover` entrou em `PhotoSource`. A origem é gravada como texto (até 16 caracteres),
+então não houve migration.
+
+Código: `frontend/src/features/rover/` — `route.ts` (paradas e caminho), `useRoverSimulation.ts`
+(movimento, paradas, envio) e `pages/RoverPage.tsx` (mapa, câmera, como o rover analisa).
+
+## Próximos passos
+
+- **Drone:** sobrepor ao mapa do eixo 2 uma imagem de alta resolução de exemplo, recortada pelo
+  contorno, para mostrar o ganho de detalhe sobre o Sentinel-2 — marcada como simulada.
+- **Rover real:** guardar a trilha do equipamento (posições ao longo do tempo) para o mapa seguir um
+  rover de verdade, e não uma animação.
 
 ## Fora do escopo do POC
 

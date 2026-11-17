@@ -27,3 +27,67 @@ body,
 .stop-marker.visited {
   background: #2e7d32;
 }
+
+/* Rover simulado: o icone gira com o rumo e pulsa, como o entregador num app de entrega. */
+.rover-marker {
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+
+.rover-marker .rover-pulse {
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: rgba(46, 125, 50, 0.35);
+  animation: rover-pulse 1.6s ease-out infinite;
+}
+
+.rover-marker svg {
+  position: absolute;
+  inset: 6px;
+  transition: transform 0.2s linear;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.45));
+}
+
+.rover-marker.capturing .rover-pulse {
+  background: rgba(255, 255, 255, 0.85);
+  animation-duration: 0.6s;
+}
+
+@keyframes rover-pulse {
+  0% { transform: scale(0.6); opacity: 1; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+
+.rover-stop {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: #757575;
+  color: #fff;
+  font: 700 12px/22px sans-serif;
+  text-align: center;
+  box-sizing: border-box;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.rover-stop.pending { background: #1565c0; }
+.rover-stop.cercosporiose { background: #c62828; }
+.rover-stop.other { background: #ef6c00; }
+.rover-stop.healthy { background: #2e7d32; }
+
+.rover-base {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 2px solid #fff;
+  background: #37474f;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes rover-flash {
+  0% { opacity: 0.9; }
+  100% { opacity: 0; }
+}

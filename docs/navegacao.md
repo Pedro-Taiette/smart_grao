@@ -138,7 +138,8 @@ pergunta em toda tela (`features/risk/components/AxesOverview.tsx`):
 |---|---|
 | `/` | Hoje — pendências e agenda |
 | `/talhoes` | Mapa da propriedade |
-| `/talhoes/:fieldId` | O talhão: cultivo, pontos, vistorias |
+| `/talhoes/:fieldId` | O talhão: situação, vistorias, plantio |
+| `/talhoes/:fieldId/rover` | Rover autônomo (simulação) |
 | `/vistorias` | Todas as visitas da fazenda |
 | `/vistorias/:id` | Executar a visita — é o link que abre no celular |
 | `/aferimento` | Desempenho da IA — alcançado por Ajustes |

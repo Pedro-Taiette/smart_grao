@@ -40,6 +40,7 @@ src/
     risk/           os três eixos (clima, satélite, fotos + IA): axes.ts resume e cruza,
                     AxesOverview mostra; a aba Situação e o painel da tela Hoje
     analysis/       revisão das fotos e o desempenho da IA (aferimento)
+    rover/          o rover autônomo simulado: rota, animação e envio pela rota de dispositivo
     settings/       o hub dos cadastros de referência
   shared/           componentes e utilidades sem dono
 ```

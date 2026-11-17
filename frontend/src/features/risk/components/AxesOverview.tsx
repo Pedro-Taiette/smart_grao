@@ -7,6 +7,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import InfoIcon from '@mui/icons-material/Info';
 import WarningIcon from '@mui/icons-material/Warning';
 import ErrorIcon from '@mui/icons-material/Error';
+import PrecisionManufacturingIcon from '@mui/icons-material/PrecisionManufacturing';
 import { InspectNowButton } from '@/features/inspections/components/InspectNowButton';
 import type { AxisSummary, AxisTone, Verdict } from '../axes';
 
@@ -44,6 +45,8 @@ interface Props {
   onAxis?: (axis: AxisId) => void;
   onReview?: () => void;
   onStage?: () => void;
+  /** Onde a vistoria e pedida, oferece mandar o rover (simulado) no lugar de alguem. */
+  onRover?: () => void;
   reviewCount?: number;
 }
 
@@ -90,6 +93,11 @@ export function AxesOverview(props: Props) {
                   );
                   return null;
                 })}
+                {actions.includes('inspect') && props.onRover && (
+                  <Button variant="outlined" startIcon={<PrecisionManufacturingIcon />} onClick={props.onRover}>
+                    Mandar o rover (simulação)
+                  </Button>
+                )}
               </Stack>
             )}
           </Box>

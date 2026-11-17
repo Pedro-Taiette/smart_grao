@@ -39,7 +39,9 @@ Marília → Talhões → **Talhão Sul** → aba **Plantio**.
 
 ## 3. Os três eixos de uma vez (1 min)
 
-Tela **Hoje**: o cartão do Talhão Sul mostra a decisão em uma frase e os três eixos numerados —
+Tela **Hoje**: em cima, **Vigiado sozinho** × **Pede vistoria agora** em hectares — o valor do
+sistema numa linha: em vez de percorrer o talhão todo, só onde clima e satélite apontaram. O cartão do
+Talhão Sul mostra a decisão em uma frase e os três eixos numerados —
 **1 Clima** (quando olhar), **2 Satélite** (onde olhar), **3 Fotos + IA** (o que é). A decisão é o
 cruzamento dos três: foto confirmada pesa mais; depois a vistoria sugerida pelo clima, dizendo se o
 satélite já sabe onde; depois satélite e clima sozinhos. Nenhum limiar novo: o cruzamento só junta as
@@ -107,7 +109,21 @@ Na aba **Situação**, a seção **3 · O que a IA viu nas fotos?** junta todas 
 campo e da estação sentinela **simulada**, marcada como tal —, as que esperam revisão primeiro. O botão
 **Revisar fotos** da decisão abre a primeira suspeita de cercosporiose.
 
-## 8. O sistema medindo a si mesmo (2 min)
+## 8. Sem ninguém em campo — o rover (2 min)
+
+Talhão Sul → aba **Situação** → **Mandar o rover (simulação)** (ou **Ver o rover em ação**, no fim).
+
+- Dizer antes: *"Por que alguém dependeria da foto do celular? Se a pessoa já está olhando a folha,
+  a IA é só segunda opinião. A IA faz sentido quando ninguém está olhando."*
+- **Iniciar rota**: o rover sai da base e vai às áreas que o satélite marcou, com distância e "chega
+  em" ao vivo. Em cada parada fotografa as folhas de baixo.
+- A foto é de exemplo (conjunto público, Bangladesh) — a tela diz —, mas **o envio, a fila e o modelo
+  são os de verdade**. Mostrar o palpite ao lado do gabarito do conjunto e **Mostrar onde a IA
+  olhou**.
+- No fim: *"A IA viu sinal em N fotos"*, e elas já estão no eixo 3 para alguém revisar de longe.
+- Dizer o limite: drone vê a copa (reforça o *onde*); só quem anda na entrelinha vê a folha de baixo.
+
+## 9. O sistema medindo a si mesmo (2 min)
 
 **Ajustes → Desempenho da IA** (o aferimento).
 
@@ -123,7 +139,7 @@ campo e da estação sentinela **simulada**, marcada como tal —, as que espera
   diria se a detecção foi precoce.
 - **Exportar fotos revisadas**: o conjunto de treino da próxima versão.
 
-## 9. O que não está validado (1 min, dizer sem ser perguntado)
+## 10. O que não está validado (1 min, dizer sem ser perguntado)
 
 - O índice climático não foi calibrado com ocorrências brasileiras.
 - O satélite não foi comparado com doença confirmada.

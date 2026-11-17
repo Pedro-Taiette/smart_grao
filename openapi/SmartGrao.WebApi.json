@@ -4275,7 +4275,8 @@
         "enum": [
           "Phone",
           "Station",
-          "Drone"
+          "Drone",
+          "Rover"
         ]
       },
       "PhotoViewModel": {

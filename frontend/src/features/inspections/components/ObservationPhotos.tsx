@@ -35,7 +35,7 @@ export function PhotoThumbnail({ photo, onOpen }: { photo: PhotoViewModel; onOpe
       <Box component="img" src={photoUrl(photo.id)} alt={plantOrganLabel[photo.organ]}
         sx={{ width: 128, height: 96, objectFit: 'cover', borderRadius: 1, display: 'block', bgcolor: 'grey.200' }} />
       <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.25 }}>
-        {plantOrganLabel[photo.organ]}{photo.isSimulated ? ' · simulada' : ''}
+        {plantOrganLabel[photo.organ]}{photo.source === 'Rover' ? ' · rover' : photo.source === 'Station' ? ' · estação' : ''}{photo.isSimulated ? ' · simulada' : ''}
       </Typography>
       <AnalysisLine photo={photo} />
     </Box>
