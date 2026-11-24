@@ -15,11 +15,19 @@ desenvolvimento. Ver [docs/modulo-coleta-autonoma.md](docs/modulo-coleta-autonom
 
 ## Para começar
 
-**Só para a demonstração (qualquer PC):** instale o [Docker Desktop](https://www.docker.com/products/docker-desktop)
-e dê dois cliques em **`demo.cmd`**: sobe tudo — banco com o starter pack (fazendas, talhões,
-pessoas e plantios de exemplo), API, serviço de análise e frontend — e abre
-`http://localhost:8080`. Enter na janela desliga; `demo.cmd reset` volta ao início. Ver
-[docs/docker.md](docs/docker.md).
+**Só para a demonstração (qualquer PC com Windows):**
+
+1. Instale o [Docker Desktop](https://www.docker.com/products/docker-desktop) e baixe o projeto
+   (`git clone` ou o ZIP do GitHub).
+2. Dois cliques em **`demo.cmd`**. Na primeira vez ele monta as imagens (alguns minutos), cria o
+   banco e roda o **starter pack** (`docker/starter-pack.sql`: fazendas, talhões reais, pessoas e
+   plantios de milho) sozinho. Abre `http://localhost:8080`.
+3. Abra uma vez cada plantio: o clima e o satélite são buscados ao vivo e a primeira busca leva de 1
+   a 2 minutos.
+
+Daí em diante, basta o **play do grupo `smartgrao` no Docker Desktop** e abrir
+`http://localhost:8080`; os dados ficam guardados. `demo.cmd reset` apaga tudo e roda o starter
+pack de novo. Ver [docs/docker.md](docs/docker.md).
 
 **Para desenvolver**, no Windows, com .NET 10, Node.js, Python 3.13 e Git LFS:
 

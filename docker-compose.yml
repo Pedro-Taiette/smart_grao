@@ -2,6 +2,10 @@
 #
 #   demo.cmd   (ou: docker compose up -d --build)  →  http://localhost:8080
 #
+# Depois da primeira subida, basta o play do grupo "smartgrao" no Docker Desktop. `restart:
+# unless-stopped` religa quem subir antes do banco ou da API ficar pronto, e sobe tudo sozinho quando
+# o Docker Desktop abre, se o sistema estava ligado ao fechar.
+#
 # Banco local: nada aqui mexe no banco compartilhado (Neon). Na primeira subida, as migrations da
 # API criam o esquema e o `seed` roda docker/starter-pack.sql. Ver docs/docker.md.
 name: smartgrao
@@ -9,6 +13,7 @@ name: smartgrao
 services:
   db:
     image: postgis/postgis:18-3.6
+    restart: unless-stopped
     environment:
       POSTGRES_USER: smartgrao
       POSTGRES_PASSWORD: smartgrao
@@ -23,6 +28,7 @@ services:
 
   analytics:
     build: { context: ., dockerfile: docker/analytics.Dockerfile }
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
       interval: 5s
@@ -31,6 +37,7 @@ services:
 
   api:
     build: { context: ., dockerfile: docker/api.Dockerfile }
+    restart: unless-stopped
     environment:
       ConnectionStrings__SmartGrao: "Host=db;Database=smartgrao;Username=smartgrao;Password=smartgrao"
       Analytics__BaseUrl: "http://analytics:8000/"
@@ -63,6 +70,7 @@ services:
 
   web:
     build: { context: ., dockerfile: docker/web.Dockerfile }
+    restart: unless-stopped
     ports:
       - "8080:80"
     depends_on:
