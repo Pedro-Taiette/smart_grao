@@ -23,7 +23,7 @@ Dados do starter pack (pessoas e fazendas fictícias, contornos de lavouras reai
 
 | O quê | Onde |
 |---|---|
-| Milho em andamento, dados do plantio em "Não sei", áreas marcadas pelo satélite | Sítio Santa Rita (Marília-SP) → **Talhão Sul** |
+| Milho de verão em andamento (lavoura real, curva do satélite), dados do plantio em "Não sei", áreas marcadas pelo satélite | Sítio Santa Rita (Castro-PR) → **Talhão Sul** |
 | Milho em andamento com os três fatores que agravam o risco | Fazenda Boa Esperança (Sorriso-MT) → **Talhão da Sede** |
 | Safrinha 2026 encerrada | Fazenda Boa Esperança → **Talhão da Sede** → safra 2025/2026 |
 

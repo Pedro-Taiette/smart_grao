@@ -6,10 +6,17 @@
 --
 -- O que NÃO está aqui, de propósito: clima e satélite. O sistema busca os dois sozinho (pilares 1 e
 -- 2): o clima na subida da API, o satélite ao abrir o talhão. Fotos também não — o rover gera na
--- demo. Pessoas e fazendas são fictícias; os contornos são de lavouras reais vistas na imagem de
--- satélite, para o Sentinel-2 ter o que ler.
+-- demo. Pessoas e fazendas são fictícias; os contornos são de lavouras reais, desenhados sobre a
+-- imagem do Sentinel-2 (estradas e carreadores como divisa):
 --
--- As datas dos plantios atuais são relativas a hoje (`current_date`): o pacote não envelhece.
+-- - Talhão Sul (Castro-PR, Campos Gerais): cobertura de inverno verde até agosto (NDVI 0,92),
+--   dessecada no fim de agosto, solo exposto em setembro (0,20) e dossel fechado em novembro (0,88).
+--   É o ciclo do milho de verão da região; a cultura é inferida pela curva, não confirmada em campo.
+--   Por isso o plantio tem data fixa (12/09/2026), tirada da curva.
+-- - Talhão da Sede (Sorriso-MT): o talhão inteiro entre as quatro estradas. Na safrinha 2026, solo
+--   exposto em fevereiro, NDVI 0,91 em abril e senescência em junho — a safrinha de Sorriso é milho.
+--
+-- As datas do plantio atual de Sorriso e dos estágios são relativas a hoje (`current_date`).
 
 begin;
 
@@ -24,8 +31,8 @@ $$;
 -- Fazendas -----------------------------------------------------------------------------------------
 
 insert into farms (id, name, city, state, headquarters, created_at) values
-  ('5a000000-0000-4000-8000-000000000001', 'Sítio Santa Rita', 'Marília', 'SP',
-   ST_SetSRID(ST_MakePoint(-49.9551, -22.3185), 4326), now()),
+  ('5a000000-0000-4000-8000-000000000001', 'Sítio Santa Rita', 'Castro', 'PR',
+   ST_SetSRID(ST_MakePoint(-49.8853, -24.7745), 4326), now()),
   ('5a000000-0000-4000-8000-000000000002', 'Fazenda Boa Esperança', 'Sorriso', 'MT',
    ST_SetSRID(ST_MakePoint(-55.8349, -12.5245), 4326), now())
 on conflict (id) do nothing;
@@ -43,23 +50,24 @@ on conflict (id) do nothing;
 
 insert into fields (id, farm_id, name, boundary, area_hectares, perimeter_meters, active, created_at) values
   ('5a000000-0000-4000-8000-000000000201', '5a000000-0000-4000-8000-000000000001', 'Talhão Sul',
-   ST_GeomFromText('POLYGON((-49.958037 -22.317401,-49.954598 -22.316746,-49.952581 -22.317416,-49.9533 -22.318905,-49.9536 -22.320731,-49.956079 -22.320215,-49.958037 -22.317401))', 4326),
-   15.3422, 1601.83, true, now()),
+   ST_GeomFromText('POLYGON((-49.889391 -24.767891,-49.888774 -24.767774,-49.885043 -24.770274,-49.881929 -24.77287,-49.880933 -24.773698,-49.885507 -24.773732,-49.887485 -24.773747,-49.888602 -24.773303,-49.888861 -24.771951,-49.889621 -24.769925,-49.889384 -24.768681,-49.889391 -24.767891))', 4326),
+   29.9592, 2498.41, true, now()),
   ('5a000000-0000-4000-8000-000000000202', '5a000000-0000-4000-8000-000000000002', 'Talhão da Sede',
-   ST_GeomFromText('POLYGON((-55.8386 -12.5195,-55.8311 -12.5195,-55.8311 -12.5295,-55.8386 -12.5295,-55.8386 -12.5195))', 4326),
-   90.5258, 3852.14, true, now())
+   ST_GeomFromText('POLYGON((-55.836772 -12.516373,-55.827073 -12.519518,-55.831336 -12.533302,-55.841682 -12.529775,-55.836772 -12.516373))', 4326),
+   182.9059, 5482.65, true, now())
 on conflict (id) do nothing;
 
 -- Safras -------------------------------------------------------------------------------------------
 
 insert into seasons (id, farm_id, name, created_at) values
-  ('5a000000-0000-4000-8000-000000000301', '5a000000-0000-4000-8000-000000000001', pg_temp.season_name(current_date - 65), now()),
+  ('5a000000-0000-4000-8000-000000000301', '5a000000-0000-4000-8000-000000000001', pg_temp.season_name(date '2026-09-12'), now()),
   ('5a000000-0000-4000-8000-000000000302', '5a000000-0000-4000-8000-000000000002', pg_temp.season_name(current_date - 60), now()),
   ('5a000000-0000-4000-8000-000000000303', '5a000000-0000-4000-8000-000000000002', '2025/2026', now())
 on conflict (id) do nothing;
 
 -- Plantios de milho --------------------------------------------------------------------------------
--- Talhão Sul: plantado há ~2 meses, sem os dados do plantio respondidos ("Não sei").
+-- Talhão Sul: plantado em 12/09/2026 (data tirada da curva do satélite), sem os dados do plantio
+--   respondidos ("Não sei").
 -- Talhão da Sede: plantado há ~2 meses, híbrido suscetível, milho sobre milho, plantio direto — os
 --   três fatores que agravam o risco.
 -- Talhão da Sede, safrinha 2026 (encerrada): a safra passada com clima e satélite reais, para mostrar
@@ -68,7 +76,7 @@ on conflict (id) do nothing;
 insert into cultivations (id, field_id, season_id, crop, cultivar, planted_on, ended_on, created_at,
                           risk_hybrid_reaction, risk_crop_sequence, risk_tillage) values
   ('5a000000-0000-4000-8000-000000000401', '5a000000-0000-4000-8000-000000000201', '5a000000-0000-4000-8000-000000000301',
-   'Corn', 'AG 8700 PRO4', current_date - 65, null, now(), 'Unknown', 'Unknown', 'Unknown'),
+   'Corn', 'AG 8700 PRO4', date '2026-09-12', null, now(), 'Unknown', 'Unknown', 'Unknown'),
   ('5a000000-0000-4000-8000-000000000402', '5a000000-0000-4000-8000-000000000202', '5a000000-0000-4000-8000-000000000303',
    'Corn', 'DKB 255 PRO3 (safrinha)', date '2026-02-10', date '2026-07-01', now(), 'Susceptible', 'Rotation', 'NoTill'),
   ('5a000000-0000-4000-8000-000000000403', '5a000000-0000-4000-8000-000000000202', '5a000000-0000-4000-8000-000000000302',
@@ -80,7 +88,7 @@ on conflict (id) do nothing;
 -- pedir o estágio logo de cara.
 
 insert into growth_stage_records (id, cultivation_id, observed_on, stage, notes) values
-  ('5a000000-0000-4000-8000-000000000501', '5a000000-0000-4000-8000-000000000401', current_date - 7, 'V8', null),
+  ('5a000000-0000-4000-8000-000000000501', '5a000000-0000-4000-8000-000000000401', current_date - 7, 'V12', null),
   ('5a000000-0000-4000-8000-000000000502', '5a000000-0000-4000-8000-000000000403', current_date - 5, 'V8', null),
   ('5a000000-0000-4000-8000-000000000503', '5a000000-0000-4000-8000-000000000402', date '2026-03-02', 'V4', null),
   ('5a000000-0000-4000-8000-000000000504', '5a000000-0000-4000-8000-000000000402', date '2026-03-20', 'V8', null),

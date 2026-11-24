@@ -9,6 +9,13 @@ navegador em `http://localhost:8080`. A primeira vez constrói as imagens (algun
 uns 20 segundos. **Enter na janela do `demo.cmd` desliga** — o que foi feito na demo fica guardado
 para a próxima vez.
 
+Depois da primeira subida, dá para ligar e desligar pelo **play/stop do grupo `smartgrao` no Docker
+Desktop**, sem o `demo.cmd`: os serviços têm `restart: unless-stopped`, então quem sobe antes do
+banco ficar pronto é religado sozinho. Em uns 10 segundos, `http://localhost:8080` responde.
+
+O reset também apaga o clima e o satélite já buscados: a primeira abertura de cada plantio volta a
+levar de 1 a 2 minutos. Antes de uma apresentação, não resete.
+
 Para começar do zero (apaga o que foi feito na demo e volta ao starter pack), no terminal da pasta
 do projeto:
 
@@ -38,16 +45,20 @@ conectar, libere a porta 8080 no firewall do Windows.
 ## O starter pack
 
 `docker/starter-pack.sql`, escrito à mão. Pessoas e fazendas são fictícias; os contornos são de
-lavouras reais vistas na imagem de satélite, para o Sentinel-2 ter o que ler. Pode rodar quantas
+lavouras reais, desenhados sobre a imagem do Sentinel-2 com as estradas como divisa. Pode rodar quantas
 vezes quiser: cada linha tem id fixo e não duplica.
 
-- **Sítio Santa Rita** (Marília-SP), com Ana Souza (técnica) e Carlos Lima (agrônomo) →
-  **Talhão Sul**: milho plantado há uns 2 meses, dados do plantio em "Não sei". É onde o rover roda.
+- **Sítio Santa Rita** (Castro-PR, Campos Gerais), com Ana Souza (técnica) e Carlos Lima
+  (agrônomo) → **Talhão Sul**: lavoura real com a curva do milho de verão — cobertura de inverno
+  dessecada no fim de agosto, solo exposto em setembro, dossel fechado em novembro. Plantio em
+  12/09/2026 (tirado da curva; a cultura é inferida pelo satélite, não confirmada em campo), dados do
+  plantio em "Não sei". É onde o rover roda.
 - **Fazenda Boa Esperança** (Sorriso-MT), com João Pereira (produtor) → **Talhão da Sede**: milho
   plantado há uns 2 meses, híbrido suscetível, milho sobre milho, plantio direto — risco alto. Tem
   também a **safrinha 2026 encerrada**, para mostrar a curva do satélite de uma safra inteira.
 
-As datas dos plantios atuais são relativas ao dia em que o banco é criado: o pacote não envelhece.
+O plantio de Sorriso e os estágios têm datas relativas ao dia em que o banco é criado. O do Talhão
+Sul tem data fixa, porque vem da curva real do satélite.
 
 **Clima e satélite não estão no pacote, de propósito**: o sistema busca os dois sozinho (pilares 1
 e 2) — o clima na subida e ao abrir o talhão, o satélite ao abrir o talhão. Por isso a demo
